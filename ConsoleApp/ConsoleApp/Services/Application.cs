@@ -1,5 +1,6 @@
 ﻿using System.ClientModel;
 using Azure.AI.OpenAI;
+using Azure.Core;
 using ConsoleApp.Settings;
 using ConsoleApp.Workflows.ReAct;
 using Microsoft.Agents.AI;
@@ -19,17 +20,16 @@ public class Application(IOptions<LanguageModelSettings> settings, IPromptServic
                     settings.Value.ApiKey))
             .GetChatClient(settings.Value.DeploymentName);
 
-        var agent = chatClient.CreateAIAgent(new ChatClientAgentOptions
+        var reasonAgent = chatClient.CreateAIAgent(new ChatClientAgentOptions
         {
-            Instructions = promptService.GetPrompt("Reason Prompt")
+            Instructions = promptService.GetPrompt("Reason-Agent")
         });
 
-        var reasonNode = new ReasonNode(agent);
+        var actAgent = chatClient.CreateAIAgent(new ChatClientAgentOptions
+        {
+            Instructions = promptService.GetPrompt("Act-Agent")
+        });
 
-        var builder = new WorkflowBuilder(reasonNode);
-
-        var workflow = builder.Build();
-     
         while (!cancellationToken.IsCancellationRequested)
         {
             Console.Write("You: ");
@@ -37,7 +37,7 @@ public class Application(IOptions<LanguageModelSettings> settings, IPromptServic
 
             if (string.IsNullOrWhiteSpace(userInput))
             {
-                continue;
+                continue;   
             }
 
             if (userInput.Equals("exit", StringComparison.OrdinalIgnoreCase))
@@ -46,18 +46,22 @@ public class Application(IOptions<LanguageModelSettings> settings, IPromptServic
                 break;
             }
 
-            await using var run = await InProcessExecution.RunAsync(workflow, userInput, cancellationToken: cancellationToken);
+            var reasonNode = new ReasonNode(reasonAgent);
+            var actNode = new ActNode(actAgent);
+
+            var builder = new WorkflowBuilder(reasonNode);
+            builder.AddEdge(reasonNode, actNode);
             
-            foreach (var evt in run.NewEvents)
+            var workflow = await builder.BuildAsync<string>();
+
+            var run = await InProcessExecution.StreamAsync(workflow, userInput, cancellationToken: cancellationToken);
+
+            await foreach (var evt in run.WatchStreamAsync(cancellationToken))
             {
-                switch (evt)
+                if (evt is ConversationStreamingEvent { Data: not null } streamingEvent)
                 {
-                    case ExecutorCompletedEvent executorComplete:
-                        Console.WriteLine($"{executorComplete.ExecutorId}: {executorComplete.Data}");
-                        break;
-                    case WorkflowOutputEvent workflowOutput:
-                        Console.WriteLine($"Workflow '{workflowOutput.SourceId}' outputs: {workflowOutput.Data}");
-                        break;
+                    var messageString = streamingEvent.Data?.ToString() ?? string.Empty;
+                    Console.Write(messageString);
                 }
             }
 
