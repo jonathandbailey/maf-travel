@@ -1,5 +1,4 @@
-﻿using Azure;
-using Microsoft.Agents.AI;
+﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
@@ -12,8 +11,7 @@ public class ActNode(AIAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IM
 {
     private List<ChatMessage> _messages = [];
 
-    public async ValueTask HandleAsync(string message, IWorkflowContext context,
-        CancellationToken cancellationToken = new CancellationToken())
+    public async ValueTask HandleAsync(string message, IWorkflowContext context, CancellationToken cancellationToken = new CancellationToken())
     {
         var stringBuilder = new StringBuilder();
 

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using System.ClientModel;
+using Microsoft.Agents.AI.Workflows.Checkpointing;
 
 namespace ConsoleApp.Services;
 
@@ -17,9 +18,9 @@ public class Application(IOptions<LanguageModelSettings> settings, IPromptServic
     {
         var sessionId = Guid.NewGuid();
 
-        var checkpointManager = CheckpointManager.CreateInMemory();
-
         var checkPointStore = new CheckpointStore();
+
+        var checkpointManager = CheckpointManager.CreateJson(checkPointStore);
         
         var chatClient = new AzureOpenAIClient(new Uri(settings.Value.EndPoint),
                 new ApiKeyCredential(
