@@ -19,6 +19,7 @@ public class ConversationWorkflow(AIAgent reasonAgent, AIAgent actAgent, Checkpo
         builder.AddEdge(reasonNode, actNode);
         builder.AddEdge(actNode, inputPort);
         builder.AddEdge( inputPort, actNode);
+        builder.AddEdge(actNode, reasonNode);
 
         var workflow = await builder.BuildAsync<string>();
 
@@ -52,8 +53,6 @@ public class ConversationWorkflow(AIAgent reasonAgent, AIAgent actAgent, Checkpo
                 {
                     checkPointStore.Add(request.SessionId, checkpoint);
 
-                    Console.WriteLine();
-                    Console.WriteLine($"-Checkpoint added: {checkpoint}, {request.SessionId}");
                 }
             }
 
