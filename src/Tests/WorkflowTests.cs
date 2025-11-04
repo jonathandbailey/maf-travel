@@ -15,10 +15,15 @@ public class WorkflowTests
 
         var actAgent = new Mock<IAgent>();
 
-        var agentResponse = new AgentRunResponse(new ChatMessage(ChatRole.Assistant, "User want to plan a trip to Paris. Departure Point is required."));
+        var reasonAgentResponse = new AgentRunResponse(new ChatMessage(ChatRole.Assistant, "User want to plan a trip to Paris. Departure Point is required."));
+        var actAgentResponse = new AgentRunResponse(new ChatMessage(ChatRole.Assistant, Data.AskUserDepartureCityResponse));
+
 
         reasonAgent.Setup(x => x.RunAsync(It.IsAny<IEnumerable<ChatMessage>>(), null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(agentResponse);
+            .ReturnsAsync(reasonAgentResponse);
+
+        actAgent.Setup(x => x.RunAsync(It.IsAny<IEnumerable<ChatMessage>>(), null, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(actAgentResponse);
 
         var workFlow = new Workflow(reasonAgent.Object, actAgent.Object);
 

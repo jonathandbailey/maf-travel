@@ -1,4 +1,5 @@
 ﻿using Application.Agents;
+using Application.Workflows.Conversations.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
@@ -12,6 +13,12 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IMe
     {
         var response = await agent.RunAsync(new List<ChatMessage> { message }, cancellationToken: cancellationToken);
 
+        if (JsonOutputParser.HasJson(response.Text))
+        {
+            var routeAction = JsonOutputParser.Parse<RouteAction>(response.Text);
+        }
+        
+        
         return response.Messages.First();
     }
 }
