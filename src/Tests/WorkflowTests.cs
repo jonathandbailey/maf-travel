@@ -16,7 +16,7 @@ public class WorkflowTests
         var actAgent = new Mock<IAgent>();
    
         reasonAgent.SetupAgentResponse(Data.ReasonTripToParisDeparturePointRequired);
-        actAgent.SetupAgentResponse(Data.AskUserDepartureCityResponse);
+        actAgent.SetupAgentResponse(Data.ActAgentDepartureCityResponse);
   
         var workFlow = new Workflow(reasonAgent.Object, actAgent.Object);
 
@@ -24,5 +24,6 @@ public class WorkflowTests
 
         Assert.NotNull(response);
         Assert.Equal(WorkflowResponseState.UserInputRequired, response.State);
+        Assert.Equal(Data.ActAgentDepartureCityUserResponse, response.Message);
     }
 }

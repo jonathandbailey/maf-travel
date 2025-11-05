@@ -19,7 +19,9 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IMe
 
             if (routeAction.Route == "ask_user")
             {
-                await context.SendMessageAsync(new UserRequest(response.Text), cancellationToken: cancellationToken);
+                var cleanedResponse = JsonOutputParser.Remove(response.Text);
+                
+                await context.SendMessageAsync(new UserRequest(cleanedResponse), cancellationToken: cancellationToken);
             }
         }
         

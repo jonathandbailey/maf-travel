@@ -27,16 +27,37 @@ public class Workflow(IAgent reasonAgent, IAgent actAgent)
 
         await foreach (var evt in run.WatchStreamAsync())
         {
-            if (evt is ExecutorCompletedEvent executorCompletedEvent)
-            {
-            }
-
             if (evt is RequestInfoEvent requestInfoEvent)
             {
-                return new WorkflowResponse(WorkflowResponseState.UserInputRequired);
+                return Handle(requestInfoEvent);
             }
         }
 
-        return new WorkflowResponse(WorkflowResponseState.Completed);
+        return new WorkflowResponse(WorkflowResponseState.Completed, string.Empty);
+    }
+
+    private static WorkflowResponse Handle(RequestInfoEvent requestInfoEvent)
+    {
+        var data = requestInfoEvent.Data as ExternalRequest;
+
+        if (data?.Data == null)
+        {
+            return new WorkflowResponse(WorkflowResponseState.Error,
+                "Invalid request event: missing data");
+        }
+
+        if (data.Data.AsType(typeof(UserRequest)) is not UserRequest userRequest)
+        {
+            return new WorkflowResponse(WorkflowResponseState.Error,
+                "Invalid request event: unable to parse UserRequest");
+        }
+
+        if (string.IsNullOrWhiteSpace(userRequest.Message))
+        {
+            return new WorkflowResponse(WorkflowResponseState.Error,
+                "Invalid request event: UserRequest message is empty");
+        }
+
+        return new WorkflowResponse(WorkflowResponseState.UserInputRequired, userRequest.Message);
     }
 }

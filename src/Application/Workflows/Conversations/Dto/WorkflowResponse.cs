@@ -1,12 +1,14 @@
 ﻿namespace Application.Workflows.Conversations.Dto;
 
-public class WorkflowResponse(WorkflowResponseState state)
+public class WorkflowResponse(WorkflowResponseState state, string message)
 {
-    public WorkflowResponseState State { get; init; } = state;
+    public WorkflowResponseState State { get; } = state;
+    public string Message { get; } = message;
 }
 
 public enum WorkflowResponseState
 {
     UserInputRequired,
-    Completed
+    Completed,
+    Error
 }

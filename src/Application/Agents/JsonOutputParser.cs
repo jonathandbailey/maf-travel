@@ -62,6 +62,6 @@ public static class JsonOutputParser
         Verify.NotNullOrWhiteSpace(content);
 
         var result = JsonBlockRegexForRemoval.Replace(content, string.Empty);
-        return result;
+        return result.Trim();
     }
 }
