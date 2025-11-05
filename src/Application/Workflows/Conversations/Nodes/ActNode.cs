@@ -6,9 +6,11 @@ using Microsoft.Extensions.AI;
 
 namespace Application.Workflows.Conversations.Nodes;
 
-public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IMessageHandler<ChatMessage, ChatMessage>
+public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IMessageHandler<ChatMessage>, 
+    IMessageHandler<UserResponse>
+
 {
-    public async ValueTask<ChatMessage> HandleAsync(ChatMessage message, IWorkflowContext context,
+    public async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         var response = await agent.RunAsync(new List<ChatMessage> { message }, cancellationToken: cancellationToken);
@@ -24,7 +26,11 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IMe
                 await context.SendMessageAsync(new UserRequest(cleanedResponse), cancellationToken: cancellationToken);
             }
         }
-        
-        return response.Messages.First();
+    }
+
+    public async ValueTask HandleAsync(UserResponse userResponse, IWorkflowContext context,
+        CancellationToken cancellationToken = new CancellationToken())
+    {
+        await context.SendMessageAsync(new ActObservation(userResponse.Message), cancellationToken: cancellationToken);
     }
 }

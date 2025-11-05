@@ -20,7 +20,7 @@ public class FakeCheckpointStore(ITestOutputHelper outputHelper) : JsonCheckpoin
 
         _checkpointElements.Add(checkpointInfo, value);
         
-        outputHelper.WriteLine($"Created: {DateTime.Now} {checkpointInfo}");
+        //outputHelper.WriteLine($"Created: {DateTime.Now} {checkpointInfo}");
 
         return ValueTask.FromResult(checkpointInfo);
     }

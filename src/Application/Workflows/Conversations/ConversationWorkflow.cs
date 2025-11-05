@@ -8,6 +8,9 @@ namespace Application.Workflows.Conversations;
 
 public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, CheckpointManager checkpointManager)
 {
+    private WorkflowState _state  = WorkflowState.Initialized;
+    private CheckpointInfo? _checkpointInfo = null;
+
     public async Task<WorkflowResponse> Execute(ChatMessage message)
     {
         var inputPort = RequestPort.Create<UserRequest, UserResponse>("user-input");
@@ -20,20 +23,62 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, Checkpoin
         builder.AddEdge(reasonNode, actNode);
         builder.AddEdge(actNode, inputPort);
         builder.AddEdge(inputPort, actNode);
+        builder.AddEdge(actNode, reasonNode);
 
         var workflow = await builder.BuildAsync<ChatMessage>();
 
-        var run = await InProcessExecution.StreamAsync(workflow, message, checkpointManager);
+        var run = await CreateStreamingRun(workflow, message);
 
         await foreach (var evt in run.Run.WatchStreamAsync())
         {
+            _state = _state == WorkflowState.Initialized ? WorkflowState.Executing : _state;
+            
+            if (evt is SuperStepCompletedEvent superStepCompletedEvt)
+            {
+                var checkpoint = superStepCompletedEvt.CompletionInfo!.Checkpoint;
+
+                if (checkpoint != null)
+                {
+                    _checkpointInfo = checkpoint;
+                }
+            }
+
             if (evt is RequestInfoEvent requestInfoEvent)
             {
-                return Handle(requestInfoEvent);
+                if (_state == WorkflowState.WaitingForUserInput)
+                {
+                    var resp = requestInfoEvent.Request.CreateResponse(new UserResponse(message.Text));
+
+                    _state = WorkflowState.Executing;
+                    await run.Run.SendResponseAsync(resp);
+                }
+                else
+                {
+                    var response = Handle(requestInfoEvent);
+
+                    _state = WorkflowState.WaitingForUserInput;
+
+                    return response;
+                }
             }
         }
 
         return new WorkflowResponse(WorkflowResponseState.Completed, string.Empty);
+    }
+
+    private async Task<Checkpointed<StreamingRun>> CreateStreamingRun(Workflow<ChatMessage> workflow,
+        ChatMessage message)
+    {
+        return _state switch
+        {
+            WorkflowState.Initialized => 
+                await InProcessExecution.StreamAsync(workflow, message, checkpointManager),
+            WorkflowState.WaitingForUserInput =>
+                await InProcessExecution.ResumeStreamAsync(workflow, _checkpointInfo, checkpointManager, _checkpointInfo.RunId),
+            
+
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 
     private static WorkflowResponse Handle(RequestInfoEvent requestInfoEvent)
@@ -60,4 +105,13 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, Checkpoin
 
         return new WorkflowResponse(WorkflowResponseState.UserInputRequired, userRequest.Message);
     }
+}
+
+public enum WorkflowState
+{
+    Initialized,
+    Executing,
+    WaitingForUserInput,
+    Completed,
+    Error
 }

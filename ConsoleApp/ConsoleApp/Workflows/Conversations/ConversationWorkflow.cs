@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using ConsoleApp.Workflows.Conversations.ReAct;
+﻿using ConsoleApp.Workflows.Conversations.ReAct;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 
