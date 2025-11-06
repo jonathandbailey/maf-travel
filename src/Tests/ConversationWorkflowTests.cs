@@ -35,6 +35,6 @@ public class ConversationWorkflowTests(ITestOutputHelper outputHelper)
         reasonAgent.SetupAgentResponse(Data.ReasonTripInformationCompete);
         actAgent.SetupAgentResponse(Data.ActAgentUserComplete);
 
-        await workFlow.Execute(new ChatMessage(ChatRole.User, Data.UserDepartingFromCity));
+        response = await workFlow.Execute(new ChatMessage(ChatRole.User, Data.UserDepartingFromCity));
     }
 }

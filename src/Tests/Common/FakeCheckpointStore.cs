@@ -20,7 +20,7 @@ public class FakeCheckpointStore(ITestOutputHelper outputHelper) : JsonCheckpoin
 
         _checkpointElements.Add(checkpointInfo, value);
         
-        //outputHelper.WriteLine($"Created: {DateTime.Now} {checkpointInfo}");
+        outputHelper.WriteLine($"Created: {DateTime.Now} {checkpointInfo}");
 
         return ValueTask.FromResult(checkpointInfo);
     }
@@ -28,6 +28,8 @@ public class FakeCheckpointStore(ITestOutputHelper outputHelper) : JsonCheckpoin
     public override ValueTask<JsonElement> RetrieveCheckpointAsync(string runId, CheckpointInfo key)
     {
         var element = _checkpointElements[key];
+
+        outputHelper.WriteLine($"Retrieve: {DateTime.Now} {key}");
 
         return ValueTask.FromResult(element);
     }

@@ -49,11 +49,7 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, Checkpoin
                 {
                     case WorkflowState.Executing:
                     {
-                        var response = Handle(requestInfoEvent);
-
-                        _state = WorkflowState.WaitingForUserInput;
-
-                        return response;
+                        return HandleRequestForUserInput(requestInfoEvent);
                     }
                     case WorkflowState.WaitingForUserInput:
                     {
@@ -85,7 +81,7 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, Checkpoin
         };
     }
 
-    private static WorkflowResponse Handle(RequestInfoEvent requestInfoEvent)
+    private WorkflowResponse HandleRequestForUserInput(RequestInfoEvent requestInfoEvent)
     {
         var data = requestInfoEvent.Data as ExternalRequest;
 
@@ -106,6 +102,8 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, Checkpoin
             return new WorkflowResponse(WorkflowResponseState.Error,
                 "Invalid request event: UserRequest message is empty");
         }
+
+        _state = WorkflowState.WaitingForUserInput;
 
         return new WorkflowResponse(WorkflowResponseState.UserInputRequired, userRequest.Message);
     }
