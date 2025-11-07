@@ -39,9 +39,11 @@ public class ReasonNode(IAgent agent) : ReflectingExecutor<ReasonNode>("ReasonNo
 
         activity?.SetTag("User", actObservation.Message);
 
-        var requestMessage = new ChatMessage(ChatRole.User, actObservation.Message);
+        var message = new ChatMessage(ChatRole.User, actObservation.Message);
 
-        var response = await agent.RunAsync(new List<ChatMessage> { requestMessage }, cancellationToken: cancellationToken);
+        _messages.Add(message);
+
+        var response = await agent.RunAsync(_messages, cancellationToken: cancellationToken);
 
         activity?.SetTag("Assistant", response.Messages.First().Text);
 

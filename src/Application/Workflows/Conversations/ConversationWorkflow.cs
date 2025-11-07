@@ -1,4 +1,5 @@
 ﻿using Application.Agents;
+using Application.Observability;
 using Application.Workflows.Conversations.Dto;
 using Application.Workflows.Conversations.Nodes;
 using Microsoft.Agents.AI.Workflows;
@@ -69,19 +70,44 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflow
     private async Task<Checkpointed<StreamingRun>> CreateStreamingRun(Workflow<ChatMessage> workflow,
         ChatMessage message)
     {
+        using var workflowActivity = Telemetry.StarActivity("Workflow-[create-run]");
+
+        workflowActivity?.SetTag("State:", workflowManager.State);
+
         switch (workflowManager.State)
         {
             case WorkflowState.Initialized:
-                return await InProcessExecution.StreamAsync(workflow, message, workflowManager.CheckpointManager);
+                return await StartStreamingRun(workflow, message);
             case WorkflowState.WaitingForUserInput:
-                var run =  await InProcessExecution.ResumeStreamAsync(workflow, workflowManager.CheckpointInfo, workflowManager.CheckpointManager,
-                    workflowManager.CheckpointInfo.RunId);
-                return run;
+                return await ResumeStreamingRun(workflow, message);
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
 
+    private async Task<Checkpointed<StreamingRun>> StartStreamingRun(Workflow<ChatMessage> workflow,
+        ChatMessage message)
+    {
+        using var workflowActivity = Telemetry.StarActivity("Workflow-[start]");
+
+
+        return await InProcessExecution.StreamAsync(workflow, message, workflowManager.CheckpointManager);
+    }
+
+    private async Task<Checkpointed<StreamingRun>> ResumeStreamingRun(Workflow<ChatMessage> workflow,
+        ChatMessage message)
+    {
+        var run = await InProcessExecution.ResumeStreamAsync(workflow, workflowManager.CheckpointInfo, workflowManager.CheckpointManager,
+            workflowManager.CheckpointInfo.RunId);
+
+        using var workflowActivity = Telemetry.StarActivity("Workflow-[resume]");
+
+        workflowActivity?.SetTag("RunId:", workflowManager.CheckpointInfo.RunId);
+        workflowActivity?.SetTag("CheckpointId:", workflowManager.CheckpointInfo.CheckpointId);
+
+        return run;
+
+    }
     private WorkflowResponse HandleRequestForUserInput(RequestInfoEvent requestInfoEvent)
     {
         var data = requestInfoEvent.Data as ExternalRequest;

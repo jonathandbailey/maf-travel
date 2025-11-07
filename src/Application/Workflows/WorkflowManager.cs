@@ -1,10 +1,11 @@
 ﻿using Application.Infrastructure;
+using Application.Observability;
 using Application.Workflows.Conversations;
+using Application.Workflows.Conversations.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Application.Workflows.Conversations.Dto;
 
 namespace Application.Workflows;
 
@@ -30,6 +31,8 @@ public class WorkflowManager(IAzureStorageRepository repository, IOptions<AzureS
 
     public async Task Initialize(Guid sessionId)
     {
+        using var activity = Telemetry.StarActivity("WorkflowManager-[initialize]");
+
         _sessionId = sessionId;
         
         _checkpointStore = await GetOrCreateCheckpointStore(sessionId);
@@ -49,7 +52,11 @@ public class WorkflowManager(IAzureStorageRepository repository, IOptions<AzureS
 
     public async Task Save()
     {
-        var workflowStateDto = new WorkflowStateDto(_checkpointStore, State, CheckpointInfo );
+        using var activity = Telemetry.StarActivity("WorkflowManager-[save]");
+
+        var storeStates = _checkpointStore.CheckpointElements.Select(x => new StoreStateDto(x.Key, x.Value)).ToList();
+
+        var workflowStateDto = new WorkflowStateDto(State, CheckpointInfo, storeStates);
         
         var serializedConversation = JsonSerializer.Serialize(workflowStateDto, SerializerOptions);
 
@@ -79,7 +86,7 @@ public class WorkflowManager(IAzureStorageRepository repository, IOptions<AzureS
 
         CheckpointInfo = stateDto.CheckpointInfo;
 
-        return stateDto.Store;
+        return new ConversationCheckpointStore(stateDto.StoreStates);
     }
 }
 

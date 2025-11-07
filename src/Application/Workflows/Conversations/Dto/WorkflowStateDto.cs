@@ -2,11 +2,11 @@
 
 namespace Application.Workflows.Conversations.Dto;
 
-public class WorkflowStateDto(ConversationCheckpointStore store, WorkflowState state, CheckpointInfo checkpointInfo)
+public class WorkflowStateDto(WorkflowState state, CheckpointInfo checkpointInfo, List<StoreStateDto> storeStates)
 {
-    public ConversationCheckpointStore Store { get; } = store;
-
     public WorkflowState State { get; } = state;
 
     public CheckpointInfo CheckpointInfo { get; } = checkpointInfo;
+
+    public List<StoreStateDto> StoreStates { get; } = storeStates;
 }

@@ -3,6 +3,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Checkpointing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Application.Workflows.Conversations.Dto;
 
 namespace Application.Workflows.Conversations;
 
@@ -17,6 +18,14 @@ public class ConversationCheckpointStore : JsonCheckpointStore
         if (checkpointElements is not null)
         {
             _checkpointElements = checkpointElements;
+        }
+    }
+
+    public ConversationCheckpointStore(List<StoreStateDto> stateDtos)
+    {
+        foreach (var storeStateDto in stateDtos)
+        {
+            _checkpointElements.Add(storeStateDto.CheckpointInfo, storeStateDto.JsonElement);
         }
     }
 
