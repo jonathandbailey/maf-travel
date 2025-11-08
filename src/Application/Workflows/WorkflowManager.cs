@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace Application.Workflows;
 
-public class WorkflowManager(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : IWorkflowManager
+public class WorkflowManager(IAzureStorageRepository repository, ICheckpointRepository checkpointRepository, IOptions<AzureStorageSeedSettings> settings) : IWorkflowManager
 {
     private const string ApplicationJsonContentType = "application/json";
 
@@ -54,12 +54,7 @@ public class WorkflowManager(IAzureStorageRepository repository, IOptions<AzureS
     {
         using var activity = Telemetry.StarActivity("WorkflowManager-[save]");
 
-        // Create a snapshot to avoid race condition with concurrent modifications
-        var storeStates = _checkpointStore.CheckpointElements.ToList()
-            .Select(x => new StoreStateDto(x.Key, x.Value))
-            .ToList();
-
-        var workflowStateDto = new WorkflowStateDto(State, CheckpointInfo, storeStates);
+        var workflowStateDto = new WorkflowStateDto(State, CheckpointInfo);
         
         var serializedConversation = JsonSerializer.Serialize(workflowStateDto, SerializerOptions);
 
@@ -75,7 +70,7 @@ public class WorkflowManager(IAzureStorageRepository repository, IOptions<AzureS
         {
             State = WorkflowState.Initialized;
             
-            return new ConversationCheckpointStore();
+            return new ConversationCheckpointStore(checkpointRepository);
         }
 
         var blob = await repository.DownloadTextBlobAsync($"{sessionId}.json", settings.Value.ContainerName);
@@ -89,7 +84,7 @@ public class WorkflowManager(IAzureStorageRepository repository, IOptions<AzureS
 
         CheckpointInfo = stateDto.CheckpointInfo;
 
-        return new ConversationCheckpointStore(stateDto.StoreStates);
+        return new ConversationCheckpointStore(checkpointRepository);
     }
 }
 
@@ -101,4 +96,5 @@ public interface IWorkflowManager
     Task Save();
     void Executing();
     void WaitingForUserInput();
+    Task Initialize(Guid sessionId);
 }

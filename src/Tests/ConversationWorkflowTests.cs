@@ -23,6 +23,7 @@ public class ConversationWorkflowTests(ITestOutputHelper outputHelper)
         var actAgent = new Mock<IAgent>();
 
         var repositoryMock = new Mock<IAzureStorageRepository>();
+        var checkpointRepositoryMock = new Mock<ICheckpointRepository>();
 
         repositoryMock.Setup(x => x.BlobExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
@@ -33,8 +34,7 @@ public class ConversationWorkflowTests(ITestOutputHelper outputHelper)
         reasonAgent.SetupAgentResponse(Data.ReasonTripToParisDeparturePointRequired);
         actAgent.SetupAgentResponse(Data.ActAgentDepartureCityResponse);
 
-        var workflowManager = new WorkflowManager(repositoryMock.Object,
-            settingsMock.Object);
+        var workflowManager = new WorkflowManager(repositoryMock.Object, checkpointRepositoryMock.Object, settingsMock.Object);
 
         await workflowManager.Initialize(sessionId);
 

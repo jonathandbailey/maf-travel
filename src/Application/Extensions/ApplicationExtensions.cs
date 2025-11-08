@@ -3,6 +3,7 @@ using Application.Agents.Repository;
 using Application.Infrastructure;
 using Application.Services;
 using Application.Settings;
+using Application.Workflows;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,9 @@ public static class ApplicationExtensions
         services.AddScoped<IApplicationService, ApplicationService>();
 
         services.AddScoped<IAzureStorageRepository, AzureStorageRepository>();
+        services.AddScoped<ICheckpointRepository, CheckpointRepository>();
+
+        services.AddScoped<IWorkflowManager, WorkflowManager>();
 
         services.AddHostedService<AzureStorageSeedService>();
 

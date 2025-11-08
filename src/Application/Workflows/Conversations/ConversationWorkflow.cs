@@ -7,7 +7,7 @@ using Microsoft.Extensions.AI;
 
 namespace Application.Workflows.Conversations;
 
-public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflowManager workflowManager)
+public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflowManager workflowManager) : WorkflowBase<ChatMessage>
 {
     public async Task<WorkflowResponse> Execute(ChatMessage message)
     {

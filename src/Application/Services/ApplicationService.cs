@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace Application.Services;
 
-public class ApplicationService(IAgentFactory agentFactory, IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings)
+public class ApplicationService(IAgentFactory agentFactory, IWorkflowManager workflowManager, IOptions<AzureStorageSeedSettings> settings)
     : IApplicationService
 {
     public async Task<ConversationResponse> Execute(ConversationRequest request)
@@ -25,9 +25,7 @@ public class ApplicationService(IAgentFactory agentFactory, IAzureStorageReposit
         var workflowActivity = Telemetry.StarActivity("Workflow");
 
         workflowActivity?.SetTag("User Input", request.Message);
-
-        var workflowManager = new WorkflowManager(repository, settings);
-
+   
         await workflowManager.Initialize(request.SessionId);
 
         var workflow = new ConversationWorkflow(reasonAgent, actAgent, workflowManager);
