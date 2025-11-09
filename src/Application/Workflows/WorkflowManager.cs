@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 
 namespace Application.Workflows;
 
-public class WorkflowManager(IAzureStorageRepository repository, ICheckpointRepository checkpointRepository, IOptions<AzureStorageSeedSettings> settings) : IWorkflowManager
+public class WorkflowManager(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : IWorkflowManager
 {
     private const string ApplicationJsonContentType = "application/json";
 
@@ -29,32 +29,25 @@ public class WorkflowManager(IAzureStorageRepository repository, ICheckpointRepo
 
     public WorkflowState State { get; private set; } = WorkflowState.Initialized;
 
-    public async Task Initialize(Guid sessionId)
+    public async Task<WorkflowStateDto> Initialize(Guid sessionId)
     {
         using var activity = Telemetry.StarActivity("WorkflowManager-[initialize]");
 
         _sessionId = sessionId;
-        
-        _checkpointStore = await GetOrCreateCheckpointStore(sessionId);
+
+        var stateDto = await GetOrCreateCheckpointStore(_sessionId);
 
         CheckpointManager = CheckpointManager.CreateJson(_checkpointStore);
-    }
 
-    public void Executing()
-    {
-        State = WorkflowState.Executing;
+        return stateDto;
     }
+   
 
-    public void WaitingForUserInput()
-    {
-        State = WorkflowState.WaitingForUserInput;
-    }
-
-    public async Task Save()
+    public async Task Save(WorkflowState state, CheckpointInfo checkpointInfo)
     {
         using var activity = Telemetry.StarActivity("WorkflowManager-[save]");
 
-        var workflowStateDto = new WorkflowStateDto(State, CheckpointInfo);
+        var workflowStateDto = new WorkflowStateDto(state, checkpointInfo);
         
         var serializedConversation = JsonSerializer.Serialize(workflowStateDto, SerializerOptions);
 
@@ -62,15 +55,15 @@ public class WorkflowManager(IAzureStorageRepository repository, ICheckpointRepo
             serializedConversation, ApplicationJsonContentType);
     }
 
-    private async Task<ConversationCheckpointStore> GetOrCreateCheckpointStore(Guid sessionId)
+    private async Task<WorkflowStateDto> GetOrCreateCheckpointStore(Guid sessionId)
     {
         var blobExists = await repository.BlobExists($"{sessionId}.json", settings.Value.ContainerName);
 
         if (blobExists == false)
         {
             State = WorkflowState.Initialized;
-            
-            return new ConversationCheckpointStore(checkpointRepository);
+
+            return new WorkflowStateDto(WorkflowState.Initialized, null);
         }
 
         var blob = await repository.DownloadTextBlobAsync($"{sessionId}.json", settings.Value.ContainerName);
@@ -84,17 +77,13 @@ public class WorkflowManager(IAzureStorageRepository repository, ICheckpointRepo
 
         CheckpointInfo = stateDto.CheckpointInfo;
 
-        return new ConversationCheckpointStore(checkpointRepository);
+        return stateDto;
     }
 }
 
 public interface IWorkflowManager
 {
-    CheckpointManager CheckpointManager { get; }
-    WorkflowState State { get; }
-    CheckpointInfo CheckpointInfo { get; set; }
-    Task Save();
-    void Executing();
-    void WaitingForUserInput();
-    Task Initialize(Guid sessionId);
+    Task Save(WorkflowState state, CheckpointInfo checkpointInfo);
+   
+    Task<WorkflowStateDto> Initialize(Guid sessionId);
 }

@@ -3,6 +3,7 @@ using Application.Infrastructure;
 using Application.Workflows;
 using Application.Workflows.Conversations;
 using Application.Workflows.Conversations.Dto;
+using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -34,13 +35,13 @@ public class ConversationWorkflowTests(ITestOutputHelper outputHelper)
         reasonAgent.SetupAgentResponse(Data.ReasonTripToParisDeparturePointRequired);
         actAgent.SetupAgentResponse(Data.ActAgentDepartureCityResponse);
 
-        var workflowManager = new WorkflowManager(repositoryMock.Object, checkpointRepositoryMock.Object, settingsMock.Object);
+        var workflowManager = new WorkflowManager(repositoryMock.Object, settingsMock.Object);
 
         await workflowManager.Initialize(sessionId);
 
         var workFlow = new ConversationWorkflow(
             reasonAgent.Object,
-            actAgent.Object, workflowManager);
+            actAgent.Object, CheckpointManager.CreateJson(new FakeCheckpointStore(outputHelper)));
 
         var response = await workFlow.Execute(new ChatMessage(ChatRole.User, Data.PlanTripToParisUserRequest));
 

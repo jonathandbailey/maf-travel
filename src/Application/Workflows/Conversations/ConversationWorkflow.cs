@@ -7,8 +7,14 @@ using Microsoft.Extensions.AI;
 
 namespace Application.Workflows.Conversations;
 
-public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflowManager workflowManager) : WorkflowBase<ChatMessage>
+public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, CheckpointManager checkpointManager)
 {
+    public CheckpointManager CheckpointManager { get; private set; } = checkpointManager;
+
+    public CheckpointInfo? CheckpointInfo { get; set; }
+
+    public WorkflowState State { get; set; } = WorkflowState.Initialized;
+
     public async Task<WorkflowResponse> Execute(ChatMessage message)
     {
         var inputPort = RequestPort.Create<UserRequest, UserResponse>("user-input");
@@ -29,9 +35,9 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflow
 
         await foreach (var evt in run.Run.WatchStreamAsync())
         {
-            if (workflowManager.State == WorkflowState.Initialized)
+            if (State == WorkflowState.Initialized)
             {
-                workflowManager.Executing();
+                State = WorkflowState.Executing;
             }
             
             if (evt is SuperStepCompletedEvent superStepCompletedEvt)
@@ -40,13 +46,13 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflow
 
                 if (checkpoint != null)
                 {
-                    workflowManager.CheckpointInfo = checkpoint;
+                    CheckpointInfo = checkpoint;
                 }
             }
 
             if (evt is RequestInfoEvent requestInfoEvent)
             {
-                switch (workflowManager.State)
+                switch (State)
                 {
                     case WorkflowState.Executing:
                     {
@@ -56,7 +62,7 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflow
                     {
                         var resp = requestInfoEvent.Request.CreateResponse(new UserResponse(message.Text));
 
-                        workflowManager.Executing();
+                        State = WorkflowState.Executing;
                         await run.Run.SendResponseAsync(resp);
                         break;
                     }
@@ -72,9 +78,9 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflow
     {
         using var workflowActivity = Telemetry.StarActivity("Workflow-[create-run]");
 
-        workflowActivity?.SetTag("State:", workflowManager.State);
+        workflowActivity?.SetTag("State:", State);
 
-        switch (workflowManager.State)
+        switch (State)
         {
             case WorkflowState.Initialized:
                 return await StartStreamingRun(workflow, message);
@@ -91,19 +97,19 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflow
         using var workflowActivity = Telemetry.StarActivity("Workflow-[start]");
 
 
-        return await InProcessExecution.StreamAsync(workflow, message, workflowManager.CheckpointManager);
+        return await InProcessExecution.StreamAsync(workflow, message, CheckpointManager);
     }
 
     private async Task<Checkpointed<StreamingRun>> ResumeStreamingRun(Workflow<ChatMessage> workflow,
         ChatMessage message)
     {
-        var run = await InProcessExecution.ResumeStreamAsync(workflow, workflowManager.CheckpointInfo, workflowManager.CheckpointManager,
-            workflowManager.CheckpointInfo.RunId);
+        var run = await InProcessExecution.ResumeStreamAsync(workflow, CheckpointInfo, CheckpointManager,
+            CheckpointInfo.RunId);
 
         using var workflowActivity = Telemetry.StarActivity("Workflow-[resume]");
 
-        workflowActivity?.SetTag("RunId:", workflowManager.CheckpointInfo.RunId);
-        workflowActivity?.SetTag("CheckpointId:", workflowManager.CheckpointInfo.CheckpointId);
+        workflowActivity?.SetTag("RunId:", CheckpointInfo.RunId);
+        workflowActivity?.SetTag("CheckpointId:", CheckpointInfo.CheckpointId);
 
         return run;
 
@@ -130,7 +136,7 @@ public class ConversationWorkflow(IAgent reasonAgent, IAgent actAgent, IWorkflow
                 "Invalid request event: UserRequest message is empty");
         }
 
-        workflowManager.WaitingForUserInput();
+        State = WorkflowState.WaitingForUserInput;
 
         return new WorkflowResponse(WorkflowResponseState.UserInputRequired, userRequest.Message);
     }
