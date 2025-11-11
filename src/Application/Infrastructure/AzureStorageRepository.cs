@@ -194,6 +194,37 @@ public class AzureStorageRepository(BlobServiceClient blobServiceClient, ILogger
             throw;
         }
     }
+
+    public async Task<List<string>> ListBlobsAsync(string containerName, string prefix)
+    {
+        Verify.NotNullOrWhiteSpace(containerName);
+        Verify.NotNullOrWhiteSpace(prefix);
+
+        var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobNames = new List<string>();
+
+        try
+        {
+            await foreach (var blobItem in blobContainerClient.GetBlobsAsync(prefix: prefix))
+            {
+                blobNames.Add(blobItem.Name);
+            }
+
+            return blobNames;
+        }
+        catch (RequestFailedException exception)
+        {
+            logger.LogError(exception, "Failed to list blobs in container {containerName} with prefix {prefix}: {errorCode}",
+                containerName, prefix, exception.ErrorCode);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "An unknown exception occurred while listing blobs in container {containerName} with prefix {prefix}",
+                containerName, prefix);
+            throw;
+        }
+    }
 }
 
 public interface IAzureStorageRepository
@@ -203,4 +234,5 @@ public interface IAzureStorageRepository
     Task<bool> ContainerExists(string containerName);
     Task<bool> BlobExists(string blobName, string containerName);
     Task CreateContainerAsync(string containerName);
+    Task<List<string>> ListBlobsAsync(string containerName, string prefix);
 }

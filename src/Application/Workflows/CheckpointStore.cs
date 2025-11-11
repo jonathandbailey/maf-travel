@@ -8,11 +8,11 @@ namespace Application.Workflows;
 
 public class CheckpointStore(ICheckpointRepository checkpointRepository) : JsonCheckpointStore
 {
-    private readonly Dictionary<CheckpointInfo, JsonElement> _checkpointElements = new();
-    
-    public override ValueTask<IEnumerable<CheckpointInfo>> RetrieveIndexAsync(string runId, CheckpointInfo? withParent = null)
+    public override async ValueTask<IEnumerable<CheckpointInfo>> RetrieveIndexAsync(string runId, CheckpointInfo? withParent = null)
     {
-        return ValueTask.FromResult<IEnumerable<CheckpointInfo>>(_checkpointElements.Keys.ToList());
+        var stateByRunId = await checkpointRepository.GetAsync(runId);
+
+        return stateByRunId.Select(x => x.CheckpointInfo);
     }
 
     public override async ValueTask<CheckpointInfo> CreateCheckpointAsync(string runId, JsonElement value, CheckpointInfo? parent = null)
@@ -20,8 +20,6 @@ public class CheckpointStore(ICheckpointRepository checkpointRepository) : JsonC
         var checkpointInfo = new CheckpointInfo(runId, Guid.NewGuid().ToString());
 
         await checkpointRepository.SaveAsync(new StoreStateDto(checkpointInfo, value));
-
-        _checkpointElements.Add(checkpointInfo, value);
        
         return checkpointInfo;
     }
