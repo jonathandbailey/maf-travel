@@ -1,7 +1,7 @@
-﻿using Application.Workflows.Conversations.Dto;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Application.Workflows.ReAct.Dto;
 
 namespace Application.Infrastructure;
 

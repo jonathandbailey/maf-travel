@@ -1,10 +1,10 @@
 ﻿using Application.Observability;
-using Application.Workflows.Conversations;
-using Application.Workflows.Conversations.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Application.Workflows.ReAct;
+using Application.Workflows.ReAct.Dto;
 
 namespace Application.Infrastructure;
 

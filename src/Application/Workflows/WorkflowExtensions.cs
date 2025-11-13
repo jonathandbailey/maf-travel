@@ -1,6 +1,6 @@
 ﻿using Application.Observability;
-using Application.Workflows.Conversations;
-using Application.Workflows.Conversations.Dto;
+using Application.Workflows.ReAct;
+using Application.Workflows.ReAct.Dto;
 using Microsoft.Agents.AI.Workflows;
 
 namespace Application.Workflows;

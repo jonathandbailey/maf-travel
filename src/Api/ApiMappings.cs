@@ -1,6 +1,6 @@
 ﻿using Api.Dto;
 using Application.Services;
-using Application.Workflows.Conversations.Dto;
+using Application.Workflows.ReAct.Dto;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 

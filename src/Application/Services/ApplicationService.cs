@@ -2,9 +2,9 @@
 using Application.Infrastructure;
 using Application.Observability;
 using Application.Workflows;
-using Application.Workflows.Conversations;
+using Application.Workflows.ReAct;
+using Application.Workflows.ReAct.Dto;
 using Microsoft.Extensions.AI;
-using Application.Workflows.Conversations.Dto;
 using Microsoft.Agents.AI.Workflows;
 
 namespace Application.Services;

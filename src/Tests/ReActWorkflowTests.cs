@@ -1,8 +1,7 @@
 ﻿using Application.Agents;
 using Application.Infrastructure;
 using Application.Workflows;
-using Application.Workflows.Conversations;
-using Application.Workflows.Conversations.Dto;
+using Application.Workflows.ReAct;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;

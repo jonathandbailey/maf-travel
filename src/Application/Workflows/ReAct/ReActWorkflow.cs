@@ -1,10 +1,10 @@
 ﻿using Application.Agents;
-using Application.Workflows.Conversations.Dto;
-using Application.Workflows.Conversations.Nodes;
+using Application.Workflows.ReAct.Dto;
+using Application.Workflows.ReAct.Nodes;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 
-namespace Application.Workflows.Conversations;
+namespace Application.Workflows.ReAct;
 
 public class ReActWorkflow(IAgent reasonAgent, IAgent actAgent, CheckpointManager checkpointManager, CheckpointInfo checkpointInfo, WorkflowState state)
 {
@@ -16,19 +16,7 @@ public class ReActWorkflow(IAgent reasonAgent, IAgent actAgent, CheckpointManage
 
     public async Task<WorkflowResponse> Execute(ChatMessage message)
     {
-        var inputPort = RequestPort.Create<UserRequest, UserResponse>("user-input");
-
-        var reasonNode = new ReasonNode(reasonAgent);
-        var actNode = new ActNode(actAgent);
-
-        var builder = new WorkflowBuilder(reasonNode);
-
-        builder.AddEdge(reasonNode, actNode);
-        builder.AddEdge(actNode, inputPort);
-        builder.AddEdge(inputPort, actNode);
-        builder.AddEdge(actNode, reasonNode);
-
-        var workflow = await builder.BuildAsync<ChatMessage>();
+        var workflow = await BuildWorkflow();
 
         var run = await workflow.CreateStreamingRun(message, State, CheckpointManager, CheckpointInfo);
 
@@ -80,7 +68,26 @@ public class ReActWorkflow(IAgent reasonAgent, IAgent actAgent, CheckpointManage
 
         return new WorkflowResponse(WorkflowState.Completed, string.Empty);
     }
+
+    private async Task<Workflow<ChatMessage>> BuildWorkflow()
+    {
+        var inputPort = RequestPort.Create<UserRequest, UserResponse>("user-input");
+
+        var reasonNode = new ReasonNode(reasonAgent);
+        var actNode = new ActNode(actAgent);
+
+        var builder = new WorkflowBuilder(reasonNode);
+
+        builder.AddEdge(reasonNode, actNode);
+        builder.AddEdge(actNode, inputPort);
+        builder.AddEdge(inputPort, actNode);
+        builder.AddEdge(actNode, reasonNode);
+
+        return await builder.BuildAsync<ChatMessage>();
+    }
 }
+
+
 
 public enum WorkflowState
 {

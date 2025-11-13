@@ -1,4 +1,4 @@
-﻿namespace Application.Workflows.Conversations.Dto;
+﻿namespace Application.Workflows.ReAct.Dto;
 
 public class ActObservation(string message)
 {

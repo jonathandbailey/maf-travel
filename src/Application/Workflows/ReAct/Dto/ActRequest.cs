@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.AI;
 
-namespace Application.Workflows.Conversations.Dto;
+namespace Application.Workflows.ReAct.Dto;
 
 public class ActRequest(ChatMessage message)
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 
-namespace Application.Workflows.Conversations.Dto;
+namespace Application.Workflows.ReAct.Dto;
 
 public class WorkflowStateDto(WorkflowState state, CheckpointInfo checkpointInfo)
 {

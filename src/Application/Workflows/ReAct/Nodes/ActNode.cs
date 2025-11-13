@@ -1,11 +1,11 @@
 ﻿using Application.Agents;
 using Application.Observability;
-using Application.Workflows.Conversations.Dto;
+using Application.Workflows.ReAct.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 
-namespace Application.Workflows.Conversations.Nodes;
+namespace Application.Workflows.ReAct.Nodes;
 
 public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IMessageHandler<ActRequest>, 
     IMessageHandler<UserResponse>
