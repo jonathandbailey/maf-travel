@@ -24,10 +24,10 @@ public class WorkflowRepository(IAzureStorageRepository repository, IOptions<Azu
     {
         var workflowStateDto = new WorkflowStateDto(state, checkpointInfo);
         
-        var serializedConversation = JsonSerializer.Serialize(workflowStateDto, SerializerOptions);
+        var serializedWorkflowState = JsonSerializer.Serialize(workflowStateDto, SerializerOptions);
 
         await repository.UploadTextBlobAsync($"{sessionId}.json", settings.Value.ContainerName,
-            serializedConversation, ApplicationJsonContentType);
+            serializedWorkflowState, ApplicationJsonContentType);
     }
 
     public async Task<WorkflowStateDto> LoadAsync(Guid sessionId)

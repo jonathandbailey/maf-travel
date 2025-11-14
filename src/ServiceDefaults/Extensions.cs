@@ -62,16 +62,16 @@ public static class Extensions
             .WithTracing(tracing =>
             {
                 tracing.AddSource(builder.Environment.ApplicationName)
-                    .AddSource("application.workflows.react") // Add your custom ActivitySource
-                    .AddAspNetCoreInstrumentation(tracing =>
-                        // Exclude health check requests from tracing
-                        tracing.Filter = new Func<HttpContext, bool>(context =>
-                            !context.Request.Path.StartsWithSegments(HealthEndpointPath)
-                            && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath))
-                    )
-                    // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
-                    //.AddGrpcClientInstrumentation()
-                    .AddHttpClientInstrumentation();
+                    .AddSource("application.workflows.react"); // Add your custom ActivitySource
+                /*   .AddAspNetCoreInstrumentation(tracing =>
+                       // Exclude health check requests from tracing
+                       tracing.Filter = new Func<HttpContext, bool>(context =>
+                           !context.Request.Path.StartsWithSegments(HealthEndpointPath)
+                           && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath))
+                   )
+                   // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
+                   //.AddGrpcClientInstrumentation()
+                   .AddHttpClientInstrumentation();*/
             });
 
         builder.AddOpenTelemetryExporters();
