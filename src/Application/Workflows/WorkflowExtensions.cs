@@ -1,5 +1,4 @@
-﻿using Application.Workflows.ReAct;
-using Application.Workflows.ReAct.Dto;
+﻿using Application.Workflows.ReAct.Dto;
 using Microsoft.Agents.AI.Workflows;
 
 namespace Application.Workflows;

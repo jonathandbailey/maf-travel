@@ -1,8 +1,6 @@
 ﻿using Application.Agents;
 using Application.Infrastructure;
-using Application.Observability;
 using Application.Workflows;
-using Application.Workflows.ReAct;
 using Application.Workflows.ReAct.Dto;
 using Microsoft.Extensions.AI;
 using Microsoft.Agents.AI.Workflows;
@@ -17,12 +15,14 @@ public class ApplicationService(IAgentFactory agentFactory, IWorkflowRepository 
         var reasonAgent = await agentFactory.CreateReasonAgent();
 
         var actAgent = await agentFactory.CreateActAgent();
+
+        var orchestrationAgent = await agentFactory.CreateOrchestrationAgent();
      
         var state = await workflowRepository.LoadAsync(request.SessionId);
 
         var checkpointManager = CheckpointManager.CreateJson(new CheckpointStore(repository));
 
-        var workflow = new ReActWorkflow(reasonAgent, actAgent, checkpointManager,state.CheckpointInfo, state.State);
+        var workflow = new ReActWooWorkflow(reasonAgent, actAgent, orchestrationAgent, checkpointManager, state.CheckpointInfo, state.State);
 
         var response = await workflow.Execute(new ChatMessage(ChatRole.User, request.Message));
   

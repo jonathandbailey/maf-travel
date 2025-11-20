@@ -2,12 +2,13 @@
 using Application.Observability;
 using Application.Workflows.ReAct.Dto;
 using Application.Workflows.ReAct.Nodes;
+using Application.Workflows.ReWoo.Nodes;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 
-namespace Application.Workflows.ReAct;
+namespace Application.Workflows;
 
-public class ReActWorkflow(IAgent reasonAgent, IAgent actAgent, CheckpointManager checkpointManager, CheckpointInfo? checkpointInfo, WorkflowState state)
+public class ReActWooWorkflow(IAgent reasonAgent, IAgent actAgent, IAgent orchestrationAgent, CheckpointManager checkpointManager, CheckpointInfo? checkpointInfo, WorkflowState state)
 {
     private CheckpointManager CheckpointManager { get; set; } = checkpointManager;
 
@@ -83,6 +84,7 @@ public class ReActWorkflow(IAgent reasonAgent, IAgent actAgent, CheckpointManage
 
         var reasonNode = new ReasonNode(reasonAgent);
         var actNode = new ActNode(actAgent);
+        var orchestrationNode = new OrchestrationNode(orchestrationAgent);
 
         var builder = new WorkflowBuilder(reasonNode);
 
@@ -90,7 +92,11 @@ public class ReActWorkflow(IAgent reasonAgent, IAgent actAgent, CheckpointManage
         builder.AddEdge(actNode, requestPort);
         builder.AddEdge(requestPort, actNode);
         builder.AddEdge(actNode, reasonNode);
+        builder.AddEdge(actNode, orchestrationNode);
 
         return await builder.BuildAsync<ChatMessage>();
     }
 }
+
+
+

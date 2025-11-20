@@ -77,6 +77,56 @@ For AskUser:
 }
 
 ------------------------------
+ORCHESTRATION LOGIC
+------------------------------
+
+In addition to AskUser and Complete, you may also produce a nextAction of type "Orchestrate".
+
+Use "Orchestrate" when:
+- All required inputs for the chosen capability or capabilities are present,
+- AND additional processing must be delegated to an Orchestration node that will call child agents (e.g., research_flights, research_trains, research_hotels),
+- AND the task requires further automated work before producing the final user-facing response.
+
+When generating an Orchestrate action:
+- Set "type" to "Orchestrate".
+- Include a "plan" object inside the nextAction.parameters that contains:
+  - the chosen capability or capabilities,
+  - all resolved inputs (slots) needed for downstream child agents,
+  - any additional structured details required by the Orchestrator for execution.
+
+Example structure:
+
+{
+  "chosen_capability": ["research_flights", "research_hotels"],
+  "missing_inputs": [],
+  "rationale": "All required inputs are known; orchestration is required to execute child agents.",
+  "nextAction": {
+    "type": "Orchestrate",
+    "parameters": {
+      "plan": {
+        "capabilities": ["research_flights", "research_hotels"],
+        "inputs": {
+          "origin": "...",
+          "destination": "...",
+          "depart_date": "...",
+          "return_date": "..."
+        }
+      }
+    }
+  }
+}
+
+Rules for Orchestrate:
+- Do NOT include any user-facing text.
+- Ensure that all required inputs for the selected capabilities are present before triggering orchestration.
+- Do NOT invent missing inputs; if anything is missing, use AskUser instead.
+- The "plan" must be strictly structured and machine-readable for downstream processing.
+- Never emit an Orchestrate action if the user is still needed for clarification.
+
+
+
+
+------------------------------
 LOGIC FOR NEXT ACTION
 ------------------------------
 

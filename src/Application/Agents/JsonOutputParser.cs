@@ -53,6 +53,26 @@ public static class JsonOutputParser
     }
 
     /// <summary>
+    /// Extracts the JSON block enclosed in ```json tags from the provided content as a raw string.
+    /// </summary>
+    /// <param name="content">The input string containing the JSON block.</param>
+    /// <returns>The raw JSON string extracted from the content.</returns>
+    /// <exception cref="FormatException">Thrown when no JSON block is found in the content.</exception>
+    public static string ExtractJson(string content)
+    {
+        Verify.NotNullOrWhiteSpace(content);
+
+        var match = JsonBlockRegex.Match(content);
+
+        if (!match.Success)
+            throw new FormatException("No JSON block found between ```json tags.");
+
+        var json = match.Groups[1].Value;
+
+        return json;
+    }
+
+    /// <summary>
     /// Removes all JSON blocks enclosed in ```json tags from the provided content.
     /// </summary>
     /// <param name="content">The input string from which JSON blocks should be removed.</param>

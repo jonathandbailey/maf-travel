@@ -2,6 +2,7 @@
 using Application.Agents;
 using Application.Observability;
 using Application.Workflows.ReAct.Dto;
+using Application.Workflows.ReWoo.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
@@ -20,7 +21,6 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IMe
         using var activity = Telemetry.Start("ActHandleRequest");
         
         activity?.SetTag("react.node", "act_node");
-
 
         activity?.SetTag("react.input.message", request.Message.Text);
 
@@ -56,14 +56,23 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>("ActNode"), IMe
             {
                 activity?.AddEvent(new ActivityEvent("ReactComplete"));
                 activity?.SetTag("react.complete.result", cleanedResponse);
-
+                
                 await context.AddEventAsync(new ReasonActWorkflowCompleteEvent(cleanedResponse), cancellationToken);
+            }
 
+            if (routeAction.Route == "orchestrate")
+            {
+                activity?.AddEvent(new ActivityEvent("Orchestrate"));
+                activity?.SetTag("react.orchestrate.result", cleanedResponse);
+
+                var extractedJson = JsonOutputParser.ExtractJson(response.Text);
+
+                await context.SendMessageAsync(new OrchestrationRequest(extractedJson), cancellationToken: cancellationToken);
             }
         }
         else
         {
-            activity?.AddEvent(new ActivityEvent("react_no_action"));
+            activity?.SetTag("react.route", response.Text);
         }
     }
 
