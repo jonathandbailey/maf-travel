@@ -11,8 +11,6 @@ namespace Application.Workflows.ReWoo.Nodes;
 
 public class FlightWorkerNode(IAgent agent) : ReflectingExecutor<FlightWorkerNode>("FlightWorkerNode"), IMessageHandler<OrchestratorWorkerTaskDto>
 {
-    private List<ChatMessage> _messages = [];
-
     public async ValueTask HandleAsync(OrchestratorWorkerTaskDto message, IWorkflowContext context,
         CancellationToken cancellationToken = new CancellationToken())
     {
@@ -23,9 +21,7 @@ public class FlightWorkerNode(IAgent agent) : ReflectingExecutor<FlightWorkerNod
         activity?.SetTag("re-woo.input.message", message);
 
         var serialized = JsonSerializer.Serialize(message);
-
-        _messages.Add(new ChatMessage(ChatRole.User, serialized));
-
+     
         activity?.AddEvent(new ActivityEvent("LLMRequestSent"));
 
         var userId = await context.UserId();

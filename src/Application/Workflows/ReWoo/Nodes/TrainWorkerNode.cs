@@ -9,10 +9,8 @@ using System.Text.Json;
 
 namespace Application.Workflows.ReWoo.Nodes;
 
-public class TrainWorkerNode(IAgent agent) : ReflectingExecutor<TrainWorkerNode>("TrainWorkerNode"), IMessageHandler<OrchestratorWorkerTaskDto>
+public class TrainWorkerNode(IAgent agent) : ReflectingExecutor<TrainWorkerNode>(WorkflowConstants.TrainWorkerNodeName), IMessageHandler<OrchestratorWorkerTaskDto>
 {
-    private List<ChatMessage> _messages = [];
-
     public async ValueTask HandleAsync(OrchestratorWorkerTaskDto message, IWorkflowContext context,
         CancellationToken cancellationToken = new CancellationToken())
     {
@@ -23,9 +21,7 @@ public class TrainWorkerNode(IAgent agent) : ReflectingExecutor<TrainWorkerNode>
         activity?.SetTag("re-woo.input.message", message);
 
         var serialized = JsonSerializer.Serialize(message);
-
-        _messages.Add(new ChatMessage(ChatRole.User, serialized));
-
+    
         activity?.AddEvent(new ActivityEvent("LLMRequestSent"));
 
         var userId = await context.UserId();

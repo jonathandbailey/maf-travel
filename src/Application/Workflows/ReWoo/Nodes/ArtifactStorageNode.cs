@@ -6,7 +6,9 @@ using Microsoft.Agents.AI.Workflows.Reflection;
 
 namespace Application.Workflows.ReWoo.Nodes;
 
-public class ArtifactStorageNode(IArtifactRepository artifactRepository) : ReflectingExecutor<ArtifactStorageNode>("ArtifactStorageNode"), IMessageHandler<ArtifactStorageDto>
+public class ArtifactStorageNode(IArtifactRepository artifactRepository) : 
+    ReflectingExecutor<ArtifactStorageNode>(WorkflowConstants.ArtifactStorageNodeName), 
+    IMessageHandler<ArtifactStorageDto>
 {
     public async ValueTask HandleAsync(ArtifactStorageDto message, IWorkflowContext context,
         CancellationToken cancellationToken = new CancellationToken())

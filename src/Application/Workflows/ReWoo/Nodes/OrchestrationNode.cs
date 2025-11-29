@@ -1,6 +1,5 @@
 ﻿using Application.Agents;
 using Application.Observability;
-using Application.Workflows.ReAct.Dto;
 using Application.Workflows.ReWoo.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
@@ -10,10 +9,8 @@ using System.Text.Json;
 
 namespace Application.Workflows.ReWoo.Nodes;
 
-public class OrchestrationNode(IAgent agent) : ReflectingExecutor<OrchestrationNode>("OrchestrationNode"), IMessageHandler<OrchestrationRequest>
+public class OrchestrationNode(IAgent agent) : ReflectingExecutor<OrchestrationNode>(WorkflowConstants.OrchestrationNodeName), IMessageHandler<OrchestrationRequest>
 {
-    private List<ChatMessage> _messages = [];
-
     public async ValueTask HandleAsync(OrchestrationRequest message, IWorkflowContext context,
         CancellationToken cancellationToken = new CancellationToken())
     {
@@ -23,20 +20,14 @@ public class OrchestrationNode(IAgent agent) : ReflectingExecutor<OrchestrationN
 
         activity?.SetTag("re-woo.input.message", message.Text);
 
-        _messages.Add(new ChatMessage(ChatRole.User, message.Text));
-
         activity?.AddEvent(new ActivityEvent("LLMRequestSent"));
 
         var userId = await context.UserId();
         var sessionId = await context.SessionId();
 
-        var response = await agent.RunAsync(_messages, sessionId, userId, cancellationToken: cancellationToken);
+        var response = await agent.RunAsync(new List<ChatMessage> { new(ChatRole.User, message.Text) }, sessionId, userId, cancellationToken: cancellationToken);
 
         activity?.AddEvent(new ActivityEvent("LLMResponseReceived"));
-
-        var responseMessage = response.Messages.First();
-
-        _messages.Add(responseMessage);
 
         activity?.SetTag("re-woo.output.message", response.Messages.First().Text);
 
