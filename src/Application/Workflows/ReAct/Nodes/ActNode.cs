@@ -4,31 +4,30 @@ using Application.Workflows.ReAct.Dto;
 using Application.Workflows.ReWoo.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
-using System.Diagnostics;
 using Application.Workflows.Events;
-using Microsoft.Agents.AI;
 
 namespace Application.Workflows.ReAct.Nodes;
 
-public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), IMessageHandler<ActRequest>, 
-    IMessageHandler<UserResponse>
+public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), IMessageHandler<ActRequest>
 {
     private const string NoJsonReturnedByAgent = "Agent/LLM did not return formnatted JSON for routing/actions";
     private const string AgentJsonParseFailed = "Agent JSON parse failed";
 
-    private Activity? _activity;
- 
     public async ValueTask HandleAsync(ActRequest request, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        TraceActRequest(request);
+        using var activity = Telemetry.Start($"{WorkflowConstants.ActNodeName}.handleRequest");
+
+        activity?.SetTag(WorkflowTelemetryTags.Node, WorkflowConstants.ActNodeName);
+
+        WorkflowTelemetryTags.SetPreview(activity, request.Message.Text);
 
         var userId = await context.UserId();
         var sessionId = await context.SessionId();
     
         var response = await agent.RunAsync(request.Message, sessionId, userId, cancellationToken);
 
-        TraceAgentRequestSent(response);
+        WorkflowTelemetryTags.SetPreview(activity, response.Text);
 
         if (!JsonOutputParser.HasJson(response.Text))
         {
@@ -37,6 +36,7 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>(WorkflowConstan
         }
         
         RouteAction routeAction;
+        
         try
         {
             routeAction = JsonOutputParser.Parse<RouteAction>(response.Text);
@@ -51,8 +51,8 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>(WorkflowConstan
 
         var cleanedResponse = JsonOutputParser.Remove(response.Text);
 
-        _activity?.SetTag("workflow.route.message", cleanedResponse);
-        _activity?.SetTag("workflow.route", routeAction.Route);
+        activity?.SetTag("workflow.route.message", cleanedResponse);
+        activity?.SetTag("workflow.route", routeAction.Route);
 
         switch (routeAction.Route)
         {
@@ -75,37 +75,6 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>(WorkflowConstan
                     cancellationToken);
                 break;
         }
-
-        TraceEnd();
-    }
-
-    public async ValueTask HandleAsync(UserResponse userResponse, IWorkflowContext context,
-        CancellationToken cancellationToken = default)
-    {
-        using var activity = Telemetry.Start($"{WorkflowConstants.ActNodeName}.handleUserResponse");
-
-        WorkflowTelemetryTags.SetPreview(activity, userResponse.Message);
-
-        await context.SendMessageAsync(new ActObservation(userResponse.Message), cancellationToken: cancellationToken);
-    }
-
-    private void TraceActRequest(ActRequest request)
-    {
-        _activity = Telemetry.Start($"{WorkflowConstants.ActNodeName}.handleRequest");
-
-        _activity?.SetTag(WorkflowTelemetryTags.Node, WorkflowConstants.ActNodeName);
-
-        WorkflowTelemetryTags.SetPreview(_activity, request.Message.Text);
-    }
-
-    private void TraceAgentRequestSent(AgentRunResponse response)
-    {
-        WorkflowTelemetryTags.SetPreview(_activity, response.Text);
-    }
-
-    private void TraceEnd()
-    {
-        _activity?.Dispose();
     }
 }
 

@@ -59,10 +59,11 @@ public static class Extensions
         builder.Logging.AddConsole();
 
         builder.Services.AddOpenTelemetry()
+            
             .WithMetrics(metrics =>
             {
                 // Ensure the meter name matches the Meter created in Application.Observability.Telemetry
-                metrics.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName)).AddMeter("Application.Workflows");
+                metrics.SetResourceBuilder(ResourceBuilder.CreateEmpty().AddService(builder.Environment.ApplicationName)).AddMeter("Application.Workflows");
                 
                /* metrics.AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()

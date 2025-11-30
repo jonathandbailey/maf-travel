@@ -80,7 +80,7 @@ public class TravelWorkflow(
                     }
                     case WorkflowState.WaitingForUserInput:
                     {
-                        var resp = requestInfoEvent.Request.CreateResponse(new UserResponse(requestDto.Message.Text));
+                        var resp = requestInfoEvent.Request.CreateResponse(new ActObservation(requestDto.Message.Text));
 
                         State = WorkflowState.Executing;
                         await run.Run.SendResponseAsync(resp);
