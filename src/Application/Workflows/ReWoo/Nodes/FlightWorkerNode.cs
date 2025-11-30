@@ -1,5 +1,6 @@
 ﻿using Application.Agents;
 using Application.Observability;
+using Application.Workflows.Events;
 using Application.Workflows.ReWoo.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
@@ -13,6 +14,8 @@ public class FlightWorkerNode(IAgent agent) :
     ReflectingExecutor<FlightWorkerNode>(WorkflowConstants.FlightWorkerNodeName), 
     IMessageHandler<OrchestratorWorkerTaskDto>
 {
+    private const string FlightWorkerNodeError = "Flight Worker Node has failed to execute.";
+
     private Activity? _activity;
     
     public async ValueTask HandleAsync(OrchestratorWorkerTaskDto message, IWorkflowContext context,
@@ -20,18 +23,25 @@ public class FlightWorkerNode(IAgent agent) :
     {
         Trace(message);
 
-        var serialized = JsonSerializer.Serialize(message);
+        try
+        {
+            var serialized = JsonSerializer.Serialize(message);
     
-        var userId = await context.UserId();
-        var sessionId = await context.SessionId();
+            var userId = await context.UserId();
+            var sessionId = await context.SessionId();
 
-        var response = await agent.RunAsync(new List<ChatMessage> { new(ChatRole.User, serialized) }, sessionId, userId, cancellationToken: cancellationToken);
+            var response = await agent.RunAsync( new ChatMessage(ChatRole.User, serialized), sessionId, userId, cancellationToken: cancellationToken);
     
-        var responseMessage = response.Messages.First();
+            var responseMessage = response.Messages.First();
 
-        _activity?.SetTag("re-woo.output.message", response.Messages.First().Text);
+            _activity?.SetTag("re-woo.output.message", response.Messages.First().Text);
 
-        await context.SendMessageAsync(new ArtifactStorageDto(message.ArtifactKey, responseMessage.Text), cancellationToken: cancellationToken);
+            await context.SendMessageAsync(new ArtifactStorageDto(message.ArtifactKey, responseMessage.Text), cancellationToken: cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            await context.AddEventAsync(new TravelWorkflowErrorEvent(FlightWorkerNodeError, message.ArtifactKey, WorkflowConstants.FlightWorkerNodeName,exception), cancellationToken);
+        }
 
         TraceEnd();
     }

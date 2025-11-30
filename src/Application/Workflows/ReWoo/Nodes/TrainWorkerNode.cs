@@ -27,7 +27,7 @@ public class TrainWorkerNode(IAgent agent) : ReflectingExecutor<TrainWorkerNode>
         var userId = await context.UserId();
         var sessionId = await context.SessionId();
 
-        var response = await agent.RunAsync(new List<ChatMessage> { new(ChatRole.User, serialized) }, sessionId, userId, cancellationToken: cancellationToken);
+        var response = await agent.RunAsync(new ChatMessage(ChatRole.User, serialized), sessionId, userId, cancellationToken: cancellationToken);
 
         activity?.AddEvent(new ActivityEvent("LLMResponseReceived"));
 

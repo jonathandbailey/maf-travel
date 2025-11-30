@@ -8,7 +8,8 @@ using System.Diagnostics;
 
 namespace Application.Workflows.ReAct.Nodes;
 
-public class ReasonNode(IAgent agent) : ReflectingExecutor<ReasonNode>(WorkflowConstants.ReasonNodeName) , IMessageHandler<TravelWorkflowRequestDto, ActRequest>,
+public class ReasonNode(IAgent agent) : ReflectingExecutor<ReasonNode>(WorkflowConstants.ReasonNodeName),
+    IMessageHandler<TravelWorkflowRequestDto, ActRequest>,
     IMessageHandler<ActObservation, ActRequest>
 {
     private Activity? _activity;
@@ -46,7 +47,7 @@ public class ReasonNode(IAgent agent) : ReflectingExecutor<ReasonNode>(WorkflowC
         var userId = await context.UserId();
         var sessionId = await context.SessionId();
 
-        var response = await agent.RunAsync(new List<ChatMessage> { message }, sessionId, userId, cancellationToken);
+        var response = await agent.RunAsync(message, sessionId, userId, cancellationToken);
   
         _activity?.SetTag("react.output.message", response.Messages.First().Text);
 

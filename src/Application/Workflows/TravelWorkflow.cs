@@ -2,14 +2,19 @@
 using Application.Observability;
 using Application.Workflows.Events;
 using Application.Workflows.ReAct.Dto;
-using Application.Workflows.ReAct.Nodes;
 using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Workflows;
 
-public class TravelWorkflow(Workflow workflow, CheckpointManager checkpointManager, CheckpointInfo? checkpointInfo, WorkflowState state)
+public class TravelWorkflow(
+    Workflow workflow,
+    CheckpointManager checkpointManager,
+    CheckpointInfo? checkpointInfo,
+    WorkflowState state,
+    ILogger logger)
 {
-    private List<ArtifactStatusEvent> _artifactStatusEvents = [];
+    private readonly List<ArtifactStatusEvent> _artifactStatusEvents = [];
     
     private CheckpointManager CheckpointManager { get; set; } = checkpointManager;
 
@@ -53,6 +58,12 @@ public class TravelWorkflow(Workflow workflow, CheckpointManager checkpointManag
             if (evt is ReasonActWorkflowCompleteEvent reasonActWorkflowCompleteEvent)
             {
                 return new WorkflowResponse(WorkflowState.Completed, reasonActWorkflowCompleteEvent.Message);
+            }
+
+            if (evt is TravelWorkflowErrorEvent travelWorkflowErrorEvent)
+            {
+                logger.LogError(travelWorkflowErrorEvent.Exception, "Travel Workflow Error");
+                return new WorkflowResponse(WorkflowState.Error, "Travel Request has failed.");
             }
 
             if (evt is RequestInfoEvent requestInfoEvent)

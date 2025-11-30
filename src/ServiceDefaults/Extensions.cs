@@ -53,6 +53,11 @@ public static class Extensions
             logging.IncludeScopes = true;
         });
 
+        // Ensure a default console logger is available so ILogger<T> can be injected out-of-the-box.
+        // This keeps the change minimal and provides visible logs during development and on hosts
+        // that don't configure additional logging providers.
+        builder.Logging.AddConsole();
+
         builder.Services.AddOpenTelemetry()
             .WithMetrics(metrics =>
             {

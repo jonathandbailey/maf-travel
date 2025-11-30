@@ -4,7 +4,6 @@ using Application.Workflows.ReAct.Dto;
 using Application.Workflows.ReWoo.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
-using Microsoft.Extensions.AI;
 using System.Diagnostics;
 using Application.Workflows.Events;
 using Microsoft.Agents.AI;
@@ -26,7 +25,7 @@ public class ActNode(IAgent agent) : ReflectingExecutor<ActNode>(WorkflowConstan
         var userId = await context.UserId();
         var sessionId = await context.SessionId();
     
-        var response = await agent.RunAsync(new List<ChatMessage> { request.Message }, sessionId, userId, cancellationToken);
+        var response = await agent.RunAsync(request.Message, sessionId, userId, cancellationToken);
 
         TraceAgentRequestSent(response);
 
