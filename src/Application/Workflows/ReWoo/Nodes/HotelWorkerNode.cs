@@ -32,9 +32,7 @@ public class HotelWorkerNode(IAgent agent) :
             var sessionId = await context.SessionId();
 
             var response = await agent.RunAsync(new ChatMessage(ChatRole.User, serialized), sessionId, userId, cancellationToken: cancellationToken);
-   
-            activity?.SetTag("re-woo.output.message", response.Text);
-
+       
             WorkflowTelemetryTags.SetOutputPreview(activity, response.Text);
 
             await context.SendMessageAsync(new ArtifactStorageDto(message.ArtifactKey, response.Text), cancellationToken: cancellationToken);
