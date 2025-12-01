@@ -1,4 +1,5 @@
 using Api;
+using Api.Hub;
 using Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -28,6 +31,8 @@ else
     app.UseHttpsRedirection();
 }
 
- 
+app.MapHub<UserHub>("hub");
+
+
 
 app.Run();

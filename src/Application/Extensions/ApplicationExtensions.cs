@@ -33,6 +33,7 @@ public static class ApplicationExtensions
         services.AddScoped<IWorkflowRepository, WorkflowRepository>();
 
         services.AddHostedService<AzureStorageSeedService>();
+      
 
 
         services.AddAzureClients(azure =>
