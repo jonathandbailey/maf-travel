@@ -1,46 +1,52 @@
 ﻿using Application.Agents;
 using Application.Observability;
+using Application.Workflows.Events;
 using Application.Workflows.ReWoo.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace Application.Workflows.ReWoo.Nodes;
 
 public class OrchestrationNode(IAgent agent) : ReflectingExecutor<OrchestrationNode>(WorkflowConstants.OrchestrationNodeName), IMessageHandler<OrchestrationRequest>
 {
+    private const string OrchestrationNodeError = "Orchestration Node has failed to execute.";
+
+
     public async ValueTask HandleAsync(OrchestrationRequest message, IWorkflowContext context,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken = default)
     {
-        using var activity = Telemetry.Start("OrchestrationActHandleRequest");
+        using var activity = Telemetry.Start($"{WorkflowConstants.OrchestrationNodeName}.handleRequest");
 
-        activity?.SetTag("re-woo.node", "orchestration_node");
+        activity?.SetTag(WorkflowTelemetryTags.Node, WorkflowConstants.OrchestrationNodeName);
 
-        activity?.SetTag("re-woo.input.message", message.Text);
+        WorkflowTelemetryTags.SetInputPreview(activity, message.Text);
 
-        activity?.AddEvent(new ActivityEvent("LLMRequestSent"));
-
-        var userId = await context.UserId();
-        var sessionId = await context.SessionId();
-
-        var response = await agent.RunAsync(new ChatMessage(ChatRole.User, message.Text), sessionId, userId, cancellationToken: cancellationToken);
-
-        activity?.AddEvent(new ActivityEvent("LLMResponseReceived"));
-
-        activity?.SetTag("re-woo.output.message", response.Messages.First().Text);
-
-        var json = JsonOutputParser.ExtractJson(response.Messages.First().Text);
-
-        var orchestrationRequest = JsonSerializer.Deserialize<OrchestrationRequestDto>(json);
-
-        if (orchestrationRequest != null)
+        try
         {
-            foreach (var orchestratorWorkerTaskDto in orchestrationRequest.Tasks)
+            var userId = await context.UserId();
+            var sessionId = await context.SessionId();
+
+            var response = await agent.RunAsync(new ChatMessage(ChatRole.User, message.Text), sessionId, userId, cancellationToken: cancellationToken);
+
+            WorkflowTelemetryTags.SetOutputPreview(activity, response.Text);
+
+            var json = JsonOutputParser.ExtractJson(response.Text);
+
+            var orchestrationRequest = JsonSerializer.Deserialize<OrchestrationRequestDto>(json);
+
+            if (orchestrationRequest != null)
             {
-                await context.SendMessageAsync(orchestratorWorkerTaskDto, cancellationToken: cancellationToken);
+                foreach (var orchestratorWorkerTaskDto in orchestrationRequest.Tasks)
+                {
+                    await context.SendMessageAsync(orchestratorWorkerTaskDto, cancellationToken: cancellationToken);
+                }
             }
+        }
+        catch (Exception exception)
+        {
+            await context.AddEventAsync(new TravelWorkflowErrorEvent(OrchestrationNodeError, OrchestrationNodeError, WorkflowConstants.OrchestrationNodeName, exception), cancellationToken);
         }
     }
 }
