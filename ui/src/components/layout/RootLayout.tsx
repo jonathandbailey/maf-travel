@@ -1,5 +1,5 @@
 import ChatInput from "../chat/ChatInput"
-import { Flex, Tabs, Timeline } from "antd"
+import { Flex, Splitter, Tabs, Timeline } from "antd"
 import type { TabsProps } from "antd";
 import { useState } from "react";
 import type { UIExchange } from "../../types/ui/UIExchange";
@@ -11,6 +11,7 @@ import { UIFactory } from '../../factories/UIFactory';
 import type { Status } from "../../types/ui/Status";
 import { useChatResponseHandler } from "../../hooks/useChatResponseHandler";
 import { useStatusUpdateHandler } from "../../hooks/useStatusUpdateHandler";
+import { useExchangeStatusUpdateHandler } from "../../hooks/useExchangeStatusUpdateHandler";
 import { useArtifactHandler } from "../../hooks/useArtifactHandler";
 
 const RootLayout = () => {
@@ -22,6 +23,7 @@ const RootLayout = () => {
 
     useChatResponseHandler({ setExchanges });
     useStatusUpdateHandler({ setStatusItems });
+    useExchangeStatusUpdateHandler({ setExchanges });
     useArtifactHandler({ sessionId, setTabs, setActiveKey });
 
     function handlePrompt(value: string): void {
@@ -45,44 +47,38 @@ const RootLayout = () => {
 
     return <>
 
-        <Flex gap="large" >
+        <Splitter style={{ width: '100vw', height: '100vh', margin: '0px', padding: '0px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+            <Splitter.Panel defaultSize="50%" min="20%" max="70%">
+                <div className={styles.container}>
+                    <Flex vertical className={styles.layout}>
+                        <div className={styles.content}>
+                            {exchanges.map((exchange, idx) => (
+                                <div key={idx}>
+                                    <Flex justify="flex-end" className={styles.userMessageContainer}>
+                                        <UserMessage message={exchange.user} />
+                                    </Flex>
+                                    <AssistantMessage message={exchange.assistant} />
+                                </div>
+                            ))}
+                        </div>
 
-            <div>
-                <Tabs
-                    items={tabs}
-                    activeKey={activeKey}
-                    onChange={setActiveKey}
-                    tabPlacement="top"
-                />
-            </div>
-            <div className={styles.container}>
-                <Flex vertical className={styles.layout}>
-                    <div className={styles.content}>
-                        {exchanges.map((exchange, idx) => (
-                            <div key={idx}>
-                                <Flex justify="flex-end" className={styles.userMessageContainer}>
-                                    <UserMessage message={exchange.user} />
-                                </Flex>
-                                <AssistantMessage message={exchange.assistant} />
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className={styles.chatInputContainer}>
-                        <ChatInput onEnter={handlePrompt} />
-                    </div>
-                </Flex>
-            </div>
-            <div className={styles.statusContainer}>
-                <Timeline>
-                    {statusItems.map((status, idx) => (
-                        <Timeline.Item key={idx}>{status.message}</Timeline.Item>
-                    ))}
-
-                </Timeline>
-            </div>
-
-        </Flex>
+                        <div className={styles.chatInputContainer}>
+                            <ChatInput onEnter={handlePrompt} />
+                        </div>
+                    </Flex>
+                </div>
+            </Splitter.Panel>
+            <Splitter.Panel defaultSize="50%">
+                <div>
+                    <Tabs
+                        items={tabs}
+                        activeKey={activeKey}
+                        onChange={setActiveKey}
+                        tabPlacement="top"
+                    />
+                </div>
+            </Splitter.Panel>
+        </Splitter>
 
 
 

@@ -13,6 +13,7 @@ export const useChatResponseHandler = ({ setExchanges }: UseChatResponseHandlerP
         const handleUserResponse = (response: ChatResponseDto) => {
             if (!response) return;
 
+            console.log("User response received:", response);
             setExchanges(prev => prev.map(exchange => {
                 if (exchange.assistant.id === response.id) {
                     const updatedAssistant = UIFactory.updateAssistantMessage(

@@ -24,7 +24,14 @@ const AssistantMessage = ({ message }: AssistantMessageProps) => {
             ) : (
                 <Flex vertical>
                     {message.isLoading && (
-                        <Spin size="small" className={styles["assistant-spin-left"]} />
+                        <Flex align="center" gap="small" className={styles["assistant-spin-left"]}>
+                            <Spin size="small" />
+                            {message.statusMessage && (
+                                <span style={{ fontSize: '14px', color: '#666' }}>
+                                    {message.statusMessage}
+                                </span>
+                            )}
+                        </Flex>
                     )}
                     <Markdown>{message.text}</Markdown>
                 </Flex>

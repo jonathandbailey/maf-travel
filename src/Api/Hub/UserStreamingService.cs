@@ -7,13 +7,13 @@ namespace Api.Hub;
 
 public class UserStreamingService(IHubContext<UserHub> hub, IUserConnectionManager userConnectionManager, IOptions<HubSettings> hubSettings) : IUserStreamingService
 {
-    public async Task Stream(Guid userId, string content, bool isEndOfStream, Guid exchangeId)
+    public async Task Stream(Guid userId, string content, bool isEndOfStream, Guid requestId)
     {
         var connections = userConnectionManager.GetConnections(userId);
 
         foreach (var connectionId in connections)
         {
-            await hub.Clients.Client(connectionId).SendAsync(hubSettings.Value.PromptChannel, new UserResponseDto() { Message = content, IsEndOfStream = isEndOfStream, Id = exchangeId});
+            await hub.Clients.Client(connectionId).SendAsync(hubSettings.Value.PromptChannel, new UserResponseDto() { Message = content, IsEndOfStream = isEndOfStream, Id = requestId});
         }
     }
 
@@ -27,13 +27,13 @@ public class UserStreamingService(IHubContext<UserHub> hub, IUserConnectionManag
         }
     }
 
-    public async Task Status(Guid userId, string content)
+    public async Task Status(Guid userId, string content, Guid requestId)
     {
         var connections = userConnectionManager.GetConnections(userId);
 
         foreach (var connectionId in connections)
         {
-            await hub.Clients.Client(connectionId).SendAsync("status", new UserResponseDto() { Message = content });
+            await hub.Clients.Client(connectionId).SendAsync("status", new UserResponseDto() { Message = content, Id = requestId});
         }
     }
 

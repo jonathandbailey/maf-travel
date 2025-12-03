@@ -13,6 +13,7 @@ export class UIFactory {
             isLoading?: boolean;
             hasError?: boolean;
             errorMessage?: string;
+            statusMessage?: string;
         }
     ): UIMessage {
         return {
@@ -21,7 +22,8 @@ export class UIFactory {
             role,
             isLoading: options?.isLoading ?? false,
             hasError: options?.hasError ?? false,
-            errorMessage: options?.errorMessage ?? ''
+            errorMessage: options?.errorMessage ?? '',
+            statusMessage: options?.statusMessage ?? ''
         };
     }
 

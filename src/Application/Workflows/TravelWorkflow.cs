@@ -61,6 +61,8 @@ public class TravelWorkflow(
 
             if (evt is ReasonActWorkflowCompleteEvent reasonActWorkflowCompleteEvent)
             {
+                await userStreamingService.Stream(requestDto.UserId, string.Empty, true, requestDto.RequestId);
+
                 return new WorkflowResponse(WorkflowState.Completed, reasonActWorkflowCompleteEvent.Message);
             }
 
@@ -77,7 +79,7 @@ public class TravelWorkflow(
 
             if (evt is WorkflowStatusEvent statusEvent)
             {
-                await userStreamingService.Status(requestDto.UserId, statusEvent.Status);
+                await userStreamingService.Status(requestDto.UserId, statusEvent.Status, requestDto.RequestId);
             }
 
             if (evt is RequestInfoEvent requestInfoEvent)
