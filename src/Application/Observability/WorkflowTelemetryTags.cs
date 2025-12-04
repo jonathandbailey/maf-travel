@@ -17,7 +17,7 @@ public static class WorkflowTelemetryTags
     private const string OutputLength = Prefix + ".output.length";
     private const string OutputTruncated = Prefix + ".output.truncated";
 
-    private const int DefaultPreviewLength = 200;
+    private const int DefaultPreviewLength = 2000;
 
     public static void SetInputPreview(Activity? activity, string? value, int maxPreviewLength = DefaultPreviewLength)
     {

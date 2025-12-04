@@ -25,8 +25,10 @@ public class ReasonNode(IAgent agent) : ReflectingExecutor<ReasonNode>(WorkflowC
         await context.AddEventAsync(new WorkflowStatusEvent(StatusThinking), cancellationToken);
 
         Annotate(activity, requestDto.Message.Text);
+
+        var chatMessage = await Create(requestDto.Message.Text, context);
    
-        return await RunReasoningAsync(requestDto.Message, context, activity, cancellationToken);
+        return await RunReasoningAsync(chatMessage, context, activity, cancellationToken);
     }
 
     public async ValueTask<ActRequest> HandleAsync(
@@ -39,10 +41,19 @@ public class ReasonNode(IAgent agent) : ReflectingExecutor<ReasonNode>(WorkflowC
         await context.AddEventAsync(new WorkflowStatusEvent(StatusThinking), cancellationToken);
 
         Annotate(activity, actObservation.Message);
-  
-        var message = new ChatMessage(ChatRole.User, actObservation.Message);
+
+        var message = await Create(actObservation.Message, context);
 
         return await RunReasoningAsync(message, context, activity, cancellationToken);
+    }
+
+    private async Task<ChatMessage> Create(string content, IWorkflowContext context)
+    {
+        var state = await context.ReasonState();
+
+        var template = $"user input :{content}\nstate :{state}";
+
+        return new ChatMessage(ChatRole.User, template);
     }
 
     private async Task<ActRequest> RunReasoningAsync(ChatMessage message, IWorkflowContext context, Activity? activity, CancellationToken cancellationToken)

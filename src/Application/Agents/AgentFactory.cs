@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OpenAI;
 using Application.Workflows.ReWoo.Dto;
 using Application.Services;
+using Application.Workflows.ReAct.Dto;
 
 namespace Application.Agents;
 
@@ -27,7 +28,7 @@ public class AgentFactory(IAgentTemplateRepository templateRepository, IAgentMem
     private readonly Dictionary<AgentTypes, ChatOptions> _agentChatOptions = new()
     {
         { AgentTypes.FlightWorker, CreateFlightChatOptions() },
-        { AgentTypes.Reason, new ChatOptions() },
+        { AgentTypes.Reason, CreateReasonChatOptions() },
         { AgentTypes.Act, new ChatOptions() },
         { AgentTypes.Orchestration, new ChatOptions() },
         { AgentTypes.HotelWorker, CreateHotelChatOptions() },
@@ -58,6 +59,21 @@ public class AgentFactory(IAgentTemplateRepository templateRepository, IAgentMem
         });
 
         return new Agent(reasonAgent, agentMemoryService, type);
+    }
+
+    private static ChatOptions CreateReasonChatOptions()
+    {
+        var schema = AIJsonUtilities.CreateJsonSchema(typeof(ReasonState));
+
+        ChatOptions chatOptions = new()
+        {
+            ResponseFormat = ChatResponseFormat.ForJsonSchema(
+                schema: schema,
+                schemaName: "ReasonState",
+                schemaDescription: "User Reasoning State for their vacation planning.")
+        };
+
+        return chatOptions;
     }
 
     private static ChatOptions CreateFlightChatOptions()
