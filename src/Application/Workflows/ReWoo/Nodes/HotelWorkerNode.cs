@@ -29,9 +29,7 @@ public class HotelWorkerNode(IAgent agent) :
             var serialized = JsonSerializer.Serialize(message);
 
             WorkflowTelemetryTags.SetInputPreview(activity, serialized);
-
-            var sessionState = await context.SessionState();
-
+   
             await context.AddEventAsync(new WorkflowStatusEvent(StatusFindingHotels), cancellationToken);
 
             var response = await agent.RunAsync(new ChatMessage(ChatRole.User, serialized), cancellationToken: cancellationToken);

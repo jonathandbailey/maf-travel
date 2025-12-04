@@ -27,9 +27,7 @@ public class FlightWorkerNode(IAgent agent) :
             var serialized = JsonSerializer.Serialize(message);
 
             WorkflowTelemetryTags.SetInputPreview(activity, serialized);
-
-            var sessionState = await context.SessionState();
-
+       
             var response = await agent.RunAsync( new ChatMessage(ChatRole.User, serialized), cancellationToken: cancellationToken);
 
             var responseMessage = response.Messages.First();

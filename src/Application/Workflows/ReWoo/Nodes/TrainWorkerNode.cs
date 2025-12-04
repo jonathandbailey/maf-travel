@@ -24,9 +24,7 @@ public class TrainWorkerNode(IAgent agent) : ReflectingExecutor<TrainWorkerNode>
             var serialized = JsonSerializer.Serialize(message);
 
             WorkflowTelemetryTags.SetInputPreview(activity, serialized);
-
-            var sessionState = await context.SessionState();
-
+    
             var response = await agent.RunAsync(new ChatMessage(ChatRole.User, serialized), cancellationToken: cancellationToken);
     
             WorkflowTelemetryTags.SetInputPreview(activity, response.Text);

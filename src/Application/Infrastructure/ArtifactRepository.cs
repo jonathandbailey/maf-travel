@@ -2,10 +2,11 @@
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Application.Users;
 
 namespace Application.Infrastructure;
 
-public class ArtifactRepository(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : IArtifactRepository
+public class ArtifactRepository(IAzureStorageRepository repository, ISessionContextAccessor sessionContextAccessor, IOptions<AzureStorageSeedSettings> settings) : IArtifactRepository
 {
     private const string ApplicationJsonContentType = "application/json";
 
@@ -17,16 +18,16 @@ public class ArtifactRepository(IAzureStorageRepository repository, IOptions<Azu
         Converters = { new JsonStringEnumConverter() }
     };
 
-    public async Task SaveAsync(Guid sessionId, Guid userId, string artifact, string name)
+    public async Task SaveAsync(string artifact, string name)
     {
-        await repository.UploadTextBlobAsync(GetCheckpointFileName(sessionId, userId, name),
+        await repository.UploadTextBlobAsync(GetArtifactFileName(name),
             settings.Value.ContainerName,
             artifact, ApplicationJsonContentType);
     }
 
-    public async Task<FlightSearchResultDto> GetFlightPlanAsync(Guid sessionId, Guid userId)
+    public async Task<FlightSearchResultDto> GetFlightPlanAsync()
     {
-        var filename = GetCheckpointFileName(sessionId, userId, "flights");
+        var filename = GetArtifactFileName("flights");
 
         var response = await repository.DownloadTextBlobAsync(filename, settings.Value.ContainerName);
 
@@ -35,9 +36,9 @@ public class ArtifactRepository(IAzureStorageRepository repository, IOptions<Azu
         return flightPlan ?? throw new InvalidOperationException($"Failed to deserialize flight plan from blob: {filename}");
     }
 
-    public async Task<HotelSearchResultDto> GetHotelPlanAsync(Guid sessionId, Guid userId)
+    public async Task<HotelSearchResultDto> GetHotelPlanAsync()
     {
-        var filename = GetCheckpointFileName(sessionId, userId, "hotels");
+        var filename = GetArtifactFileName("hotels");
 
         var response = await repository.DownloadTextBlobAsync(filename, settings.Value.ContainerName);
 
@@ -48,15 +49,18 @@ public class ArtifactRepository(IAzureStorageRepository repository, IOptions<Azu
 
 
 
-    private static string GetCheckpointFileName(Guid sessionId, Guid userId, string name)
+    private string GetArtifactFileName(string name)
     {
+        var userId = sessionContextAccessor.Context.UserId;
+        var sessionId = sessionContextAccessor.Context.SessionId;
+
         return $"{userId}/{sessionId}/artifacts/{name}.json";
     }
 }
 
 public interface IArtifactRepository
 {
-    Task SaveAsync(Guid sessionId, Guid userId, string artifact, string name);
-    Task<FlightSearchResultDto> GetFlightPlanAsync(Guid sessionId, Guid userId);
-    Task<HotelSearchResultDto> GetHotelPlanAsync(Guid sessionId, Guid userId);
+    Task SaveAsync(string artifact, string name);
+    Task<FlightSearchResultDto> GetFlightPlanAsync();
+    Task<HotelSearchResultDto> GetHotelPlanAsync();
 }

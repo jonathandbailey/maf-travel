@@ -27,9 +27,7 @@ public class OrchestrationNode(IAgent agent) : ReflectingExecutor<OrchestrationN
         try
         {
             await context.AddEventAsync(new WorkflowStatusEvent(StatusBuildingTravelPlan), cancellationToken);
-
-            var sessionState = await context.SessionState();
-
+     
             var response = await agent.RunAsync(new ChatMessage(ChatRole.User, message.Text), cancellationToken: cancellationToken);
 
             WorkflowTelemetryTags.SetOutputPreview(activity, response.Text);

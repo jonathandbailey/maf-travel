@@ -43,20 +43,24 @@ public static class ApiMappings
     private static async Task<Ok<FlightSearchResultDto>> GetFlightPlan(
         Guid sessionId, 
         IArtifactRepository service,
-        HttpContext context
-        )
+        ISessionContextAccessor sessionContextAccessor,
+        HttpContext context)
     {
-        var flightPlan = await service.GetFlightPlanAsync(sessionId, context.User.Id());
+        sessionContextAccessor.Initialize(context.User.Id(), sessionId);
+
+        var flightPlan = await service.GetFlightPlanAsync();
         return TypedResults.Ok(flightPlan);
     }
 
     private static async Task<Ok<HotelSearchResultDto>> GetHotelPlan(
         Guid sessionId,
         IArtifactRepository service,
-        HttpContext context
-        )
+        ISessionContextAccessor sessionContextAccessor,
+        HttpContext context)
     {
-        var hotelPlan = await service.GetHotelPlanAsync(sessionId, context.User.Id());
+        sessionContextAccessor.Initialize(context.User.Id(), sessionId);
+
+        var hotelPlan = await service.GetHotelPlanAsync();
         return TypedResults.Ok(hotelPlan);
     }
 }
