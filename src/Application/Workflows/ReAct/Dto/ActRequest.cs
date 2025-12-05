@@ -6,6 +6,8 @@ public class ActRequest
 
     public string NextAction { get; set; } = string.Empty;
 
+    public string Status { get; set; } = string.Empty;
+
     public TravelPlanUpdateDto? TravelPlanUpdate { get; set; }
 
     public UserInputRequestDto? UserInput { get; set; }

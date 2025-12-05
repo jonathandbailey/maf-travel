@@ -56,6 +56,8 @@ public class WorkflowFactory(IAgentFactory agentFactory, IArtifactRepository art
         builder.AddEdge(actNode, reasonNode);
         builder.AddEdge(actNode, orchestrationNode);
 
+        builder.AddEdge(actNode, flightWorkerNode);
+
         builder.AddEdge<OrchestratorWorkerTaskDto>(
             source: orchestrationNode,
             target: flightWorkerNode,

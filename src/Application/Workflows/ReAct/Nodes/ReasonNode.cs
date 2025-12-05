@@ -58,6 +58,8 @@ public class ReasonNode(IAgent agent, ITravelPlanService travelPlanService) : Re
 
         var actRequest = response.Deserialize<ActRequest>(JsonSerializerOptions.Web);
 
+        await context.AddEventAsync(new WorkflowStatusEvent(actRequest.Status), cancellationToken);
+
         return actRequest;
     }
 

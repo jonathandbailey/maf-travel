@@ -6,6 +6,7 @@ using Application.Workflows.ReAct.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using System.Text.Json;
+using Application.Workflows.ReWoo.Dto;
 
 namespace Application.Workflows.ReAct.Nodes;
 
@@ -25,6 +26,8 @@ public class ActNode(IAgent agent, ITravelPlanService travelPlanService) : Refle
 
         activity?.SetTag(WorkflowTelemetryTags.Node, WorkflowConstants.ActNodeName);
 
+        await context.AddEventAsync(new WorkflowStatusEvent(message.Status), cancellationToken);
+
         var serialized = JsonSerializer.Serialize(message);
 
         WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, serialized);
@@ -36,6 +39,10 @@ public class ActNode(IAgent agent, ITravelPlanService travelPlanService) : Refle
                 break;
             case "UpdateTravelPlan":
                 await UpdateTravelPlan(message, context, cancellationToken);
+                break;
+            case "GenerateTravelPlanArtifacts":
+                var plan = await travelPlanService.LoadAsync();
+                await context.SendMessageAsync(new CreatePlanRequestDto(plan), cancellationToken: cancellationToken);
                 break;
         }
     }
