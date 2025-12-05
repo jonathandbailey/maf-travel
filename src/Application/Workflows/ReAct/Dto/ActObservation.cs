@@ -7,6 +7,7 @@ public class ActObservation(string message)
     public string Observation { get; set; } = string.Empty;
 
     public string ResultType { get; set; } = string.Empty;
-
-    public Dictionary<string, string> Payload { get; set; } = new();
+ 
+   
 }
+

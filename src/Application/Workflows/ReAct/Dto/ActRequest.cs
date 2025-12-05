@@ -6,5 +6,25 @@ public class ActRequest
 
     public string NextAction { get; set; } = string.Empty;
 
-    public Dictionary<string, string> Parameters { get; set; } = new();
+    public TravelPlanUpdateDto? TravelPlanUpdate { get; set; }
+
+    public UserInputRequestDto? UserInput { get; set; }
+}
+
+public class TravelPlanUpdateDto()
+{
+    public string? Origin { get; set; }
+
+    public string? Destination { get; set; }
+
+    public DateTime? StartDate { get; set; }
+
+    public DateTime? EndDate { get; set; }
+}
+
+public class UserInputRequestDto()
+{
+    public string Question { get; set; } = string.Empty;
+
+    public List<string> RequiredInputs { get; set; } = new List<string>();
 }
