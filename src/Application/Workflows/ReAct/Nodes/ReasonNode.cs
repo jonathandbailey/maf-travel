@@ -52,15 +52,23 @@ public class ReasonNode(IAgent agent, ITravelPlanService travelPlanService) : Re
     private async Task<ActRequest> RunReasoningAsync(ChatMessage message, IWorkflowContext context, Activity? activity,
         CancellationToken cancellationToken)
     {
-        var response = await agent.RunAsync(message, cancellationToken);
+        try
+        {
+            var response = await agent.RunAsync(message, cancellationToken);
 
-        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.OutputNodePreview, response.Text);
+            WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.OutputNodePreview, response.Text);
 
-        var actRequest = response.Deserialize<ActRequest>(JsonSerializerOptions.Web);
+            var actRequest = response.Deserialize<ActRequest>(JsonSerializerOptions.Web);
 
-        await context.AddEventAsync(new WorkflowStatusEvent(actRequest.Status), cancellationToken);
+            await context.AddEventAsync(new WorkflowStatusEvent(actRequest.Status), cancellationToken);
 
-        return actRequest;
+            return actRequest;
+        }
+        catch (Exception exception)
+        {
+            await context.AddEventAsync(new TravelWorkflowErrorEvent("Reason Node Error", "Reason Node", WorkflowConstants.ReasonNodeName, exception), cancellationToken);
+            throw;
+        }
     }
 
 }

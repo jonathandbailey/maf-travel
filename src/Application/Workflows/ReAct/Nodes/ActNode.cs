@@ -29,13 +29,15 @@ public class ActNode(IAgent agent, ITravelPlanService travelPlanService) : Refle
 
         WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, serialized);
 
+        if(message.TravelPlanUpdate != null)
+        {
+            await UpdateTravelPlan(message, context, cancellationToken);
+        }
+
         switch (message.NextAction)
         {
             case "AskUser":
                 await context.SendMessageAsync(new ActUserRequest(serialized), cancellationToken: cancellationToken);
-                break;
-            case "UpdateTravelPlan":
-                await UpdateTravelPlan(message, context, cancellationToken);
                 break;
             case "GenerateTravelPlanArtifacts":
                 var plan = await travelPlanService.LoadAsync();
@@ -48,8 +50,6 @@ public class ActNode(IAgent agent, ITravelPlanService travelPlanService) : Refle
         CancellationToken cancellationToken)
     {
         await travelPlanService.UpdateAsync(message.TravelPlanUpdate!);
-
-        await context.SendMessageAsync(new ActObservation("Travel Plan Updated", "TravelPlanUpdate"), cancellationToken: cancellationToken);
     }
 }
 

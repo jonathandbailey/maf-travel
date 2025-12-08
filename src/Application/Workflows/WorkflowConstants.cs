@@ -26,4 +26,6 @@ public static class WorkflowConstants
 
     public const string ScopeGlobal = "Global";
     public const string UserNodeName = "UserNode";
+
+    public const string ParserNodeName = "ParserNode";
 }

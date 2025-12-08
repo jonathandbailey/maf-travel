@@ -25,6 +25,8 @@ public class WorkflowFactory(IAgentFactory agentFactory, IArtifactRepository art
 
         var userAgent = await agentFactory.Create(AgentTypes.User);
 
+        var parserAgent = await agentFactory.Create(AgentTypes.Parser);
+
         var requestPort = RequestPort.Create<UserRequest, UserResponse>("user-input");
 
         var reasonNode = new ReasonNode(reasonAgent, travelPlanService);
@@ -37,14 +39,20 @@ public class WorkflowFactory(IAgentFactory agentFactory, IArtifactRepository art
         var artifactStorageNode = new ArtifactStorageNode(artifactRepository);
 
         var userNode = new UserNode(userAgent);
+
+        var parserNode = new ParserNode(parserAgent);
  
-        var builder = new WorkflowBuilder(reasonNode);
+        var builder = new WorkflowBuilder(parserNode);
+
+        builder.AddEdge(parserNode, reasonNode);
 
         builder.AddEdge(reasonNode, actNode);
         builder.AddEdge(actNode, userNode);
         builder.AddEdge(userNode, requestPort);
+        
         builder.AddEdge(requestPort, userNode);
-        builder.AddEdge(userNode, reasonNode);
+        
+        builder.AddEdge(userNode, parserNode);
         
         builder.AddEdge(actNode, reasonNode);
         

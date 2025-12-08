@@ -22,7 +22,8 @@ public class AgentFactory(IAgentTemplateRepository templateRepository, IAgentMem
         { AgentTypes.FlightWorker, "Flight-Agent" },
         { AgentTypes.HotelWorker, "Hotel-Agent" },
         { AgentTypes.TrainWorker, "Train-Agent" },
-        { AgentTypes.User , "User-Agent"}
+        { AgentTypes.User , "User-Agent"},
+        { AgentTypes.Parser , "Parser-Agent"}
     };
 
     private readonly Dictionary<AgentTypes, ChatOptions> _agentChatOptions = new()
@@ -33,7 +34,8 @@ public class AgentFactory(IAgentTemplateRepository templateRepository, IAgentMem
         { AgentTypes.Orchestration, new ChatOptions() },
         { AgentTypes.HotelWorker, CreateHotelChatOptions() },
         { AgentTypes.TrainWorker, new ChatOptions() },
-        { AgentTypes.User, new ChatOptions() }
+        { AgentTypes.User, new ChatOptions() },
+        { AgentTypes.Parser, CreateParserChatOptions() }
     };
     public async Task<IAgent> Create(AgentTypes agentType)
     {
@@ -91,6 +93,21 @@ public class AgentFactory(IAgentTemplateRepository templateRepository, IAgentMem
         return chatOptions;
     }
 
+    private static ChatOptions CreateParserChatOptions()
+    {
+        var schema = AIJsonUtilities.CreateJsonSchema(typeof(TravelPlanUpdateDto));
+
+        ChatOptions chatOptions = new()
+        {
+            ResponseFormat = ChatResponseFormat.ForJsonSchema(
+                schema: schema,
+                schemaName: "HotelPlan",
+                schemaDescription: "User Hotel Options for their vacation.")
+        };
+
+        return chatOptions;
+    }
+
     private static ChatOptions CreateHotelChatOptions()
     {
         var schema = AIJsonUtilities.CreateJsonSchema(typeof(HotelSearchResultDto));
@@ -99,8 +116,8 @@ public class AgentFactory(IAgentTemplateRepository templateRepository, IAgentMem
         {
             ResponseFormat = ChatResponseFormat.ForJsonSchema(
                 schema: schema,
-                schemaName: "HotelPlan",
-                schemaDescription: "User Hotel Options for their vacation.")
+                schemaName: "ParsedTravelPlan",
+                schemaDescription: "The parsed travel plan from the user.")
         };
 
         return chatOptions;
@@ -120,5 +137,6 @@ public enum AgentTypes
     FlightWorker,
     HotelWorker,
     TrainWorker,
-    User
+    User,
+    Parser
 }

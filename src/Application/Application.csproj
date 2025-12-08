@@ -34,6 +34,9 @@
     <None Update="Agents\Templates\Orchestration-Agent.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Agents\Templates\Parser-Agent.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Agents\Templates\Reason-Agent.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
