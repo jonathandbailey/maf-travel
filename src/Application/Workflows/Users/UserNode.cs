@@ -10,19 +10,19 @@ using Microsoft.Extensions.AI;
 namespace Application.Workflows.Users;
 
 public class UserNode(IAgent agent) : ReflectingExecutor<UserNode>(WorkflowConstants.UserNodeName), 
-    IMessageHandler<ActUserRequest>, 
+    IMessageHandler<RequestUserInput>, 
     IMessageHandler<UserResponse>
 {
-    public async ValueTask HandleAsync(ActUserRequest actUserRequest, IWorkflowContext context,
+    public async ValueTask HandleAsync(RequestUserInput requestUserInput, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         using var activity = Telemetry.Start($"{WorkflowConstants.UserNodeName}.handleRequest");
 
-        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, actUserRequest.Message);
+        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, requestUserInput.Message);
 
         var stringBuilder = new StringBuilder();
 
-        await foreach (var update in agent.RunStreamingAsync(new ChatMessage(ChatRole.User, actUserRequest.Message), cancellationToken: cancellationToken))
+        await foreach (var update in agent.RunStreamingAsync(new ChatMessage(ChatRole.User, requestUserInput.Message), cancellationToken: cancellationToken))
         {
             await context.AddEventAsync(new UserStreamingEvent(update.Text), cancellationToken);
 

@@ -1,5 +1,4 @@
-﻿using Application.Agents;
-using Application.Observability;
+﻿using Application.Observability;
 using Application.Services;
 using Application.Workflows.Events;
 using Application.Workflows.ReAct.Dto;
@@ -10,7 +9,7 @@ using Application.Workflows.ReWoo.Dto;
 
 namespace Application.Workflows.ReAct.Nodes;
 
-public class ActNode(IAgent agent, ITravelPlanService travelPlanService) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), IMessageHandler<ActRequest>
+public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), IMessageHandler<ActRequest>
 {
     private const string StatusExecuting = "Executing...";
 
@@ -37,7 +36,7 @@ public class ActNode(IAgent agent, ITravelPlanService travelPlanService) : Refle
         switch (message.NextAction)
         {
             case "AskUser":
-                await context.SendMessageAsync(new ActUserRequest(serialized), cancellationToken: cancellationToken);
+                await context.SendMessageAsync(new RequestUserInput(serialized), cancellationToken: cancellationToken);
                 break;
             case "GenerateTravelPlanArtifacts":
                 var plan = await travelPlanService.LoadAsync();
