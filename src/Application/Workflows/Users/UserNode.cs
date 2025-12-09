@@ -9,9 +9,10 @@ using Microsoft.Extensions.AI;
 
 namespace Application.Workflows.Users;
 
-public class UserNode(IAgent agent) : ReflectingExecutor<UserNode>(WorkflowConstants.UserNodeName), 
+public class UserNode(IAgent agent, IAgent parsingAgent) : ReflectingExecutor<UserNode>(WorkflowConstants.UserNodeName), 
     IMessageHandler<RequestUserInput>, 
-    IMessageHandler<UserResponse>
+    IMessageHandler<UserResponse, ActObservation>,
+    IMessageHandler<UserInput, ActObservation>
 {
     public async ValueTask HandleAsync(RequestUserInput requestUserInput, IWorkflowContext context,
         CancellationToken cancellationToken = default)
@@ -36,9 +37,24 @@ public class UserNode(IAgent agent) : ReflectingExecutor<UserNode>(WorkflowConst
         await context.SendMessageAsync(new UserRequest(stringBuilder.ToString()), cancellationToken: cancellationToken);
     }
 
-    public async ValueTask HandleAsync(UserResponse message, IWorkflowContext context,
+    public async ValueTask<ActObservation> HandleAsync(UserResponse message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        await context.SendMessageAsync(new UserInput(message.Message), cancellationToken: cancellationToken);
+        return await HandleAsync(new UserInput(message.Message), context, cancellationToken);
+    }
+
+    public async ValueTask<ActObservation> HandleAsync(UserInput message, IWorkflowContext context,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = Telemetry.Start($"{WorkflowConstants.ParserNodeName}.observe");
+
+        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, message.Message);
+
+        var response = await parsingAgent.RunAsync(new ChatMessage(ChatRole.User, message.Message), cancellationToken);
+
+        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.OutputNodePreview, response.Text);
+
+
+        return new ActObservation(response.Text, "UserInput");
     }
 }

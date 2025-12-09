@@ -36,21 +36,18 @@ public class WorkflowFactory(IAgentFactory agentFactory, IArtifactRepository art
 
         var artifactStorageNode = new ArtifactStorageNode(artifactRepository);
 
-        var userNode = new UserNode(userAgent);
+        var userNode = new UserNode(userAgent, parserAgent);
+     
+        var builder = new WorkflowBuilder(userNode);
 
-        var parserNode = new ParserNode(parserAgent);
- 
-        var builder = new WorkflowBuilder(parserNode);
+        builder.AddEdge(userNode, reasonNode);
 
-        builder.AddEdge(parserNode, reasonNode);
 
         builder.AddEdge(reasonNode, actNode);
         builder.AddEdge(actNode, userNode);
         builder.AddEdge(userNode, requestPort);
         
         builder.AddEdge(requestPort, userNode);
-        
-        builder.AddEdge(userNode, parserNode);
         
         builder.AddEdge(actNode, reasonNode);
         
