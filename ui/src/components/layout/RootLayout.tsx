@@ -61,7 +61,10 @@ const RootLayout = () => {
             <Layout>
                 <Content className={styles.content}>
                     <div className={styles.mainArea}>
-                        Main Area
+                        <Tabs items={
+                            tabs
+                        } activeKey={activeKey
+                        }></Tabs>
                     </div>
                     <div className={styles.chatInputContainer}>
                         <Flex vertical>
