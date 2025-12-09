@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Application.Workflows.ReWoo.Dto;
+namespace Application.Workflows.Dto;
 
 public class OrchestrationRequestDto
 {

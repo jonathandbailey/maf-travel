@@ -1,4 +1,4 @@
-namespace Application.Workflows.ReWoo.Dto;
+namespace Application.Workflows.Dto;
 
 public record HotelSearchResultDto
 {

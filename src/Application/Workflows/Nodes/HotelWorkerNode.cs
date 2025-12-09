@@ -1,13 +1,13 @@
 ﻿using Application.Agents;
 using Application.Observability;
+using Application.Workflows.Dto;
 using Application.Workflows.Events;
-using Application.Workflows.ReWoo.Dto;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using System.Text.Json;
 
-namespace Application.Workflows.ReWoo.Nodes;
+namespace Application.Workflows.Nodes;
 
 public class HotelWorkerNode(IAgent agent) : 
     ReflectingExecutor<HotelWorkerNode>(WorkflowConstants.HotelWorkerNodeName), 

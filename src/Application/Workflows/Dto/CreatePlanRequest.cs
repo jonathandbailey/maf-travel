@@ -1,6 +1,6 @@
 ﻿using Application.Models;
 
-namespace Application.Workflows.ReWoo.Dto;
+namespace Application.Workflows.Dto;
 
 public class CreatePlanRequestDto(TravelPlan travelPlan)
 {

@@ -7,7 +7,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 
-namespace Application.Workflows.Users;
+namespace Application.Workflows.Nodes;
 
 public class UserNode(IAgent agent, IAgent parsingAgent) : ReflectingExecutor<UserNode>(WorkflowConstants.UserNodeName), 
     IMessageHandler<RequestUserInput>, 
