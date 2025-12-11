@@ -76,19 +76,18 @@ const RootLayout = () => {
                             </Flex>
                         </div>
 
-                        {tabs && tabs.length > 0 && (
-                            <div style={{ padding: "24px" }} >
-                                <Tabs
-                                    items={tabs}
-                                    type="card"
-                                    activeKey={activeKey}
-                                    onChange={setActiveKey}
-                                />
-                            </div>
-                        )}
-                        <div className={styles.chatInputContainer} style={{ flex: 1, display: "flex" }}>
-                            <Flex vertical style={{ height: "100%" }}>
-                                <div style={{ flex: 1 }}>
+
+                        <div style={{ padding: "24px" }} >
+                            <Tabs
+                                items={tabs}
+                                type="card"
+                                activeKey={activeKey}
+                                onChange={setActiveKey}
+                            />
+                        </div>
+                        <div className={styles.chatInputContainer}>
+                            <Flex vertical>
+                                <div>
                                     {activeExchange?.assistant.text}
                                 </div>
                                 {activeExchange?.assistant.isLoading && (
