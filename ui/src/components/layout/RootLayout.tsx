@@ -71,11 +71,13 @@ const RootLayout = () => {
                     </div>
 
 
-                    <div >
-                        <Tabs items={
-                            tabs
-                        } activeKey={activeKey
-                        }></Tabs>
+                    <div style={{ padding: "24px" }} >
+                        <Tabs
+                            items={tabs}
+                            type="card"
+                            activeKey={activeKey}
+                            onChange={setActiveKey}
+                        />
                     </div>
                     <div className={styles.chatInputContainer}>
                         <Flex vertical>
