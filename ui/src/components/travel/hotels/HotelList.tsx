@@ -9,7 +9,7 @@ interface HotelListProps {
 const HotelList = ({ hotels }: HotelListProps) => {
     return (
         <div>
-            <Flex gap="middle" wrap="wrap">
+            <Flex gap="middle" wrap="wrap" justify="center">
                 {hotels.map((hotel, index) => (
                     <Hotel key={index} hotel={hotel} />
                 ))}
