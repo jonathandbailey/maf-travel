@@ -15,7 +15,10 @@ export const useStatusUpdateHandler = ({ setStatusItems, setActiveStatus, setAct
         const handleStatusUpdate = (response: ChatResponseDto) => {
             if (!response) return;
 
-            const newStatus = { message: response.message || '' };
+            const newStatus: Status = {
+                message: response.message || '',
+                details: response.details || ''
+            };
 
             setStatusItems(prev => {
                 const newItems = [

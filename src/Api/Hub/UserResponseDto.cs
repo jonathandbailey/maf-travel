@@ -1,19 +1,12 @@
-﻿namespace Api.Hub
+﻿namespace Api.Hub;
+
+public class UserResponseDto
 {
-    public class UserResponseDto
-    {
-        public Guid SessionId { get; set; } = Guid.Empty;
+    public string Message { get; set; } = string.Empty;
 
-        public string Message { get; set; } = string.Empty;
+    public Guid Id { get; set; }
 
-        public Guid Id { get; set; }
-
-        public bool HasError { get; set; } = false;
-
-        public Guid VacationPlanId { get; set; } = Guid.Empty;
-
-        public string Source { get; set; } = string.Empty;
-
-        public bool IsEndOfStream { get; set; } = false;
-    }
+    public bool IsEndOfStream { get; set; } = false;
 }
+
+public record StatusDto(string Message, string Details, Guid RequestId);

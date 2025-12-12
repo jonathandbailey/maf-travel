@@ -10,19 +10,13 @@ namespace Application.Workflows.Nodes;
 
 public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), IMessageHandler<ReasoningOutputDto>
 {
-    private const string StatusExecuting = "Executing...";
-
     public async ValueTask HandleAsync(ReasoningOutputDto message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        await context.AddEventAsync(new WorkflowStatusEvent(StatusExecuting), cancellationToken);
-
         using var activity = Telemetry.Start($"{WorkflowConstants.ActNodeName}.handleRequest");
 
         activity?.SetTag(WorkflowTelemetryTags.Node, WorkflowConstants.ActNodeName);
-
-        await context.AddEventAsync(new WorkflowStatusEvent(message.Status), cancellationToken);
-
+    
         var serialized = JsonSerializer.Serialize(message);
 
         WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, serialized);

@@ -90,7 +90,7 @@ public class TravelWorkflow(
 
             if (evt is WorkflowStatusEvent statusEvent)
             {
-                await userStreamingService.Status(requestDto.UserId, statusEvent.Status, requestDto.RequestId);
+                await userStreamingService.Status(requestDto.UserId, statusEvent.Status, requestDto.RequestId, statusEvent.Details);
             }
 
             if (evt is RequestInfoEvent requestInfoEvent)

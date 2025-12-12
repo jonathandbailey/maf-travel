@@ -15,16 +15,12 @@ public class ReasonNode(IAgent agent, ITravelPlanService travelPlanService) : Re
    
     IMessageHandler<ReasoningInputDto, ReasoningOutputDto>
 {
-    private const string StatusThinking = "Evaluating Travel Requirements...";
-
     public async ValueTask<ReasoningOutputDto> HandleAsync(
         ReasoningInputDto actObservation, 
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         using var activity = Telemetry.Start($"{WorkflowConstants.ReasonNodeName}.observe");
-
-        await context.AddEventAsync(new WorkflowStatusEvent(StatusThinking), cancellationToken);
  
         var message = await Create(context, actObservation);
 
@@ -60,7 +56,7 @@ public class ReasonNode(IAgent agent, ITravelPlanService travelPlanService) : Re
 
             var actRequest = response.Deserialize<ReasoningOutputDto>(JsonSerializerOptions.Web);
 
-            await context.AddEventAsync(new WorkflowStatusEvent(actRequest.Status), cancellationToken);
+            await context.AddEventAsync(new WorkflowStatusEvent(actRequest.Status, actRequest.Thought), cancellationToken);
 
             return actRequest;
         }
