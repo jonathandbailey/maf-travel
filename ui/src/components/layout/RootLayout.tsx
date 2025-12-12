@@ -1,5 +1,5 @@
 import ChatInput from "../chat/ChatInput"
-import { Flex, Typography, Tabs, Timeline, Layout, Spin } from "antd"
+import { Flex, Typography, Tabs, Timeline, Layout, Spin, Button } from "antd"
 import type { TabsProps } from "antd";
 import { useState } from "react";
 import type { UIExchange } from "../../types/ui/UIExchange";
@@ -18,9 +18,15 @@ import type { TravelPlanDto } from "../../types/dto/travel-plan.dto";
 import AgentFeedback from "../chat/AgentFeedback";
 import AgentStatus from "../chat/AgentStatus";
 
+import { FaPlaneUp } from "react-icons/fa6";
+import Welcome from "./Welcome";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+
+import TravelIcon from '../../assets/fly.png';
+
 const { Header, Sider, Content } = Layout;
 
-const { Text } = Typography;
+const { Title } = Typography;
 
 const RootLayout = () => {
     const [sessionId] = useState<string>(crypto.randomUUID());
@@ -31,6 +37,8 @@ const RootLayout = () => {
     const [activeKey, setActiveKey] = useState<string>();
     const [travelPlan, setTravelPlan] = useState<TravelPlanDto | null>(null);
     const [activeStatus, setActiveStatus] = useState<Status | null>(null);
+
+    const [collapsed, setCollapsed] = useState(false);
 
     // Debug status items changes
 
@@ -64,14 +72,37 @@ const RootLayout = () => {
 
         <Layout className={styles.layout}>
             <Header className={styles.header}>
+
                 <Flex justify="start" align="center" style={{ height: "100%" }}>
-                    <Text style={{ color: "black", fontSize: "24px" }}>Travel Agent</Text>
+                    <img
+                        src={TravelIcon}
+                        alt="Travel App Logo"
+                        // 2. Resize the image via CSS since the source file is large
+                        style={{ height: '64px', width: 'auto', marginRight: '0px' }}
+                    />
+                    <Title level={4} style={{ marginLeft: "2px", marginBottom: 0, marginTop: 0 }}>Travel Planner</Title>
                 </Flex>
 
             </Header>
 
             <Layout style={{ height: "calc(100vh - 64px)" }}>
+
                 <Content style={{ background: "white", height: "100%", display: "flex", flexDirection: "column" }} >
+                    <Header style={{ background: "white", padding: 0 }}>
+                        <Flex justify="end">
+                            <Button
+                                type="text"
+                                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                                onClick={() => setCollapsed(!collapsed)}
+                                style={{
+                                    fontSize: '16px',
+                                    width: 64,
+                                    height: 64,
+                                }}
+                            />
+                        </Flex>
+
+                    </Header>
                     <Flex vertical align="center" style={{ height: "100%", flex: 1, minHeight: 0 }}>
                         <div style={{ padding: "24px", flexShrink: 0 }}>
                             <Flex justify="center" align="start">
@@ -79,7 +110,7 @@ const RootLayout = () => {
                             </Flex>
                         </div>
 
-
+                        {exchanges.length === 0 && <Welcome />}
                         <div style={{ padding: "24px" }} >
                             <Tabs
                                 items={tabs}
@@ -101,34 +132,34 @@ const RootLayout = () => {
 
 
                 </Content>
-                <Sider className={styles.statusSidebar} width={350}>
-                    <Tabs type="card"
-                        items={[
+                <Sider className={styles.statusSidebar} collapsible collapsed={collapsed} trigger={null} width={350}>
+                    {!collapsed && (
+                        <div className={styles.chatContainer}>
+                            <Tabs type="card"
+                                style={{ height: '100%' }}
+                                items={[
+                                    {
+                                        label: 'Chat',
+                                        key: 'chat',
+                                        children: (
+                                            <div className={styles.content}>
+                                                {exchanges.map((exchange, idx) => (
+                                                    <div key={idx}>
+                                                        <Flex justify="flex-end" className={styles.userMessageContainer}>
+                                                            <UserMessage message={exchange.user} />
+                                                        </Flex>
+                                                        <AssistantMessage message={exchange.assistant} />
+                                                        <AgentStatus statusItems={exchange.status || []} />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )
+                                    }
+                                ]}
+                            />
+                        </div>
+                    )}
 
-                            {
-                                label: 'Chat',
-                                key: 'chat',
-                                children: (
-                                    <Flex vertical className={styles.layout}>
-                                        <div className={styles.content}>
-                                            {exchanges.map((exchange, idx) => (
-                                                <div key={idx}>
-                                                    <Flex justify="flex-end" className={styles.userMessageContainer}>
-                                                        <UserMessage message={exchange.user} />
-                                                    </Flex>
-                                                    <AssistantMessage message={exchange.assistant} />
-                                                    <AgentStatus statusItems={exchange.status || []} />
-                                                </div>
-                                            ))}
-                                        </div>
-
-
-                                    </Flex>
-
-                                )
-                            }
-                        ]}
-                    />
                 </Sider>
             </Layout>
         </Layout>
