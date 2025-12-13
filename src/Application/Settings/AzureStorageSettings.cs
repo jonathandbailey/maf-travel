@@ -1,4 +1,4 @@
-﻿namespace Application.Infrastructure;
+﻿namespace Infrastructure.Settings;
 
 public class AzureStorageSeedSettings
 {

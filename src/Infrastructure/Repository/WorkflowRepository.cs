@@ -1,12 +1,12 @@
-﻿using Application.Observability;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Application.Dto;
+using Application.Interfaces;
+using Infrastructure.Settings;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Application.Workflows;
-using Application.Workflows.Dto;
 
-namespace Application.Infrastructure;
+namespace Infrastructure.Repository;
 
 public class WorkflowRepository(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : IWorkflowRepository
 {
@@ -53,11 +53,4 @@ public class WorkflowRepository(IAzureStorageRepository repository, IOptions<Azu
     {
         return $"{userId}/{sessionId}/workflows/state.json";
     }
-}
-
-public interface IWorkflowRepository
-{
-    Task SaveAsync(Guid userId, Guid sessionId, WorkflowState state, CheckpointInfo? checkpointInfo);
-   
-    Task<WorkflowStateDto> LoadAsync(Guid userId, Guid sessionId);
 }

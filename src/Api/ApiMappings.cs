@@ -1,6 +1,6 @@
 ﻿using Api.Dto;
 using Api.Extensions;
-using Application.Infrastructure;
+using Application.Interfaces;
 using Application.Models;
 using Application.Services;
 using Application.Users;

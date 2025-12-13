@@ -1,13 +1,14 @@
 ﻿using Application.Agents;
 using Application.Agents.Repository;
-using Application.Infrastructure;
 using Application.Services;
 using Application.Settings;
 using Application.Users;
 using Application.Workflows;
+using Infrastructure.Settings;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace Application.Extensions;
 
@@ -25,16 +26,9 @@ public static class ApplicationExtensions
         services.AddScoped<IApplicationService, ApplicationService>();
         services.AddScoped<IAgentMemoryService, AgentMemoryService>();
 
-        services.AddScoped<IArtifactRepository, ArtifactRepository>();
+      
         services.AddScoped<IWorkflowFactory, WorkflowFactory>();
-
-        services.AddScoped<IAzureStorageRepository, AzureStorageRepository>();
-        services.AddScoped<ICheckpointRepository, CheckpointRepository>();
-
-        services.AddScoped<IWorkflowRepository, WorkflowRepository>();
-
-        services.AddHostedService<AzureStorageSeedService>();
-
+    
         services.AddScoped<ISessionContextAccessor, SessionContextAccessor>();
 
         services.AddScoped<ITravelPlanService, TravelPlanService>();

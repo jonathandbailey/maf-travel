@@ -1,8 +1,8 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Checkpointing;
 using System.Text.Json;
-using Application.Infrastructure;
-using Application.Workflows.Dto;
+using Application.Dto;
+using Application.Interfaces;
 
 namespace Application.Workflows;
 
