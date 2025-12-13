@@ -1,5 +1,5 @@
 ﻿using Application.Agents;
-using Application.Infrastructure;
+using Application.Interfaces;
 using Application.Services;
 using Application.Workflows.Dto;
 using Application.Workflows.Nodes;

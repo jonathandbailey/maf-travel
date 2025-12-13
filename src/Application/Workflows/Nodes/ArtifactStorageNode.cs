@@ -1,4 +1,4 @@
-﻿using Application.Infrastructure;
+﻿using Application.Interfaces;
 using Application.Observability;
 using Application.Workflows.Dto;
 using Application.Workflows.Events;

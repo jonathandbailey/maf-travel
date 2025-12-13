@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Options;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Application.Workflows.Dto;
+using Application.Dto;
+using Application.Interfaces;
+using Infrastructure.Settings;
+using Microsoft.Extensions.Options;
 
-namespace Application.Infrastructure;
+namespace Infrastructure.Repository;
 
 public class CheckpointRepository(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : ICheckpointRepository
 {
@@ -64,11 +66,4 @@ public class CheckpointRepository(IAzureStorageRepository repository, IOptions<A
     {
         return $"{userId}/{sessionId}/checkpoints/{runId}/{checkpointId}.json";
     }
-}
-
-public interface ICheckpointRepository
-{
-    Task SaveAsync(Guid userId, Guid sessionId, StoreStateDto storeState);
-    Task<StoreStateDto> LoadAsync(Guid userId, Guid sessionId, string checkpointId, string runId);
-    Task<List<StoreStateDto>> GetAsync(Guid userId, Guid sessionId, string runId);
 }

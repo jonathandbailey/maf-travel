@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Options;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Application.Interfaces;
 using Application.Users;
 using Application.Workflows.Dto;
+using Infrastructure.Settings;
+using Microsoft.Extensions.Options;
 
-namespace Application.Infrastructure;
+namespace Infrastructure.Repository;
 
 public class ArtifactRepository(IAzureStorageRepository repository, ISessionContextAccessor sessionContextAccessor, IOptions<AzureStorageSeedSettings> settings) : IArtifactRepository
 {
@@ -56,11 +58,4 @@ public class ArtifactRepository(IAzureStorageRepository repository, ISessionCont
 
         return $"{userId}/{sessionId}/artifacts/{name}.json";
     }
-}
-
-public interface IArtifactRepository
-{
-    Task SaveAsync(string artifact, string name);
-    Task<FlightSearchResultDto> GetFlightPlanAsync();
-    Task<HotelSearchResultDto> GetHotelPlanAsync();
 }
