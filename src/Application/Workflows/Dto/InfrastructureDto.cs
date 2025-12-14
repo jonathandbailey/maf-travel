@@ -2,8 +2,9 @@
 
 namespace Application.Workflows.Dto;
 
-public class CreateFlightOptions(TravelPlan travelPlan)
+public class CreateFlightOptions(TravelPlan travelPlan, ReasoningOutputDto message)
 {
+    public ReasoningOutputDto Message { get; } = message;
     public TravelPlan TravelPlan => travelPlan;
 }
 
@@ -20,6 +21,15 @@ public class ArtifactStorageDto(string key, string content)
 
     public string Content { get; } = content;
 }
+
+public class FlightActionResultDto
+{
+    public FlightSearchResultDto FlightOptions { get; set; }
+    public string Action { get; set; }
+
+    public string Status { get; set; }
+}
+
 
 public class FlightSearchResultDto
 {

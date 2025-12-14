@@ -36,7 +36,7 @@ public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<
                 break;
             case "HandleFlightOptions":
                 var plan = await travelPlanService.LoadAsync();
-                await context.SendMessageAsync(new CreateFlightOptions(plan), cancellationToken: cancellationToken);
+                await context.SendMessageAsync(new CreateFlightOptions(plan, message), cancellationToken: cancellationToken);
                 break;
         }
     }
