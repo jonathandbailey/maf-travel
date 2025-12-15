@@ -24,6 +24,20 @@ Where:
 - Requests missing critical information from the user
 
 ### Example:
+
+### Input
+Observation :{
+	"userMessage": "I want to plan a trip to Berlin on the 23.04.2025?",
+	"userIntent": "User wants to plan travel",
+	"intentInputs": {
+		"destination": "Berlin",
+		"startDate": "2025-04-23",
+		"endDate": null
+	}
+}
+TravelPlanSummary :{"Origin":"Not_Set","Destination":"Not_Set","StartDate":"Not_Set","EndDate":"Not_Set","FlightOptionStatus":"NotCreated","UserFlightOptionStatus":"NotSelected"}
+
+### Output
 {
   "thought": "User provided destination 'Berlin' and departure date '23.04.2025', updating travel plan.Destination is known but origin and dates are missing.",
   "nextAction": "AskUser",
@@ -48,5 +62,12 @@ Where:
   "status": "Creating flight options"
 }
 
+## TravelPlanCompleted
+- Called when the TravelPlanStatus = Completed
 
-
+### Example - Finalize Travel Plan:
+{
+  "thought": "All Travel Plan Statuses are complete, finalize travel plan",
+  "nextAction": "TravelPlanCompleted",
+  "status": "Travel Plan Completed"
+}

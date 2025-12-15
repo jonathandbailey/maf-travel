@@ -10,6 +10,8 @@ public class TravelPlan
     public FlightOptionsStatus FlightOptionsStatus { get; set; } = FlightOptionsStatus.NotCreated;
 
     public UserFlightOptionsStatus UserFlightOptionStatus { get; set; } = UserFlightOptionsStatus.NotSelected;
+
+    public TravelPlanStatus TravelPlanStatus { get; set; } = TravelPlanStatus.NotStarted;
 }
 
 public class TravelPlanSummary(TravelPlan plan)
@@ -25,6 +27,8 @@ public class TravelPlanSummary(TravelPlan plan)
     public string FlightOptionStatus { get; set; } = plan.FlightOptionsStatus.ToString();
 
     public string UserFlightOptionStatus { get; set; } = plan.UserFlightOptionStatus.ToString();
+
+    public string TravelPlanStatus { get; set; } = plan.TravelPlanStatus.ToString();
 }
 
 public static class TravelPlanSummaryConstants
@@ -43,5 +47,14 @@ public enum UserFlightOptionsStatus
     Selected,
     UserChoiceRequired,
     NotSelected
+}
+
+public enum TravelPlanStatus
+{
+    InProgress,
+    Completed,
+    Cancelled,
+    NotStarted,
+    Error
 }
 

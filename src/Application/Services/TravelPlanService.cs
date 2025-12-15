@@ -48,6 +48,11 @@ public class TravelPlanService(IAzureStorageRepository repository, ISessionConte
     {
         var travelPlan = await LoadAsync();
 
+        if (travelPlan.TravelPlanStatus == TravelPlanStatus.NotStarted)
+        {
+            travelPlan.TravelPlanStatus = TravelPlanStatus.InProgress;
+        }
+
         if (messageTravelPlanUpdate.Origin != null)
             travelPlan.Origin = messageTravelPlanUpdate.Origin;
 

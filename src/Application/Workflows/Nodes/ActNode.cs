@@ -57,6 +57,12 @@ public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<
         plan.FlightOptionsStatus = message.FlightOptionsStatus;
         plan.UserFlightOptionStatus = message.UserFlightOptionStatus;
 
+        if (plan.FlightOptionsStatus == FlightOptionsStatus.Created &&
+            plan.UserFlightOptionStatus == UserFlightOptionsStatus.Selected)
+        {
+            plan.TravelPlanStatus = TravelPlanStatus.Completed;
+        }
+
         await travelPlanService.SaveAsync(plan);
 
         var output = $"Flight Options : {message.FlightOptionsStatus}, User Flight Option Status: {message.UserFlightOptionStatus}";

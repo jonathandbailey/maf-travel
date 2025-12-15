@@ -1,13 +1,14 @@
 ﻿using Application.Agents;
 using Application.Observability;
+using Application.Services;
+using Application.Workflows.Dto;
 using Application.Workflows.Events;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using System.Diagnostics;
 using System.Text.Json;
-using Application.Services;
-using Application.Workflows.Dto;
+using System.Text.Json.Serialization;
 
 namespace Application.Workflows.Nodes;
 
@@ -15,6 +16,14 @@ public class ReasonNode(IAgent agent, ITravelPlanService travelPlanService) : Re
    
     IMessageHandler<ReasoningInputDto, ReasoningOutputDto>
 {
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new JsonStringEnumConverter() }
+    };
+
     public async ValueTask<ReasoningOutputDto> HandleAsync(
         ReasoningInputDto actObservation, 
         IWorkflowContext context,
@@ -23,24 +32,22 @@ public class ReasonNode(IAgent agent, ITravelPlanService travelPlanService) : Re
         using var activity = Telemetry.Start($"{WorkflowConstants.ReasonNodeName}.observe");
  
         var message = await Create(context, actObservation);
-
-        var input = JsonSerializer.Serialize(message.Text);
-
-        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, input);
+      
+        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, message.Text);
 
         var actRequest = await RunReasoningAsync(message, context, activity, cancellationToken);
 
         return actRequest;
     }
 
-    private async Task<ChatMessage> Create(IWorkflowContext context, ReasoningInputDto observation)
+    private async Task<ChatMessage> Create(IWorkflowContext context, ReasoningInputDto reasoningInput)
     {
 
         var travelPlanSummary = await travelPlanService.GetSummary();
 
-        var serialized = JsonSerializer.Serialize(observation);
+        var serialized = JsonSerializer.Serialize(reasoningInput, SerializerOptions);
 
-        var template = $"Observation :{serialized}\nTravelPlanSummary :{travelPlanSummary}";
+        var template = $"Observation :{reasoningInput.Observation}\nTravelPlanSummary :{travelPlanSummary}";
 
         return new ChatMessage(ChatRole.User, template);
     }
