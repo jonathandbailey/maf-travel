@@ -9,4 +9,4 @@ public class UserResponseDto
     public bool IsEndOfStream { get; set; } = false;
 }
 
-public record StatusDto(string Message, string Details, Guid RequestId);
+public record StatusDto(string Message, string Details, Guid RequestId, string Source);

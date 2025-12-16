@@ -17,7 +17,8 @@ export const useStatusUpdateHandler = ({ setStatusItems, setActiveStatus, setAct
 
             const newStatus: Status = {
                 message: response.message || '',
-                details: response.details || ''
+                details: response.details || '',
+                source: response.source || ''
             };
 
             setStatusItems(prev => {

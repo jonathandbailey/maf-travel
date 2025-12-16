@@ -30,13 +30,13 @@ public class HotelWorkerNode(IAgent agent) :
 
             WorkflowTelemetryTags.SetInputPreview(activity, serialized);
 
-            await context.AddEventAsync(new WorkflowStatusEvent(StatusFindingHotels, string.Empty), cancellationToken);
+            await context.AddEventAsync(new WorkflowStatusEvent(StatusFindingHotels, string.Empty, WorkflowConstants.HotelWorkerNodeName), cancellationToken);
 
             var response = await agent.RunAsync(new ChatMessage(ChatRole.User, serialized), cancellationToken: cancellationToken);
 
             WorkflowTelemetryTags.SetOutputPreview(activity, response.Text);
 
-            await context.AddEventAsync(new WorkflowStatusEvent(StatusHotelsFound, string.Empty), cancellationToken);
+            await context.AddEventAsync(new WorkflowStatusEvent(StatusHotelsFound, string.Empty , WorkflowConstants.HotelWorkerNodeName), cancellationToken);
 
             await context.SendMessageAsync(new ArtifactStorageDto("hotels", response.Text), cancellationToken: cancellationToken);
         }

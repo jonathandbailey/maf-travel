@@ -5,7 +5,7 @@ interface AgentStatusProps {
     statusItems: Status[];
 }
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 const AgentStatus = ({ statusItems }: AgentStatusProps) => {
     return (
@@ -15,8 +15,11 @@ const AgentStatus = ({ statusItems }: AgentStatusProps) => {
                     {statusItems.map((status, index) => (
                         <Timeline.Item key={index} >
                             <Flex vertical>
-                                {status.message}
-                                <Text type="secondary" style={{ marginTop: "4px", marginBottom: "8px" }}>{status.details}</Text>
+
+                                <Title level={5} style={{ marginTop: "0px" }}> {status.source}  </Title>
+                                <Text> {status.message}</Text>
+
+                                <Text type="secondary" italic style={{ marginTop: "8px", marginBottom: "8px" }}>{status.details}</Text>
 
                             </Flex>
 

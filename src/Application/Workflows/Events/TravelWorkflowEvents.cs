@@ -45,9 +45,18 @@ public class UserStreamingCompleteEvent : WorkflowEvent { }
 
 public class TravelPlanUpdatedEvent : WorkflowEvent { }
 
-public class WorkflowStatusEvent(string message, string details) : WorkflowEvent(message)
+public class WorkflowStatusEvent : WorkflowEvent
 {
-    public string Status { get; } = message;
+    public WorkflowStatusEvent(string message, string details, string source) : base(message)
+    {
+        Status = message;
+        Details = details;
+        Source = source;
+    }
 
-    public string Details { get; } = details;
+    public string Source { get; }
+    
+    public string Status { get; }
+
+    public string Details { get; }
 }

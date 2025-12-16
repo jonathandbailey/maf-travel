@@ -1,4 +1,5 @@
 export interface Status {
     message: string;
-    details: string
+    details: string;
+    source: string;
 }

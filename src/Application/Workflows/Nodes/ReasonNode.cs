@@ -63,7 +63,7 @@ public class ReasonNode(IAgent agent, ITravelPlanService travelPlanService) : Re
 
             var actRequest = response.Deserialize<ReasoningOutputDto>(JsonSerializerOptions.Web);
 
-            await context.AddEventAsync(new WorkflowStatusEvent(actRequest.Status, actRequest.Thought), cancellationToken);
+            await context.AddEventAsync(new WorkflowStatusEvent(actRequest.Status, actRequest.Thought, WorkflowConstants.ReasonNodeName), cancellationToken);
 
             return actRequest;
         }

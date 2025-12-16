@@ -27,13 +27,13 @@ public class UserStreamingService(IHubContext<UserHub> hub, IUserConnectionManag
         }
     }
 
-    public async Task Status(Guid userId, string content, Guid requestId, string details)
+    public async Task Status(Guid userId, string content, Guid requestId, string details, string source)
     {
         var connections = userConnectionManager.GetConnections(userId);
 
         foreach (var connectionId in connections)
         {
-            await hub.Clients.Client(connectionId).SendAsync("status", new StatusDto(content, details, requestId));
+            await hub.Clients.Client(connectionId).SendAsync("status", new StatusDto(content, details, requestId, source));
         }
     }
 

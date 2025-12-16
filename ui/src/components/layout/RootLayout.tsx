@@ -1,5 +1,5 @@
 import ChatInput from "../chat/ChatInput"
-import { Flex, Typography, Tabs, Timeline, Layout, Spin, Button } from "antd"
+import { Flex, Typography, Tabs, Timeline, Layout, Spin, Button, Divider } from "antd"
 import type { TabsProps } from "antd";
 import { useState } from "react";
 import type { UIExchange } from "../../types/ui/UIExchange";
@@ -132,7 +132,7 @@ const RootLayout = () => {
 
 
                 </Content>
-                <Sider className={styles.statusSidebar} collapsible collapsed={collapsed} trigger={null} width={350}>
+                <Sider className={styles.statusSidebar} collapsible collapsed={collapsed} trigger={null} width={550}>
                     {!collapsed && (
                         <div className={styles.chatContainer}>
                             <Tabs type="card"
@@ -149,7 +149,9 @@ const RootLayout = () => {
                                                             <UserMessage message={exchange.user} />
                                                         </Flex>
                                                         <AssistantMessage message={exchange.assistant} />
+                                                        <Divider />
                                                         <AgentStatus statusItems={exchange.status || []} />
+                                                        <Divider />
                                                     </div>
                                                 ))}
                                             </div>

@@ -48,6 +48,8 @@ public class UserNode(IAgent agent, IAgent parsingAgent) : ReflectingExecutor<Us
     {
         using var activity = Telemetry.Start($"{WorkflowConstants.ParserNodeName}.observe");
 
+        await context.AddEventAsync(new WorkflowStatusEvent("Parsing User Input", string.Empty, WorkflowConstants.UserNodeName), cancellationToken);
+
         WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, message.Message);
 
         var response = await parsingAgent.RunAsync(new ChatMessage(ChatRole.User, message.Message), cancellationToken);

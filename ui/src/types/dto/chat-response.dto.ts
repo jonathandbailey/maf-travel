@@ -4,4 +4,5 @@ export interface ChatResponseDto {
     details: string;
     threadId: string;
     isEndOfStream: boolean;
+    source: string;
 }
