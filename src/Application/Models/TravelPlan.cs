@@ -1,4 +1,6 @@
-﻿namespace Application.Models;
+﻿using Application.Workflows.Dto;
+
+namespace Application.Models;
 
 public class TravelPlan
 {
@@ -12,6 +14,8 @@ public class TravelPlan
     public UserFlightOptionsStatus UserFlightOptionStatus { get; set; } = UserFlightOptionsStatus.NotSelected;
 
     public TravelPlanStatus TravelPlanStatus { get; set; } = TravelPlanStatus.NotStarted;
+
+    public FlightOptionDto? SelectedFlightOption { get; set; }
 }
 
 public class TravelPlanSummary(TravelPlan plan)

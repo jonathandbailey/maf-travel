@@ -11,7 +11,7 @@ namespace Application.Workflows.Nodes;
 
 public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), 
     IMessageHandler<ReasoningOutputDto>,
-    IMessageHandler<FlightOptionsCreated>
+    IMessageHandler<FlightOptionsCreated, ReasoningInputDto>
 {
     public async ValueTask HandleAsync(ReasoningOutputDto message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
@@ -49,7 +49,7 @@ public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<
         await context.AddEventAsync(new TravelPlanUpdatedEvent(), cancellationToken);
     }
 
-    public async ValueTask HandleAsync(FlightOptionsCreated message, IWorkflowContext context,
+    public async ValueTask<ReasoningInputDto> HandleAsync(FlightOptionsCreated message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         var plan = await travelPlanService.LoadAsync();
@@ -57,17 +57,22 @@ public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<
         plan.FlightOptionsStatus = message.FlightOptionsStatus;
         plan.UserFlightOptionStatus = message.UserFlightOptionStatus;
 
-        if (plan.FlightOptionsStatus == FlightOptionsStatus.Created &&
-            plan.UserFlightOptionStatus == UserFlightOptionsStatus.Selected)
+        if (plan is { FlightOptionsStatus: FlightOptionsStatus.Created, UserFlightOptionStatus: UserFlightOptionsStatus.Selected })
         {
             plan.TravelPlanStatus = TravelPlanStatus.Completed;
+
+            var flightOption = message.FlightOptions.Results.First();
+
+            plan.SelectedFlightOption = flightOption;
         }
 
         await travelPlanService.SaveAsync(plan);
 
+        await context.AddEventAsync(new TravelPlanUpdatedEvent(), cancellationToken);
+
         var output = $"Flight Options : {message.FlightOptionsStatus}, User Flight Option Status: {message.UserFlightOptionStatus}";
 
-        await context.SendMessageAsync(new ReasoningInputDto(output, "FlightWorkerInput"), cancellationToken: cancellationToken);
+        return new ReasoningInputDto(output, "FlightWorkerInput");
     }
 }
 

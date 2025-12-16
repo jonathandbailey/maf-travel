@@ -64,12 +64,12 @@ public class FlightWorkerNode(IAgent agent, IArtifactRepository artifactReposito
             {
                 await context.SendMessageAsync(new ArtifactStorageDto("flights", payload), cancellationToken: cancellationToken);
 
-                await context.SendMessageAsync(new FlightOptionsCreated(FlightOptionsStatus.Created, UserFlightOptionsStatus.UserChoiceRequired), cancellationToken: cancellationToken);
+                await context.SendMessageAsync(new FlightOptionsCreated(FlightOptionsStatus.Created, UserFlightOptionsStatus.UserChoiceRequired, flightOptions.FlightOptions), cancellationToken: cancellationToken);
             }
 
             if (flightOptions.Action == "FlightOptionsSelected")
             {
-                await context.SendMessageAsync(new FlightOptionsCreated(FlightOptionsStatus.Created, UserFlightOptionsStatus.Selected), cancellationToken: cancellationToken);
+                await context.SendMessageAsync(new FlightOptionsCreated(FlightOptionsStatus.Created, UserFlightOptionsStatus.Selected, flightOptions.FlightOptions), cancellationToken: cancellationToken);
             }
 
         }

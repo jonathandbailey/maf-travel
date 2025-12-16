@@ -125,6 +125,8 @@ public class TravelWorkflow(
             stringBuilder.AppendLine(statusEvent.ToString());
         }
 
+        State = WorkflowState.Completed;
+
         return new WorkflowResponse(WorkflowState.Completed, stringBuilder.ToString());
     }
 }

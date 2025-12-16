@@ -53,7 +53,7 @@ TravelPlanSummary :{"Origin":"Not_Set","Destination":"Not_Set","StartDate":"Not_
 }
 
 ## HandleFlightOptions
-- Generates flight options based on known travel details
+- Flight options based on known travel details and options
 
 ### Example - Create Flights Options:
 {
@@ -62,12 +62,3 @@ TravelPlanSummary :{"Origin":"Not_Set","Destination":"Not_Set","StartDate":"Not_
   "status": "Creating flight options"
 }
 
-## TravelPlanCompleted
-- Called when the TravelPlanStatus = Completed
-
-### Example - Finalize Travel Plan:
-{
-  "thought": "All Travel Plan Statuses are complete, finalize travel plan",
-  "nextAction": "TravelPlanCompleted",
-  "status": "Travel Plan Completed"
-}

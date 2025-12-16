@@ -11,6 +11,7 @@ public static class WorkflowExtensions
         switch (state)
         {
             case WorkflowState.Initialized:
+            case WorkflowState.Completed:
                 return await StartStreamingRun(workflow, message, checkpointManager);
             case WorkflowState.WaitingForUserInput:
                 return await ResumeStreamingRun(workflow, checkpointInfo, checkpointManager);

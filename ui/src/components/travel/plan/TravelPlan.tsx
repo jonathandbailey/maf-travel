@@ -3,6 +3,7 @@ import type { TravelPlanDto } from "../../../types/dto/travel-plan.dto";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import Flight from "../flights/Flight";
 
 dayjs.extend(advancedFormat);
 
@@ -24,27 +25,34 @@ const TravelPlan = ({ travelPlan }: TravelPlanProps) => {
     const showArrow = showOriginCard && showDestinationCard;
 
     return (
-        <Flex gap="small" style={{ minHeight: 'auto' }}>
-            {showOriginCard && (
-                <Card size="small" style={{ padding: '8px 12px', boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", }}>
-                    <Flex vertical gap="extra-small">
-                        <Text type="secondary" style={{ fontSize: '12px' }}>From</Text>
-                        <Text strong style={{ fontSize: '20px' }}>{travelPlan?.origin}</Text>
-                        <Text style={{ fontSize: '14px' }}>{formatDate(travelPlan?.startDate)}</Text>
-                    </Flex>
-                </Card>
-            )}
-            {showArrow && <ArrowRightOutlined />}
-            {showDestinationCard && (
-                <Card size="small" style={{ padding: '8px 12px', boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", }}>
-                    <Flex vertical>
-                        <Text type="secondary" style={{ fontSize: '12px' }}>To</Text>
-                        <Text strong style={{ fontSize: '20px' }}>{travelPlan?.destination}</Text>
-                        <Text style={{ fontSize: '14px' }}>{formatDate(travelPlan?.endDate)}</Text>
-                    </Flex>
-                </Card>
-            )}
-        </Flex>
+        <>
+            <Flex gap="small" style={{ minHeight: 'auto' }}>
+                {showOriginCard && (
+                    <Card size="small" style={{ padding: '8px 12px', boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", }}>
+                        <Flex vertical gap="extra-small">
+                            <Text type="secondary" style={{ fontSize: '12px' }}>From</Text>
+                            <Text strong style={{ fontSize: '20px' }}>{travelPlan?.origin}</Text>
+                            <Text style={{ fontSize: '14px' }}>{formatDate(travelPlan?.startDate)}</Text>
+                        </Flex>
+                    </Card>
+                )}
+                {showArrow && <ArrowRightOutlined />}
+                {showDestinationCard && (
+                    <Card size="small" style={{ padding: '8px 12px', boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", }}>
+                        <Flex vertical>
+                            <Text type="secondary" style={{ fontSize: '12px' }}>To</Text>
+                            <Text strong style={{ fontSize: '20px' }}>{travelPlan?.destination}</Text>
+                            <Text style={{ fontSize: '14px' }}>{formatDate(travelPlan?.endDate)}</Text>
+                        </Flex>
+                    </Card>
+                )}
+            </Flex>
+            <div>
+                {travelPlan?.selectedFlightOption && (
+                    <Flight flight={travelPlan.selectedFlightOption} />
+                )}
+            </div>
+        </>
     );
 }
 export default TravelPlan;
