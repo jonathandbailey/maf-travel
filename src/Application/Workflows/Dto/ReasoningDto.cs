@@ -1,4 +1,6 @@
-﻿namespace Application.Workflows.Dto;
+﻿using Application.Models;
+
+namespace Application.Workflows.Dto;
 
 public class UserParsedDto
 {
@@ -20,6 +22,11 @@ public class ReasoningOutputDto
     public TravelPlanUpdateDto? TravelPlanUpdate { get; set; }
 
     public UserInputRequestDto? UserInput { get; set; }
+
+    public void Error()
+    {
+
+    }
 }
 
 public class ReasoningInputDto(string observation, string resultType)
@@ -27,6 +34,12 @@ public class ReasoningInputDto(string observation, string resultType)
     public string Observation { get; } = observation;
 
     public string ResultType { get; } = resultType;
+}
+
+public class ReasoningState(string observation, TravelPlanSummary travelPlanSummary)
+{
+    public string Observation { get; } = observation;
+    public TravelPlanSummary TravelPlanSummary { get; } = travelPlanSummary;
 }
 
 public class TravelPlanUpdateDto()

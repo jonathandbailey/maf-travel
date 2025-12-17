@@ -15,7 +15,7 @@ public interface ITravelPlanService
     Task SaveAsync(TravelPlan state);
     Task<bool> ExistsAsync();
     Task<TravelPlan> LoadAsync();
-    Task<string> GetSummary();
+    Task<TravelPlanSummary> GetSummary();
     Task UpdateAsync(TravelPlanUpdateDto messageTravelPlanUpdate);
     Task<TravelPlan> AddFlightSearchOption(FlightOptionSearch option);
     Task<TravelPlan> SelectFlightOption(FlightOption flightOption);
@@ -70,18 +70,13 @@ public class TravelPlanService(IAzureStorageRepository repository, ISessionConte
         return travelPlan;
     }
 
-    public async Task<string> GetSummary()
+    public async Task<TravelPlanSummary> GetSummary()
     {
         var travelPlan = await LoadAsync();
 
         var summary = new TravelPlanSummary(travelPlan);
-
-        var serialized = JsonSerializer.Serialize(summary);
-
-        if (serialized == null)
-            throw new JsonException("Could not serialize the Travel Plan Summary");
-
-        return serialized;
+      
+        return summary;
     }
 
     public async Task UpdateAsync(TravelPlanUpdateDto messageTravelPlanUpdate)

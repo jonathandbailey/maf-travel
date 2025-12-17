@@ -6,6 +6,8 @@ public static class WorkflowConstants
 
     public const string ReasonNodeName = "ReasonNode";
 
+    public const string Observe = ".observe";
+
     public const string OrchestrationNodeName = "OrchestrationNode";
 
     public const string TrainWorkerNodeName = "TrainWorkerNode";
