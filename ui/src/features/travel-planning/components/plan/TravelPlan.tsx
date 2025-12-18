@@ -1,5 +1,5 @@
 import { Card, Flex, Typography } from "antd";
-import type { TravelPlanDto } from "../../../types/dto/travel-plan.dto";
+import type { TravelPlanDto } from "../../../../types/dto/travel-plan.dto";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';

@@ -1,5 +1,5 @@
 import { Flex } from "antd";
-import type { HotelOptionDto } from "../../../types/dto/hotel.dto";
+import type { HotelOptionDto } from "../../../../types/dto/hotel.dto";
 import Hotel from "./Hotel";
 
 interface HotelListProps {

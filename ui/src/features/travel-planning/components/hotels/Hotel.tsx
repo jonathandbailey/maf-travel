@@ -1,5 +1,5 @@
 import { Card, Flex, Rate, Typography } from "antd";
-import type { HotelOptionDto } from "../../../types/dto/hotel.dto";
+import type { HotelOptionDto } from "../../../../types/dto/hotel.dto";
 
 interface HotelProps {
     hotel: HotelOptionDto;

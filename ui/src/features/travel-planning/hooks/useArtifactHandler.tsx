@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import type { TabsProps } from "antd";
 import type { ArtifactStatusDto } from "../../../types/dto/artifact-status.dto";
-import { ConversationService } from "../../../services/conversation.service";
-import FlightList from "../../../components/travel/flights/FlightList";
-import HotelList from "../../../components/travel/hotels/HotelList";
-import streamingService from "../../../services/streaming.service";
+import streamingService from "../../../app/services/streaming.service";
+import FlightList from "../components/flights/FlightList";
+import HotelList from "../components/hotels/HotelList";
+import { TravelService } from "../services/travel.service";
 
 interface UseArtifactHandlerProps {
     sessionId: string;
@@ -17,8 +17,8 @@ export const useArtifactHandler = ({ sessionId, setTabs, setActiveKey }: UseArti
         const handleArtifact = (response: ArtifactStatusDto) => {
 
             if (response.key === 'Flights') {
-                const conversationService = new ConversationService();
-                conversationService.getFlightPlan(sessionId).then(flightPlan => {
+                const travelService = new TravelService();
+                travelService.getFlightPlan(sessionId).then(flightPlan => {
                     console.log("Flight plan downloaded:", flightPlan);
 
                     const newTab = {
@@ -73,8 +73,8 @@ export const useArtifactHandler = ({ sessionId, setTabs, setActiveKey }: UseArti
             }
 
             if (response.key === 'hotels') {
-                const conversationService = new ConversationService();
-                conversationService.getHotelPlan(sessionId).then(hotelPlan => {
+                const travelService = new TravelService();
+                travelService.getHotelPlan(sessionId).then(hotelPlan => {
                     console.log("Hotel plan downloaded:", hotelPlan);
 
                     const newTab = {

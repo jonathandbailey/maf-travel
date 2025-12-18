@@ -1,8 +1,7 @@
 import { useEffect } from "react";
-import type { ChatResponseDto } from "../types/dto/chat-response.dto";
-import streamingService from "../services/streaming.service";
-import type { TravelPlanDto } from "../types/dto/travel-plan.dto";
-import { ConversationService } from "../services/conversation.service";
+import { TravelService } from "../../travel-planning/services/travel.service";
+import type { TravelPlanDto } from "../../../types/dto/travel-plan.dto";
+import streamingService from "../../../app/services/streaming.service";
 
 interface UseExchangeStatusUpdateHandlerProps {
     sessionId: string;
@@ -15,8 +14,8 @@ export const useTravelPlanUpdateHandler = ({ sessionId, setTravelPlan }: UseExch
         const handleExchangeStatusUpdate = () => {
 
             console.log('Requesting travel plan for sessionId:', sessionId);
-            const conversationService = new ConversationService();
-            conversationService.getTravelPlan(sessionId)
+            const travelService = new TravelService();
+            travelService.getTravelPlan(sessionId)
 
                 .then((travelPlan: TravelPlanDto) => {
                     console.log('Travel plan received:', travelPlan);
