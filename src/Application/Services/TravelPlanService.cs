@@ -68,7 +68,7 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
     {
         var travelPlan = await LoadAsync();
 
-        var flightOption = option.Results.First();
+        var flightOption = option.DepartureFlightOptions.First();
 
         var mapped = MapFlightOption(flightOption);
 

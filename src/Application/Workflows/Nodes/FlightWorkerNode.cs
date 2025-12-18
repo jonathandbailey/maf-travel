@@ -26,6 +26,7 @@ public class FlightWorkerNode(IAgent agent, ITravelPlanService travelPlanService
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         Converters = { new JsonStringEnumConverter() },
+        PropertyNameCaseInsensitive = true
     };
 
     public async ValueTask<AgentResponse> HandleAsync(CreateFlightOptions message, IWorkflowContext context,
@@ -54,16 +55,16 @@ public class FlightWorkerNode(IAgent agent, ITravelPlanService travelPlanService
             {
                 case FlightAction.FlightOptionsCreated:
                 {
-                    await travelPlanService.AddFlightSearchOption(flightSearchResults.FlightOptions);
+                    await travelPlanService.AddFlightSearchOption(flightSearchResults.Results);
 
-                    await context.AddEventAsync(new ArtifactStatusEvent(flightSearchResults.FlightOptions.ArtifactKey, ArtifactStatus.Created), cancellationToken);
+                    await context.AddEventAsync(new ArtifactStatusEvent(flightSearchResults.Results.ArtifactKey, ArtifactStatus.Created), cancellationToken);
 
                     return new AgentResponse(FlightAgent, FlightsOptionsCreated, AgentResponseStatus.Success);
                 }
                 
                 case FlightAction.FlightOptionsSelected:
                 {
-                    await travelPlanService.SelectFlightOption(flightSearchResults.FlightOptions);
+                    await travelPlanService.SelectFlightOption(flightSearchResults.Results);
 
                     return new AgentResponse(FlightAgent, FlightOptionSelected, AgentResponseStatus.Success);
                 }

@@ -8,7 +8,8 @@ export interface TravelPlanDto {
 
 export interface FlightSearchResultDto {
     artifactKey: string;
-    results: FlightOptionDto[];
+    departureFlightOptions: FlightOptionDto[];
+    returnFlightOptions: FlightOptionDto[];
 }
 
 export interface FlightOptionDto {

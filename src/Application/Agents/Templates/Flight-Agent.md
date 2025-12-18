@@ -26,16 +26,24 @@ Based on the provided inputs, you choose from the below actions :
 
 ### Output Example Format
 {
-	"FlightOptions" :{
+	"Results" :{
 		"ArtifactKey" : "Flights",
-		"Results" :[
+		"DepartureFlightOptions" :[{
 			"Airline" :"Example Air",
 			"FlightNumber" :"EA123",
 			"Departure" :{ "Airport" : "Example Airport", "DateTime":"2023-10-01T10:00:00Z"},
 			"Arrival" : { "Airport" : "Example Destination Airport", "DateTime":"2023-10-01T14:00:00Z"},
 			"Duration" : "2hrs 20 minutes",
 			"Price" : {"Currency" : "USD", "Amount" : 350.00}
-			]
+		}],
+		"ReturnFlightOptions" :[{
+			"Airline" :"Example Air",
+			"FlightNumber" :"EA123",
+			"Departure" :{ "Airport" : "Example Airport", "DateTime":"2023-10-01T10:00:00Z"},
+			"Arrival" : { "Airport" : "Example Destination Airport", "DateTime":"2023-10-01T14:00:00Z"},
+			"Duration" : "2hrs 20 minutes",
+			"Price" : {"Currency" : "USD", "Amount" : 350.00}
+		}]
 	},
 	"Action" : "FlightOptionsCreated",
 	"Status" : "Success"
@@ -47,7 +55,7 @@ Based on the provided inputs, you choose from the below actions :
 
 - ### Output Example Format
 {
-	"FlightOptions" :{
+	"DepartureFlightOptions" :{
 		"ArtifactKey" : "Flights",
 		"Results" :[
 			"Airline" :"Example Air",

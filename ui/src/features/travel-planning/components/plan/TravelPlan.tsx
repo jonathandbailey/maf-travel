@@ -4,13 +4,15 @@ import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import Flight from "../flights/Flight";
 import type { TravelPlanDto } from "../../api/travel.dto";
+import { useState } from "react";
+import { useTravelPlanUpdateHandler } from "../../hooks/useTravelPlanUpdateHandler";
 
 dayjs.extend(advancedFormat);
 
 const { Text } = Typography;
 
 interface TravelPlanProps {
-    travelPlan: TravelPlanDto | null;
+    sessionId: string;
 }
 
 const formatDate = (dateString: string | undefined): string => {
@@ -18,11 +20,17 @@ const formatDate = (dateString: string | undefined): string => {
     return dayjs(dateString).format('Do, MMM, YYYY');
 };
 
-const TravelPlan = ({ travelPlan }: TravelPlanProps) => {
-    // Check if we should show each card
+const TravelPlan = ({ sessionId }: TravelPlanProps) => {
+
+    const [travelPlan, setTravelPlan] = useState<TravelPlanDto | null>(null);
+
     const showOriginCard = !!(travelPlan?.origin || travelPlan?.startDate);
     const showDestinationCard = !!(travelPlan?.destination || travelPlan?.endDate);
     const showArrow = showOriginCard && showDestinationCard;
+
+
+
+    useTravelPlanUpdateHandler({ sessionId, setTravelPlan });
 
     return (
         <>

@@ -60,7 +60,7 @@ public enum FlightAction
 
 public class FlightActionResultDto
 {
-    public FlightSearchResultDto FlightOptions { get; set; }
+    public FlightSearchResultDto Results { get; set; }
     public FlightAction Action { get; set; }
 
     public string Status { get; set; }
@@ -70,7 +70,9 @@ public class FlightActionResultDto
 public class FlightSearchResultDto
 {
     public string ArtifactKey { get; set; }
-    public List<FlightOptionDto> Results { get; set; }
+    public List<FlightOptionDto> DepartureFlightOptions { get; set; }
+
+    public List<FlightOptionDto> ReturnFlightOptions { get; set; }
 }
 
 public class FlightOptionDto

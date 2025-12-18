@@ -1,6 +1,17 @@
 
-import { Card } from "antd";
+import { Card, Flex, Typography } from "antd";
 import type { FlightOptionDto } from "../../api/travel.dto";
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+
+const { Text } = Typography;
+
+dayjs.extend(advancedFormat);
+
+const formatDate = (dateString: string | undefined): string => {
+    if (!dateString) return '';
+    return dayjs(dateString).format('Do, MMM, YYYY - h:mm A');
+};
 
 interface FlightProps {
     flight: FlightOptionDto;
@@ -15,11 +26,23 @@ const Flight = ({ flight }: FlightProps) => {
         >
 
             <div>
-                <h3>{flight.airline} {flight.flightNumber}</h3>
-                <p>From: {flight.departure.airport} at {flight.departure.datetime}</p>
-                <p>To: {flight.arrival.airport} at {flight.arrival.datetime}</p>
-                <p>Duration: {flight.duration}</p>
-                <p>Price: {flight.price.amount} {flight.price.currency}</p>
+                <Flex gap="small" align="center">
+                    <Text strong style={{ fontSize: '20px' }}>{flight.airline}</Text>
+                    <Text type="secondary" style={{ fontSize: '12px' }}>{flight.flightNumber}</Text>
+                </Flex>
+                <Flex vertical gap="extra-small">
+                    <Text type="secondary" style={{ fontSize: '12px' }}>Depart</Text>
+                    <Text style={{ fontSize: '14px' }}>{flight.departure.airport}</Text>
+                    <Text style={{ fontSize: '14px' }}>{formatDate(flight.departure.datetime)}</Text>
+                </Flex>
+                <Flex vertical gap="extra-small">
+                    <Text type="secondary" style={{ fontSize: '12px' }}>Arrive</Text>
+                    <Text style={{ fontSize: '14px' }}>{flight.arrival.airport}</Text>
+                    <Text style={{ fontSize: '14px' }}>{formatDate(flight.arrival.datetime)}</Text>
+                </Flex>
+
+                <p>{flight.duration} | {flight.price.amount} {flight.price.currency}</p>
+
             </div>
         </Card>
 

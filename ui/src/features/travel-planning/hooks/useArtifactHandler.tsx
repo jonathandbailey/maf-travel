@@ -26,7 +26,9 @@ export const useArtifactHandler = ({ sessionId, setTabs, setActiveKey }: UseArti
                         label: response.key,
                         children: (
                             <div style={{ padding: '16px' }}>
-                                <FlightList flights={flightPlan.results} />
+                                <FlightList
+                                    flights={flightPlan.departureFlightOptions}
+                                    returnFlights={flightPlan.returnFlightOptions} />
                             </div>
                         ),
                     };
