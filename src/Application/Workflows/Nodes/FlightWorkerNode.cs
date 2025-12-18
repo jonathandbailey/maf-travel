@@ -55,7 +55,9 @@ public class FlightWorkerNode(IAgent agent, ITravelPlanService travelPlanService
                 case FlightAction.FlightOptionsCreated:
                 {
                     await travelPlanService.AddFlightSearchOption(flightSearchResults.FlightOptions);
-               
+
+                    await context.AddEventAsync(new ArtifactStatusEvent(flightSearchResults.FlightOptions.ArtifactKey, ArtifactStatus.Created), cancellationToken);
+
                     return new AgentResponse(FlightAgent, FlightsOptionsCreated, AgentResponseStatus.Success);
                 }
                 

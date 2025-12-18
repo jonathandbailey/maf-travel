@@ -1,0 +1,23 @@
+import { Flex } from "antd";
+import Flight from "./Flight";
+import type { FlightOptionDto } from "../../api/travel.dto";
+
+
+interface FlightListProps {
+    flights: FlightOptionDto[];
+}
+
+const FlightList = ({ flights }: FlightListProps) => {
+    return (
+        <Flex gap="middle" wrap="wrap" justify="center">
+            {flights.map((flight, index) => (
+                <Flight key={index} flight={flight} />
+            ))}
+
+        </Flex>
+
+
+    );
+}
+
+export default FlightList;
