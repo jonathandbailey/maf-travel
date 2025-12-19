@@ -33,7 +33,7 @@ const Chat = ({ sessionId }: ChatProps) => {
             sessionId,
             newExchange.assistant.id
         ).then(() => {
-            // Conversation exchange initiated successfully
+
         }).catch(error => {
             console.error("Error during conversation exchange:", error);
         });

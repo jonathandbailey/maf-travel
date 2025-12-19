@@ -53,7 +53,7 @@ TravelPlanSummary :{"Origin":"Not_Set","Destination":"Not_Set","StartDate":"Not_
 }
 
 ## FlightAgent
-- Flight options based on known travel details and options
+- Handles all flight-related tasks : searching, selecting, booking etc.
 
 ### Example - Create Flights Options:
 {
