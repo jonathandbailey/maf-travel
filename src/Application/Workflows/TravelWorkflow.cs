@@ -35,7 +35,7 @@ public class TravelWorkflow(
         activity?.AddTag("workflow.user.message", requestDto.Message.Text);
 
         var run = await workflow.CreateStreamingRun(
-            new UserInput(requestDto.Message.Text), State, CheckpointManager, CheckpointInfo);
+            new ReasoningInputDto(requestDto.Message.Text), State, CheckpointManager, CheckpointInfo);
 
         await foreach (var evt in run.Run.WatchStreamAsync())
         {
@@ -108,7 +108,7 @@ public class TravelWorkflow(
                     }
                     case WorkflowState.WaitingForUserInput:
                     {
-                        var resp = requestInfoEvent.Request.CreateResponse(new UserResponse(requestDto.Message.Text));
+                        var resp = requestInfoEvent.Request.CreateResponse(new ReasoningInputDto(requestDto.Message.Text));
 
                         State = WorkflowState.Executing;
                         await run.Run.SendResponseAsync(resp);

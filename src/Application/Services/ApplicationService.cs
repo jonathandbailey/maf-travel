@@ -1,14 +1,16 @@
-﻿using Application.Interfaces;
+﻿using Application.Agents;
+using Application.Interfaces;
 using Application.Workflows;
-using Microsoft.Extensions.AI;
-using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.Logging;
 using Application.Workflows.Dto;
+using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
 public class ApplicationService(
     IWorkflowFactory workflowFactory, 
+    IAgentFactory agentFactory,
     IWorkflowRepository workflowRepository, 
     ICheckpointRepository repository, 
     ITravelPlanService travelPlanService,
@@ -28,9 +30,13 @@ public class ApplicationService(
 
         var travelWorkflow = new TravelWorkflow(workflow, checkpointManager, state.CheckpointInfo, state.State, userStreamingService, logger);
 
+        var parsingAgent = await agentFactory.Create(AgentTypes.Parser);
+
+        var parsingResponse = await parsingAgent.RunAsync(new ChatMessage(ChatRole.User, request.Message), CancellationToken.None);
+
         var response = await travelWorkflow.Execute(
             new TravelWorkflowRequestDto(
-                new ChatMessage(ChatRole.User, request.Message),
+                new ChatMessage(ChatRole.User, parsingResponse.Text),
                 request.UserId,
                 request.SessionId,
                 request.ExchangeId
