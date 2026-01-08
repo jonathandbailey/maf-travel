@@ -9,15 +9,13 @@ using Microsoft.Extensions.AI;
 
 namespace Application.Workflows.Nodes;
 
-public class UserNode(IAgent agent, IAgent parsingAgent) : ReflectingExecutor<UserNode>(WorkflowConstants.UserNodeName), 
-    IMessageHandler<RequestUserInput>, 
-    IMessageHandler<UserResponse, ReasoningInputDto>,
-    IMessageHandler<UserInput, ReasoningInputDto>
+public class UserNode(IAgent agent) : ReflectingExecutor<UserNode>(WorkflowConstants.UserNodeName), 
+    IMessageHandler<RequestUserInput>
 {
     public async ValueTask HandleAsync(RequestUserInput requestUserInput, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        using var activity = Telemetry.Start($"{WorkflowConstants.UserNodeName}.handleRequest");
+        using var activity = Telemetry.Start($"{WorkflowConstants.UserNodeName}{WorkflowConstants.HandleRequest}");
 
         WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, requestUserInput.Message);
 
@@ -35,27 +33,5 @@ public class UserNode(IAgent agent, IAgent parsingAgent) : ReflectingExecutor<Us
         await context.AddEventAsync(new UserStreamingCompleteEvent(), cancellationToken);
 
         await context.SendMessageAsync(new UserRequest(stringBuilder.ToString()), cancellationToken: cancellationToken);
-    }
-
-    public async ValueTask<ReasoningInputDto> HandleAsync(UserResponse message, IWorkflowContext context,
-        CancellationToken cancellationToken = default)
-    {
-        return await HandleAsync(new UserInput(message.Message), context, cancellationToken);
-    }
-
-    public async ValueTask<ReasoningInputDto> HandleAsync(UserInput message, IWorkflowContext context,
-        CancellationToken cancellationToken = default)
-    {
-        using var activity = Telemetry.Start($"{WorkflowConstants.ParserNodeName}.observe");
-
-        await context.AddEventAsync(new WorkflowStatusEvent("Parsing User Input", string.Empty, WorkflowConstants.UserNodeName), cancellationToken);
-
-        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, message.Message);
-
-        var response = await parsingAgent.RunAsync(new ChatMessage(ChatRole.User, message.Message), cancellationToken);
-
-        WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.OutputNodePreview, response.Text);
-
-        return new ReasoningInputDto(response.Text);
     }
 }

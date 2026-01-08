@@ -31,7 +31,7 @@ public class WorkflowFactory(IAgentFactory agentFactory, IArtifactRepository art
 
         var artifactStorageNode = new ArtifactStorageNode(artifactRepository);
 
-        var userNode = new UserNode(userAgent, parserAgent);
+        var userNode = new UserNode(userAgent);
      
         var builder = new WorkflowBuilder(reasonNode);
 
