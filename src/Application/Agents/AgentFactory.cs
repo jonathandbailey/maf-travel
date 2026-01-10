@@ -1,12 +1,11 @@
 ﻿using System.ClientModel;
+using Application.Agents.Middleware;
 using Application.Agents.Repository;
-using Application.Dto;
 using Application.Settings;
 using Azure.AI.OpenAI;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
-using OpenAI;
 using Application.Services;
 using Application.Workflows.Dto;
 
@@ -15,6 +14,7 @@ namespace Application.Agents;
 public class AgentFactory(
     IAgentTemplateRepository templateRepository, 
     IAgentMemoryService agentMemoryService, 
+    IAgentMemoryMiddleware agentMemoryMiddleware,
     IOptions<LanguageModelSettings> settings) : IAgentFactory
 {
     private readonly Dictionary<AgentTypes, string> _agentTemplates = new()
@@ -85,7 +85,7 @@ public class AgentFactory(
         return new Agent(agent, agentMemoryService, _agentMemoryTypes[type]);
     }
 
-    public async Task<IAgent> CreateConversationAgent(ITravelWorkflowService travelWorkflowService)
+    public async Task<AIAgent> CreateConversationAgent(ITravelWorkflowService travelWorkflowService)
     {
         var template = await templateRepository.Load("Conversation-Agent");
 
@@ -95,6 +95,7 @@ public class AgentFactory(
 
         var clientChatOptions = new ChatClientAgentOptions
         {
+            Name = "conversation_agent",
             Instructions = template,
             ChatOptions = new ChatOptions {Tools = [AIFunctionFactory.Create(travelWorkflowService.PlanVacation)] }
         };
@@ -103,7 +104,11 @@ public class AgentFactory(
             .AsBuilder()
             .BuildAIAgent(options:clientChatOptions);
 
-        return new Agent(agent, agentMemoryService, _agentMemoryTypes[AgentTypes.Conversation]);
+        var middlewareAgent = agent.AsBuilder()
+            .Use(runFunc: null, runStreamingFunc: agentMemoryMiddleware.RunStreamingAsync)
+            .Build();
+
+        return middlewareAgent;
     }
 
     private static ChatOptions CreateReasonChatOptions()
@@ -170,7 +175,7 @@ public class AgentFactory(
 public interface IAgentFactory
 {
     Task<IAgent> Create(AgentTypes agentType);
-    Task<IAgent> CreateConversationAgent(ITravelWorkflowService travelWorkflowService);
+    Task<AIAgent> CreateConversationAgent(ITravelWorkflowService travelWorkflowService);
 }
 
 public enum AgentTypes

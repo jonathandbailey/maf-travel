@@ -15,7 +15,7 @@ public class ApplicationService(
     {
         var conversationAgent = await agentFactory.CreateConversationAgent(travelWorkflowService);
     
-        await foreach (var update in conversationAgent.RunStreamingAsync(new ChatMessage(ChatRole.Assistant, request.Message), CancellationToken.None))
+        await foreach (var update in conversationAgent.RunStreamingAsync(new ChatMessage(ChatRole.Assistant, request.Message)))
         {
             await userStreamingService.Stream(update.Text, false);
         }
