@@ -1,6 +1,7 @@
 using Api;
 using Api.Extensions;
 using Api.Hub;
+using Api.Middleware;
 using Api.Settings;
 using Application.Extensions;
 using Infrastructure.Extensions;
@@ -43,6 +44,8 @@ else
 }
 
 app.MapHub<UserHub>("hub");
+
+app.UseMiddleware<ExecutionContextMiddleware>();
 
 await app.MapAgUiToAgent();
 
