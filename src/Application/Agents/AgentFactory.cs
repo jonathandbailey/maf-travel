@@ -114,66 +114,7 @@ public class AgentFactory(
 
         return middlewareAgent;
     }
-
-    private static ChatOptions CreateReasonChatOptions()
-    {
-        var schema = AIJsonUtilities.CreateJsonSchema(typeof(ReasoningOutputDto));
-
-        ChatOptions chatOptions = new()
-        {
-            ResponseFormat = ChatResponseFormat.ForJsonSchema(
-                schema: schema,
-                schemaName: "ReasoningActRequest",
-                schemaDescription: "Reasoning State for Act.")
-        };
-
-        return chatOptions;
-    }
-
-    private static ChatOptions CreateFlightChatOptions()
-    {
-        var schema = AIJsonUtilities.CreateJsonSchema(typeof(FlightActionResultDto));
-
-        ChatOptions chatOptions = new()
-        {
-            ResponseFormat = ChatResponseFormat.ForJsonSchema(
-                schema: schema,
-                schemaName: "FlightPlan",
-                schemaDescription: "User Flight Options for their vacation.")
-        };
-
-        return chatOptions;
-    }
-
-    private static ChatOptions CreateParserChatOptions()
-    {
-        var schema = AIJsonUtilities.CreateJsonSchema(typeof(UserParsedDto));
-
-        ChatOptions chatOptions = new()
-        {
-            ResponseFormat = ChatResponseFormat.ForJsonSchema(
-                schema: schema,
-                schemaName: "HotelPlan",
-                schemaDescription: "User Hotel Options for their vacation.")
-        };
-
-        return chatOptions;
-    }
-
-    private static ChatOptions CreateHotelChatOptions()
-    {
-        var schema = AIJsonUtilities.CreateJsonSchema(typeof(HotelSearchResultDto));
-
-        ChatOptions chatOptions = new()
-        {
-            ResponseFormat = ChatResponseFormat.ForJsonSchema(
-                schema: schema,
-                schemaName: "ParsedTravelPlan",
-                schemaDescription: "The parsed travel plan from the user.")
-        };
-
-        return chatOptions;
-    }
+ 
 }
 
 public interface IAgentFactory
@@ -183,27 +124,3 @@ public interface IAgentFactory
     Task<AIAgent> CreateFlightAgent();
 }
 
-public enum AgentTypes
-{
-    Reason,
-    Act,
-    Orchestration,
-    FlightWorker,
-    HotelWorker,
-    User,
-    Parser,
-    Conversation
-}
-
-public enum AgentMemoryTypes
-{
-    Reason,
-    Act,
-    Orchestration,
-    FlightWorker,
-    HotelWorker,
-    User,
-    Parser,
-    UserShared,
-    Conversation
-}
