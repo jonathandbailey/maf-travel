@@ -1,4 +1,5 @@
 ﻿using Application.Agents;
+using Application.Agents.Middleware;
 using Application.Agents.Repository;
 using Application.Services;
 using Application.Settings;
@@ -30,6 +31,8 @@ public static class ApplicationExtensions
         services.AddScoped<IWorkflowFactory, WorkflowFactory>();
     
         services.AddScoped<IExecutionContextAccessor, ExecutionContextAccessor>();
+
+        services.AddScoped<IAgentMemoryMiddleware, AgentMemoryMiddleware>();
 
         services.AddScoped<ITravelPlanService, TravelPlanService>();
         services.AddScoped<ITravelWorkflowService, TravelWorkflowService>();
