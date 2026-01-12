@@ -1,4 +1,4 @@
-﻿using Application.Agents;
+﻿using Agents;
 using Application.Services;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
 
@@ -12,7 +12,7 @@ public static class AgUiExtensions
 
         var travelWorkflowService = app.Services.GetRequiredService<ITravelWorkflowService>();
 
-        var agent = await agentFactory.CreateConversationAgent(travelWorkflowService);
+        var agent = await agentFactory.CreateConversationAgent(travelWorkflowService.PlanVacation);
 
         app.MapAGUI("ag-ui", agent);
         

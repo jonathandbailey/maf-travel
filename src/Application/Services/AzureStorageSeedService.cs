@@ -1,11 +1,11 @@
-﻿using Application.Interfaces;
+﻿using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Infrastructure.Services;
+namespace Application.Services;
 
 public class AzureStorageSeedService(
     IServiceProvider serviceProvider,

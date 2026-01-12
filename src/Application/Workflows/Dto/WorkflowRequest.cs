@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Application.Dto;
+namespace Application.Workflows.Dto;
 
 public class WorkflowRequest
 {

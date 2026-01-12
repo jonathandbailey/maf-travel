@@ -1,14 +1,13 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Application.Interfaces;
-using Application.Users;
-using Application.Workflows.Dto;
+using Infrastructure.Dto;
+using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Repository;
 
-public class ArtifactRepository(IAzureStorageRepository repository, IExecutionContextAccessor sessionContextAccessor, IOptions<AzureStorageSeedSettings> settings) : IArtifactRepository
+public class ArtifactRepository(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : IArtifactRepository
 {
     private const string ApplicationJsonContentType = "application/json";
 
@@ -46,24 +45,8 @@ public class ArtifactRepository(IAzureStorageRepository repository, IExecutionCo
         return exists;
     }
 
-    public async Task<HotelSearchResultDto> GetHotelPlanAsync()
-    {
-        var filename = GetArtifactFileName("hotels");
-
-        var response = await repository.DownloadTextBlobAsync(filename, settings.Value.ContainerName);
-
-        var hotelPlan = JsonSerializer.Deserialize<HotelSearchResultDto>(response, SerializerOptions);
-
-        return hotelPlan ?? throw new InvalidOperationException($"Failed to deserialize hotel plan from blob: {filename}");
-    }
-
-
-
     private string GetArtifactFileName(string name)
     {
-        var userId = sessionContextAccessor.Context.UserId;
-        var sessionId = sessionContextAccessor.Context.SessionId;
-
-        return $"{userId}/{sessionId}/artifacts/{name}.json";
+        return $"artifacts/{name}.json";
     }
 }

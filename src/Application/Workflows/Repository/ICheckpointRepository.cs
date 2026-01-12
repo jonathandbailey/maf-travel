@@ -1,6 +1,4 @@
-﻿using Application.Dto;
-
-namespace Application.Interfaces;
+﻿namespace Application.Workflows.Repository;
 
 public interface ICheckpointRepository
 {

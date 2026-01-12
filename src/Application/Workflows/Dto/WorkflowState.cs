@@ -1,4 +1,4 @@
-﻿namespace Application.Dto;
+﻿namespace Application.Workflows.Dto;
 
 public enum WorkflowState
 {

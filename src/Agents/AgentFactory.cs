@@ -1,15 +1,15 @@
 ﻿using System.ClientModel;
-using Application.Services;
-using Application.Settings;
-using Application.Workflows.Dto;
+using Agents.Dto;
+using Agents.Settings;
 using Azure.AI.OpenAI;
+using Infrastructure.Dto;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
-using IAgentMemoryMiddleware = Infrastructure.Agents.Middleware.IAgentMemoryMiddleware;
-using IAgentTemplateRepository = Infrastructure.Agents.Repository.IAgentTemplateRepository;
+using IAgentMemoryMiddleware = Agents.Middleware.IAgentMemoryMiddleware;
+using IAgentTemplateRepository = Agents.Repository.IAgentTemplateRepository;
 
-namespace Infrastructure.Agents;
+namespace Agents;
 
 public class AgentFactory(
     IAgentTemplateRepository templateRepository, 
@@ -90,7 +90,7 @@ public class AgentFactory(
         return middlewareAgent;
     }
 
-    public async Task<AIAgent> CreateConversationAgent(ITravelWorkflowService travelWorkflowService)
+    public async Task<AIAgent> CreateConversationAgent(Delegate travelWorkflowService)
     {
         var template = await templateRepository.Load("Conversation-Agent");
 
@@ -104,7 +104,7 @@ public class AgentFactory(
            
             ChatOptions = new ChatOptions
             {
-                Tools = [AIFunctionFactory.Create(travelWorkflowService.PlanVacation)],
+                Tools = [AIFunctionFactory.Create(travelWorkflowService)],
                 Instructions = template
             }
         };
@@ -124,7 +124,7 @@ public class AgentFactory(
 
 public interface IAgentFactory
 {
-    Task<AIAgent> CreateConversationAgent(ITravelWorkflowService travelWorkflowService);
+    Task<AIAgent> CreateConversationAgent(Delegate travelWorkflowService);
     Task<AIAgent> CreateReasonAgent();
     Task<AIAgent> CreateFlightAgent();
 }

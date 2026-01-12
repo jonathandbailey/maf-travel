@@ -1,8 +1,9 @@
-﻿using Application.Agents;
+﻿using Agents;
 using Application.Interfaces;
 using Application.Services;
 using Application.Workflows.Dto;
 using Application.Workflows.Nodes;
+using Infrastructure.Interfaces;
 using Microsoft.Agents.AI.Workflows;
 
 namespace Application.Workflows;

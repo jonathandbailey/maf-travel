@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Application.Interfaces;
 using Application.Users;
+using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 
 namespace Application.Services;

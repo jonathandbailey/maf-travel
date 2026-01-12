@@ -1,12 +1,13 @@
-﻿using Application.Agents;
-using Application.Agents.Middleware;
-using Application.Agents.Repository;
+﻿using Agents;
+using Agents.Middleware;
+using Agents.Repository;
 using Application.Services;
 using Application.Settings;
 using Application.Users;
 using Application.Workflows;
+using Application.Workflows.Repository;
+using Infrastructure.Repository;
 using Infrastructure.Settings;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,8 +18,7 @@ public static class ApplicationExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<LanguageModelSettings>(settings => 
-            configuration.GetSection("LanguageModelSettings").Bind(settings));
+       
 
         services.Configure<AzureStorageSeedSettings>((options) => configuration.GetSection("AzureStorageSeedSettings").Bind(options));
 
@@ -31,19 +31,17 @@ public static class ApplicationExtensions
 
       
         services.AddSingleton<IWorkflowFactory, WorkflowFactory>();
-    
+        services.AddSingleton<IWorkflowRepository, WorkflowRepository>();
+
         services.AddSingleton<IExecutionContextAccessor, ExecutionContextAccessor>();
 
         services.AddSingleton<IAgentMemoryMiddleware, AgentMemoryMiddleware>();
 
+        services.AddSingleton<ICheckpointRepository, CheckpointRepository>();
+
         services.AddSingleton<ITravelPlanService, TravelPlanService>();
         
         services.AddSingleton<ITravelWorkflowService, TravelWorkflowService>();
-   
-        services.AddAzureClients(azure =>
-        {
-            azure.AddBlobServiceClient(configuration.GetConnectionString("blobs"));
-        });
 
         return services;
     }

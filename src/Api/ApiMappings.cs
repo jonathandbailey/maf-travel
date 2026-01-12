@@ -5,6 +5,7 @@ using Application.Models;
 using Application.Services;
 using Application.Users;
 using Application.Workflows.Dto;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,6 @@ public static class ApiMappings
 
         api.MapPost("/conversations", ConversationExchange);
         api.MapGet(GetFlightPlanPath, GetFlightPlan);
-        api.MapGet(GetHotelPlanPath, GetHotelPlan);
         api.MapGet(GetTravelPlanPath, GetTravelPlan);
 
         return app;
@@ -66,15 +66,5 @@ public static class ApiMappings
         return TypedResults.Ok(flightPlan);
     }
 
-    private static async Task<Ok<HotelSearchResultDto>> GetHotelPlan(
-        Guid sessionId,
-        IArtifactRepository service,
-        IExecutionContextAccessor sessionContextAccessor,
-        HttpContext context)
-    {
-        sessionContextAccessor.Initialize(context.User.Id(), sessionId);
-
-        var hotelPlan = await service.GetHotelPlanAsync();
-        return TypedResults.Ok(hotelPlan);
-    }
+  
 }

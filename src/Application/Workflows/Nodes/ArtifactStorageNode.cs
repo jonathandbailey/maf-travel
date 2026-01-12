@@ -2,6 +2,7 @@
 using Application.Observability;
 using Application.Workflows.Dto;
 using Application.Workflows.Events;
+using Infrastructure.Interfaces;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 

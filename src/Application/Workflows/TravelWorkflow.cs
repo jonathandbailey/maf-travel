@@ -4,7 +4,6 @@ using Application.Workflows.Dto;
 using Application.Workflows.Events;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Logging;
-using Application.Dto;
 
 namespace Application.Workflows;
 

@@ -1,3 +1,4 @@
+using Agents.Extensions;
 using Api;
 using Api.Extensions;
 using Api.Hub;
@@ -14,7 +15,9 @@ builder.Services.Configure<HubSettings>(options => builder.Configuration.GetSect
 
 builder.AddCorsPolicyFromServiceDiscovery();
 
-builder.Services.AddInfrastructureServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddAgentServices(builder.Configuration);
 
 builder.Services.AddApiServices();
 

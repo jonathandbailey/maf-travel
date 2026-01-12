@@ -1,11 +1,10 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Application.Dto;
-using Application.Interfaces;
+using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
-namespace Infrastructure.Repository;
+namespace Application.Workflows.Repository;
 
 public class CheckpointRepository(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : ICheckpointRepository
 {

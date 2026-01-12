@@ -1,7 +1,8 @@
 ﻿using System.Text.Json;
+using Application.Workflows.Dto;
 using Microsoft.Agents.AI.Workflows;
 
-namespace Application.Dto;
+namespace Application.Workflows;
 
 public class WorkflowStateDto(WorkflowState state, CheckpointInfo? checkpointInfo)
 {

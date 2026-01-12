@@ -1,4 +1,4 @@
-﻿using Application.Agents;
+﻿using Agents;
 using Application.Interfaces;
 using Application.Workflows.Dto;
 using Microsoft.Extensions.AI;
@@ -13,7 +13,7 @@ public class ApplicationService(
 {
     public async Task<ConversationResponse> Execute(ConversationRequest request)
     {
-        var conversationAgent = await agentFactory.CreateConversationAgent(travelWorkflowService);
+        var conversationAgent = await agentFactory.CreateConversationAgent(travelWorkflowService.PlanVacation);
     
         await foreach (var update in conversationAgent.RunStreamingAsync(new ChatMessage(ChatRole.Assistant, request.Message)))
         {

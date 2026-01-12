@@ -1,13 +1,12 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Application.Interfaces;
-using Application.Users;
+using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
-namespace Infrastructure.Agents.Services;
+namespace Agents.Services;
 
-public class AgentMemoryService(IAzureStorageRepository repository, IExecutionContextAccessor sessionContextAccessor, IOptions<AzureStorageSeedSettings> settings) : IAgentMemoryService
+public class AgentMemoryService(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : IAgentMemoryService
 {
     private const string ApplicationJsonContentType = "application/json";
 
@@ -22,6 +21,7 @@ public class AgentMemoryService(IAzureStorageRepository repository, IExecutionCo
     public async Task SaveAsync(AgentState state, string name)
     {
         var serializedConversation = JsonSerializer.Serialize(state, SerializerOptions);
+
 
         await repository.UploadTextBlobAsync(
             GetStorageFileName(name), 
@@ -50,10 +50,7 @@ public class AgentMemoryService(IAzureStorageRepository repository, IExecutionCo
 
     private string GetStorageFileName(string name)
     {
-        var userId = sessionContextAccessor.Context.UserId;
-        var sessionId = sessionContextAccessor.Context.SessionId;
-
-        return $"{userId}/{sessionId}/agents/{name}.json";
+        return $"agents/{name}.json";
     }
 }
 

@@ -1,10 +1,9 @@
-﻿using Microsoft.Agents.AI;
+﻿using System.Runtime.CompilerServices;
+using Agents.Services;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using System.Runtime.CompilerServices;
-using Application.Services;
 
-namespace Infrastructure.Agents.Middleware;
-
+namespace Agents.Middleware;
 
 public class AgentMemoryMiddleware(IAgentMemoryService memory) : IAgentMemoryMiddleware
 {

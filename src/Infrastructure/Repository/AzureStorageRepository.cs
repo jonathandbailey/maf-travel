@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using Application.Interfaces;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Infrastructure.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Repository;

@@ -1,5 +1,4 @@
-﻿using Application.Dto;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Users;
 using Application.Workflows;
 using Application.Workflows.Dto;
@@ -8,10 +7,10 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using System.Text.Json;
+using Agents;
+using Application.Workflows.Repository;
 
 namespace Application.Services;
-
-
 
 public class TravelWorkflowService(
     IExecutionContextAccessor executionContext, 
@@ -43,9 +42,4 @@ public class TravelWorkflowService(
 
         return new WorkflowResponse(response.State, response.Message);
     }
-}
-
-public interface ITravelWorkflowService
-{
-    Task<WorkflowResponse> PlanVacation(WorkflowRequest request);
 }
