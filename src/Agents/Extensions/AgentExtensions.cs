@@ -1,4 +1,5 @@
 ﻿using Agents.Middleware;
+using Agents.Repository;
 using Agents.Services;
 using Agents.Settings;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,8 @@ public static class AgentExtensions
 
         services.AddSingleton<IAgentMemoryService, AgentMemoryService>();
         services.AddSingleton<IAgentMemoryMiddleware, AgentMemoryMiddleware>();
+        services.AddSingleton<IAgentFactory, AgentFactory>();
+        services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
 
         return services;
     }

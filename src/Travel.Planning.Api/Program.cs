@@ -1,12 +1,25 @@
-using A2A;
+using Agents.Extensions;
+using Infrastructure.Extensions;
+using Infrastructure.Settings;
+using Microsoft.Extensions.Configuration;
 using Travel.Planning.Api.Services;
+using Workflows.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddWorkflowServices();
+builder.Services.AddAgentServices(builder.Configuration);
+
+builder.Services.Configure<AzureStorageSeedSettings>((options) => builder.Configuration.GetSection("AzureStorageSeedSettings").Bind(options));
+
+
 
 builder.Services.AddSingleton<IAgentDiscoveryService, AgentDiscoveryService>();
 builder.Services.AddSingleton<IWorkflowService, WorkflowService>();
+builder.Services.AddSingleton<ITravelWorkflowService, TravelWorkflowService>();
 
 builder.Services.AddOpenApi();
 

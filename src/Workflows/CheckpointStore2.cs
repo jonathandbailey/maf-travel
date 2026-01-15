@@ -5,11 +5,11 @@ using Workflows.Repository;
 
 namespace Workflows;
 
-public class CheckpointStore2(ICheckpointRepository checkpointRepository, string threadId) : JsonCheckpointStore
+public class CheckpointStore(ICheckpointRepository checkpointRepository, Guid userId, Guid sessionId) : JsonCheckpointStore
 {
     public override async ValueTask<IEnumerable<CheckpointInfo>> RetrieveIndexAsync(string runId, CheckpointInfo? withParent = null)
     {
-        var stateByRunId = await checkpointRepository.GetAsync(runId);
+        var stateByRunId = await checkpointRepository.GetAsync(userId, sessionId, runId);
 
         return stateByRunId.Select(x => x.CheckpointInfo);
     }
@@ -18,14 +18,14 @@ public class CheckpointStore2(ICheckpointRepository checkpointRepository, string
     {
         var checkpointInfo = new CheckpointInfo(runId, Guid.NewGuid().ToString());
 
-        await checkpointRepository.SaveAsync(threadId, new StoreStateDto(checkpointInfo, value));
+        await checkpointRepository.SaveAsync(userId, sessionId, new StoreStateDto(checkpointInfo, value));
        
         return checkpointInfo;
     }
 
     public override async ValueTask<JsonElement> RetrieveCheckpointAsync(string runId, CheckpointInfo key)
     {
-        var stateDto = await checkpointRepository.LoadAsync(threadId, key.CheckpointId, runId);
+        var stateDto = await checkpointRepository.LoadAsync(userId, sessionId, key.CheckpointId, runId);
 
         return stateDto.JsonElement;
     }

@@ -16,6 +16,8 @@ var ui = builder.AddUiServices(api);
 
 api.WithReference(ui);
 
-builder.AddProject<Projects.Travel_Planning_Api>("travel-planning-api");
+builder.AddProject<Projects.Travel_Planning_Api>("travel-planning-api")
+    .WithReference(blobs)
+    .WaitFor(storage);
 
 builder.Build().Run();

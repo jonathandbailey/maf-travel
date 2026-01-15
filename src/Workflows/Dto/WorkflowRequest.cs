@@ -13,6 +13,6 @@ public sealed class Meta
     public string RawUserMessage { get; set; } = string.Empty;
     public string Intent { get; set; } = string.Empty;
     public float? Confidence { get; set; }
-    public string? SessionId { get; set; }
+    public string ThreadId { get; set; } = string.Empty;
     public string SchemaVersion { get; set; } = "1.0";
 }
