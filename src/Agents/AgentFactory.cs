@@ -90,6 +90,36 @@ public class AgentFactory(
         return middlewareAgent;
     }
 
+    public async Task<AIAgent> CreateConversationAgent(List<AITool> tools)
+    {
+        var template = await templateRepository.Load("Conversation-Agent");
+
+        var chatClient = new AzureOpenAIClient(new Uri(settings.Value.EndPoint),
+                new ApiKeyCredential(settings.Value.ApiKey))
+            .GetChatClient(settings.Value.DeploymentName);
+
+        var clientChatOptions = new ChatClientAgentOptions
+        {
+            Name = "conversation_agent",
+
+            ChatOptions = new ChatOptions
+            {
+                Tools = tools,
+                Instructions = template
+            }
+        };
+
+        var agent = chatClient.AsIChatClient()
+            .AsBuilder()
+            .BuildAIAgent(options: clientChatOptions);
+
+        var middlewareAgent = agent.AsBuilder()
+            .Use(runFunc: null, runStreamingFunc: agentMemoryMiddleware.RunStreamingAsync)
+            .Build();
+
+        return middlewareAgent;
+    }
+
     public async Task<AIAgent> CreateConversationAgent(Delegate travelWorkflowService)
     {
         var template = await templateRepository.Load("Conversation-Agent");
@@ -127,5 +157,6 @@ public interface IAgentFactory
     Task<AIAgent> CreateConversationAgent(Delegate travelWorkflowService);
     Task<AIAgent> CreateReasonAgent();
     Task<AIAgent> CreateFlightAgent();
+    Task<AIAgent> CreateConversationAgent(List<AITool> tools);
 }
 

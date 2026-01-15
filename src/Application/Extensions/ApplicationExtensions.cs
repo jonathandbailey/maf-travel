@@ -28,6 +28,8 @@ public static class ApplicationExtensions
         
         services.AddSingleton<IAgentMemoryService, AgentMemoryService>();
 
+        services.AddSingleton<IA2AAgentServiceDiscovery, A2AAgentServiceDiscovery>();
+
       
         services.AddSingleton<IWorkflowFactory, WorkflowFactory>();
         services.AddSingleton<IWorkflowRepository, WorkflowRepository>();

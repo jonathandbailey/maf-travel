@@ -8,11 +8,13 @@ public static class AgUiExtensions
 {
     public static async Task<WebApplication> MapAgUiToAgent(this WebApplication app)
     {
+        var discovery = app.Services.GetRequiredService<IA2AAgentServiceDiscovery>();
+
+        await discovery.Initialize();
+
         var agentFactory = app.Services.GetRequiredService<IAgentFactory>();
-
-        var travelWorkflowService = app.Services.GetRequiredService<ITravelWorkflowService>();
-
-        var agent = await agentFactory.CreateConversationAgent(travelWorkflowService.PlanVacation);
+    
+        var agent = await agentFactory.CreateConversationAgent(discovery.GetTools());
 
         app.MapAGUI("ag-ui", agent);
         
