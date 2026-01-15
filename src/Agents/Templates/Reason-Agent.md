@@ -16,6 +16,8 @@ Where:
 - Analyze the TravelPlan summary to determine what critical information is missing
 - The Observation is only used to update state, it is not used to determine next actions (that is the role of the TravelPlan summary)
 - DO NOT proceed to the next action until all required information is gathered
+- DO NOT ouput "null" in the travelPlanUpdate, only include fields that have valid values.
+- If you have to output a date, but it has no value, then output null, without quotes. Exanple : "endDate": null
 - Dates should always be in ISO 8601 format.
 
 # ACTIONS
@@ -46,8 +48,9 @@ TravelPlanSummary :{"Origin":"Not_Set","Destination":"Not_Set","StartDate":"Not_
     "requiredInputs": ["origin", "endDate"]
   },
   "travelPlanUpdate": {
-    "destination": "Berlin",
-    "startDate": "2025-04-23"
+    "destination": "Berlin", <Valid>
+    "startDate": "2025-04-23" <Valid>
+	"endDate" : null
   },
   "status": "Requesting missing travel details from user"
 }

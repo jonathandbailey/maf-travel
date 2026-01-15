@@ -11,6 +11,49 @@ using Workflows.Services;
 
 namespace Workflows.Nodes;
 
+public class NullableDateTimeConverter : JsonConverter<DateTime?>
+{
+    public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+        {
+            return null;
+        }
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            var stringValue = reader.GetString();
+
+            // Handle empty strings or the string "null"
+            if (string.IsNullOrWhiteSpace(stringValue) || stringValue.Equals("null", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            // Try to parse the date string
+            if (DateTime.TryParse(stringValue, out var dateTime))
+            {
+                return dateTime;
+            }
+        }
+
+        // If we can't parse it, return null instead of throwing
+        return null;
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
+    {
+        if (value.HasValue)
+        {
+            writer.WriteStringValue(value.Value);
+        }
+        else
+        {
+            writer.WriteNullValue();
+        }
+    }
+}
+
 public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : ReflectingExecutor<ReasonNode>(WorkflowConstants.ReasonNodeName),
    
     IMessageHandler<ReasoningInputDto, ReasoningOutputDto>
@@ -22,7 +65,7 @@ public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : R
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new JsonStringEnumConverter() }
+        Converters = { new JsonStringEnumConverter(), new NullableDateTimeConverter() }
     };
 
     public async ValueTask<ReasoningOutputDto> HandleAsync(
@@ -31,7 +74,6 @@ public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : R
         CancellationToken cancellationToken = default)
     {
         using var activity = Telemetry.Start($"{WorkflowConstants.ReasonNodeName}{WorkflowConstants.Observe}");
-
             
         try
         {

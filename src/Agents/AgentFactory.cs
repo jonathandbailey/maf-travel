@@ -119,7 +119,7 @@ public class AgentFactory(
             .Use(runFunc: null, runStreamingFunc: agentMemoryMiddleware.RunStreamingAsync)
             .Build();
 
-        return new UserAgent(agent, agentServiceDiscovery);
+        return new UserAgent(middlewareAgent, agentServiceDiscovery);
     }
 }
 

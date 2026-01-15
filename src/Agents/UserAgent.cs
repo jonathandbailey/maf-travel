@@ -15,7 +15,7 @@ public class UserAgent(AIAgent agent, IA2AAgentServiceDiscovery discovery) : Del
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         using var activity = Telemetry.Start($"UserAgent.Run");
-        activity?.SetTag("Input", messages);
+        activity?.SetTag("Input", messages.First().Text);
 
 
         var threadId = options?.GetAgUiThreadId();
@@ -35,7 +35,7 @@ public class UserAgent(AIAgent agent, IA2AAgentServiceDiscovery discovery) : Del
             yield return update;
         }
 
-        var toolMessage = new List<ChatMessage>();
+        var toolResults = new List<AIContent>();
 
         foreach (var functionCallContent in tools)
         {
@@ -47,11 +47,17 @@ public class UserAgent(AIAgent agent, IA2AAgentServiceDiscovery discovery) : Del
 
             var toolResponse = await agentMeta.Agent.RunAsync(new ChatMessage(ChatRole.User, argument), agentThread, cancellationToken: cancellationToken);
 
-            toolMessage.AddRange(toolResponse.Messages);
+            var resultContent = new FunctionResultContent(
+                functionCallContent.Value.CallId,
+                toolResponse.Messages.First().Text);
+            
+            toolResults.Add(resultContent);
+
+            activity?.SetTag("Tool Response", toolResponse.Messages.First().Text);
 
         }
 
-        await foreach (var update in InnerAgent.RunStreamingAsync(toolMessage, thread, cancellationToken: cancellationToken))
+        await foreach (var update in InnerAgent.RunStreamingAsync([new ChatMessage(ChatRole.Tool, toolResults)], thread, cancellationToken: cancellationToken))
         {
             yield return update;
         }

@@ -20,9 +20,11 @@ public class TravelWorkflow(
 
     public async Task<WorkflowResponse> Execute(TravelWorkflowRequestDto requestDto)
     {
-     
+
+        var startWorkflow = new StartWorkflowDto(requestDto.ThreadId, new ReasoningInputDto(requestDto.Message.Text));
+
         var run = await workflow.CreateStreamingRun(
-            new ReasoningInputDto(requestDto.Message.Text), State, CheckpointManager, CheckpointInfo);
+            startWorkflow, State, CheckpointManager, CheckpointInfo);
 
         await foreach (var evt in run.Run.WatchStreamAsync())
         {

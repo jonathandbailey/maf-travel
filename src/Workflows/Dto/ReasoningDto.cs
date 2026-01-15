@@ -38,6 +38,12 @@ public enum NextAction
     Error
 }
 
+public class StartWorkflowDto(string threadId, ReasoningInputDto reasoningInputDto)
+{
+    public string ThreadId { get; } = threadId;
+    public ReasoningInputDto ReasoningInputDto { get; } = reasoningInputDto;
+}
+
 public class ReasoningInputDto(string observation)
 {
     public string Observation { get; } = observation;
