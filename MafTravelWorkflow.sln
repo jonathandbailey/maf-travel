@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\Infra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agents", "src\Agents\Agents.csproj", "{960A3CFD-C130-7355-5431-BD1168CC8817}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workflows", "src\Workflows\Workflows.csproj", "{20851A03-9214-4F41-B30D-59C78BE2513D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{960A3CFD-C130-7355-5431-BD1168CC8817}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{960A3CFD-C130-7355-5431-BD1168CC8817}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{960A3CFD-C130-7355-5431-BD1168CC8817}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20851A03-9214-4F41-B30D-59C78BE2513D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20851A03-9214-4F41-B30D-59C78BE2513D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20851A03-9214-4F41-B30D-59C78BE2513D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20851A03-9214-4F41-B30D-59C78BE2513D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
