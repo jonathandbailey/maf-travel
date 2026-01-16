@@ -6,8 +6,9 @@ using Application.Users;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Workflows;
-using Workflows.Repository;
+using Travel.Workflows;
+using Travel.Workflows.Repository;
+
 using AgentMemoryService = Application.Services.AgentMemoryService;
 using IAgentMemoryService = Application.Services.IAgentMemoryService;
 
@@ -39,9 +40,7 @@ public static class ApplicationExtensions
         services.AddSingleton<IAgentMemoryMiddleware, AgentMemoryMiddleware>();
 
         services.AddSingleton<ICheckpointRepository, CheckpointRepository>();
-        
-        //services.AddSingleton<ITravelWorkflowService, TravelWorkflowService>();
-
+   
         return services;
     }
 }

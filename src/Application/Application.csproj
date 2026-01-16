@@ -24,7 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Agents\Agents.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\Workflows\Workflows.csproj" />
+    <ProjectReference Include="..\Travel.Workflows\Travel.Workflows.csproj" />
   </ItemGroup>
 
 </Project>

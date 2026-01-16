@@ -1,9 +1,9 @@
 ﻿using Api.Extensions;
 using Application.Users;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Workflows.Dto;
-using Workflows.Models;
-using Workflows.Services;
+using Travel.Workflows.Dto;
+using Travel.Workflows.Models;
+using Travel.Workflows.Services;
 
 namespace Api;
 

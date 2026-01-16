@@ -4,10 +4,10 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using System.Text.Json;
-using Workflows;
-using Workflows.Dto;
-using Workflows.Repository;
-using Workflows.Services;
+using Travel.Workflows;
+using Travel.Workflows.Dto;
+using Travel.Workflows.Repository;
+using Travel.Workflows.Services;
 
 namespace Application.Services;
 

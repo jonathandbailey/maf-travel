@@ -1,5 +1,5 @@
-﻿using Workflows;
-using Workflows.Dto;
+﻿using Travel.Workflows;
+using Travel.Workflows.Dto;
 
 namespace Application.Services;
 

@@ -1,5 +1,5 @@
 ﻿using A2A;
-using Workflows.Dto;
+using Travel.Workflows.Dto;
 
 namespace Travel.Planning.Api.Services;
 

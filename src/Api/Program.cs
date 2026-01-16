@@ -6,7 +6,7 @@ using Api.Middleware;
 using Api.Settings;
 using Application.Extensions;
 using Infrastructure.Extensions;
-using Workflows.Extensions;
+using Travel.Workflows.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
