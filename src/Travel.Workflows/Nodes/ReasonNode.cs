@@ -73,12 +73,14 @@ public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : R
     public async ValueTask<ReasoningOutputDto> HandleAsync(
         ReasoningInputDto reasoningInput, 
         IWorkflowContext context,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         using var activity = Telemetry.Start($"{WorkflowConstants.ReasonNodeName}{WorkflowConstants.Observe}");
             
         try
         {
+            var threadId = await context.ReadStateAsync<string>("agent_thread_id", scopeName: "workflow", cancellationToken);
+
             var travelPlanSummary = await travelPlanService.GetSummary();
 
             var template = JsonSerializer.Serialize(new ReasoningState(reasoningInput.Observation, travelPlanSummary));
@@ -87,7 +89,19 @@ public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : R
 
             WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.InputNodePreview, message.Text);
 
-            var response = await agent.RunAsync(message, cancellationToken: cancellationToken);
+
+            var chatOptions = new ChatClientAgentRunOptions()
+            {
+                ChatOptions = new ChatOptions()
+                {
+                    AdditionalProperties = new AdditionalPropertiesDictionary()
+                    {
+                      { "agent_thread_id", threadId! }
+                    }
+                }
+            };
+
+            var response = await agent.RunAsync(message, options:chatOptions, cancellationToken: cancellationToken);
 
             WorkflowTelemetryTags.Preview(activity, WorkflowTelemetryTags.OutputNodePreview, response.Text);
 
