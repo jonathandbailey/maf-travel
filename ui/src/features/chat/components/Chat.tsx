@@ -81,11 +81,12 @@ const Chat = ({ sessionId }: ChatProps) => {
 
         setActiveExchange(newExchange);
 
-        agentRef.current!.addMessage({
+        // Clear existing messages and add only the new message
+        agentRef.current!.setMessages([{
             id: Date.now().toString(),
             role: "user",
             content: value
-        });
+        }]);
 
         agentRef.current!.runAgent({
             tools: [],
@@ -96,23 +97,6 @@ const Chat = ({ sessionId }: ChatProps) => {
         });
     }
 
-    function handlePrompt1(value: string): void {
-        const newExchange = UIFactory.createUIExchange(value);
-
-        setActiveExchange(newExchange);
-
-        const conversationService = new ChatService();
-        conversationService.startChatExchange(
-            value,
-            newExchange.user.id,
-            sessionId,
-            newExchange.assistant.id
-        ).then(() => {
-
-        }).catch(error => {
-            console.error("Error during conversation exchange:", error);
-        });
-    }
 
 
     return (<>
