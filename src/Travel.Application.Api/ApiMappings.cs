@@ -8,7 +8,7 @@ public static class ApiMappings
 {
     private const string ApiConversationsRoot = "api";
     private const string CreateSessionPath = "travel/plans/session";
-  
+    
     public static WebApplication MapApi(this WebApplication app)
     {
         var api = app.MapGroup(ApiConversationsRoot);

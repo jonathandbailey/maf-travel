@@ -6,6 +6,9 @@ namespace Travel.Application.Api.Models;
 
 public class TravelPlan
 {
+    public Guid Id { get; set; } = Guid.NewGuid();
+    
+    
     [JsonInclude]
     public string? Origin { get; private set; }
     

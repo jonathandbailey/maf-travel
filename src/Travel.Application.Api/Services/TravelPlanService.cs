@@ -7,21 +7,20 @@ using Microsoft.Extensions.Options;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Models;
 using Travel.Application.Api.Models.Flights;
-using Travel.Workflows.Models;
 
 namespace Travel.Application.Api.Services;
 
 public interface ITravelPlanService
 {
-    Task SaveAsync(TravelPlan state);
-    Task<bool> ExistsAsync();
-    Task<TravelPlan> LoadAsync();
-    Task<TravelPlanSummary> GetSummary();
-    Task UpdateAsync(TravelPlanUpdateDto messageTravelPlanUpdate);
-    Task<TravelPlan> AddFlightSearchOption(FlightSearchResultDto option);
-    Task<TravelPlan> SelectFlightOption(FlightSearchResultDto option);
-    Task<FlightSearchResultDto> GetFlightOptionsAsync();
-    Task CreateTravelPlan();
+    Task SaveAsync(TravelPlan state, Guid userId);
+    Task<bool> ExistsAsync(Guid userId, Guid travelPlanId);
+    Task<TravelPlan> LoadAsync(Guid userId, Guid travelPlanId);
+    Task<TravelPlanSummary> GetSummary(Guid userId, Guid travelPlanId);
+    Task UpdateAsync(TravelPlanUpdateDto messageTravelPlanUpdate, Guid userId, Guid travelPlanId);
+    Task<TravelPlan> AddFlightSearchOption(FlightSearchResultDto option, Guid userId, Guid travelPlanId);
+    Task<TravelPlan> SelectFlightOption(FlightSearchResultDto option, Guid userId, Guid travelPlanId);
+    Task<FlightSearchResultDto> GetFlightOptionsAsync(Guid userId, Guid travelPlanId);
+    Task<Guid> CreateTravelPlan(Guid userId);
 }
 
 public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepository artifactRepository, IOptions<AzureStorageSeedSettings> settings) : ITravelPlanService
@@ -34,9 +33,9 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
         Converters = { new JsonStringEnumConverter() },
     };
 
-    public async Task<TravelPlan> AddFlightSearchOption(FlightSearchResultDto option)
+    public async Task<TravelPlan> AddFlightSearchOption(FlightSearchResultDto option, Guid userId, Guid travelPlanId)  
     {
-        var travelPlan = await LoadAsync();
+        var travelPlan = await LoadAsync(userId, travelPlanId);
 
         var payload = JsonSerializer.Serialize(option, SerializerOptions);
 
@@ -46,16 +45,16 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
 
         travelPlan.AddFlightSearchOption(new FlightOptionSearch(id));
 
-        await SaveAsync(travelPlan);
+        await SaveAsync(travelPlan, userId);
 
         return travelPlan;
     }
 
-    public async Task<FlightSearchResultDto> GetFlightOptionsAsync()
+    public async Task<FlightSearchResultDto> GetFlightOptionsAsync(Guid userId, Guid travelPlanId)
     {
 
-        var travelPlan = await LoadAsync();
-        
+        var travelPlan = await LoadAsync(userId, travelPlanId);
+
         var filename = GetArtifactFileName(travelPlan.FlightPlan.FlightOptions.First().Id.ToString());
 
         var response = await repository.DownloadTextBlobAsync(filename, settings.Value.ContainerName);
@@ -65,9 +64,9 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
         return flightPlan ?? throw new InvalidOperationException($"Failed to deserialize flight plan from blob: {filename}");
     }
 
-    public async Task<TravelPlan> SelectFlightOption(FlightSearchResultDto option)
+    public async Task<TravelPlan> SelectFlightOption(FlightSearchResultDto option, Guid userId, Guid travelPlanId)
     {
-        var travelPlan = await LoadAsync();
+        var travelPlan = await LoadAsync(userId, travelPlanId);
 
         var flightOption = option.DepartureFlightOptions.First();
 
@@ -75,7 +74,7 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
 
         travelPlan.SelectFlightOption(mapped);
 
-        await SaveAsync(travelPlan);
+        await SaveAsync(travelPlan, userId);
 
         return travelPlan;
     }
@@ -105,18 +104,18 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
         };
     }
 
-    public async Task<TravelPlanSummary> GetSummary()
+    public async Task<TravelPlanSummary> GetSummary(Guid userId, Guid travelPlanId)
     {
-        var travelPlan = await LoadAsync();
+        var travelPlan = await LoadAsync(userId, travelPlanId);
 
         var summary = new TravelPlanSummary(travelPlan);
       
         return summary;
     }
 
-    public async Task UpdateAsync(TravelPlanUpdateDto messageTravelPlanUpdate)
+    public async Task UpdateAsync(TravelPlanUpdateDto messageTravelPlanUpdate, Guid userId, Guid travelPlanId)
     {
-        var travelPlan = await LoadAsync();
+        var travelPlan = await LoadAsync(userId, travelPlanId);
 
         travelPlan.InProgress();
 
@@ -132,38 +131,37 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
         if (messageTravelPlanUpdate.EndDate.HasValue)
             travelPlan.SetEndDate(messageTravelPlanUpdate.EndDate.Value);
 
-        await SaveAsync(travelPlan);
+        await SaveAsync(travelPlan, userId);
     }
 
-    public async Task SaveAsync(TravelPlan state)
+    public async Task SaveAsync(TravelPlan travelPlan, Guid userId)
     {
-        var serializedConversation = JsonSerializer.Serialize(state, SerializerOptions);
+        var serializedConversation = JsonSerializer.Serialize(travelPlan, SerializerOptions);
 
         await repository.UploadTextBlobAsync(
-            GetStorageFileName(),
+            GetStorageFileName(userId, travelPlan.Id),
             settings.Value.ContainerName,
             serializedConversation,
             ApplicationJsonContentType);
     }
 
-    public async Task CreateTravelPlan()
+    public async Task<Guid> CreateTravelPlan(Guid userId)
     {
-        if (!await repository.BlobExists(GetStorageFileName(), settings.Value.ContainerName))
-        {
-            var travelPlan = new TravelPlan();
+        var travelPlan = new TravelPlan();
+ 
+        await SaveAsync(travelPlan, userId);
 
-            await SaveAsync(travelPlan);
-        }
+        return travelPlan.Id;
     }
 
-    public async Task<bool> ExistsAsync()
+    public async Task<bool> ExistsAsync(Guid userId, Guid travelPlanId)
     {
-        return await repository.BlobExists(GetStorageFileName(), settings.Value.ContainerName);
+        return await repository.BlobExists(GetStorageFileName(userId, travelPlanId), settings.Value.ContainerName);
     }
 
-    public async Task<TravelPlan> LoadAsync()
+    public async Task<TravelPlan> LoadAsync(Guid userId, Guid travelPlanId)
     {
-        var blob = await repository.DownloadTextBlobAsync(GetStorageFileName(), settings.Value.ContainerName);
+        var blob = await repository.DownloadTextBlobAsync(GetStorageFileName(userId, travelPlanId), settings.Value.ContainerName);
 
         var stateDto = JsonSerializer.Deserialize<TravelPlan>(blob, SerializerOptions);
 
@@ -174,9 +172,9 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
     }
 
 
-    private string GetStorageFileName()
+    private string GetStorageFileName(Guid userId, Guid travelPlanId)
     {
-        return $"/plans/travel-plan.json";
+        return $"{userId}/plans/travel-plan-{travelPlanId}.json";
     }
 
     private string GetArtifactFileName(string name)
