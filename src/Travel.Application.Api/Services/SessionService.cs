@@ -22,6 +22,18 @@ public class SessionService(IAzureStorageRepository azureStorageRepository, IOpt
         return await Task.FromResult(session);
     }
 
+    public async Task<Session> Get(Guid userId, Guid sessionId)
+    {
+        var payload = await azureStorageRepository.DownloadTextBlobAsync(GetResource(userId, sessionId), settings.Value.ContainerName);
+
+        var session = JsonSerializer.Deserialize<Session>(payload);
+
+        if (session == null)
+            throw new ArgumentException("Session not found");
+
+        return session;
+    }
+
     private string GetResource(Guid userId, Guid threadId)
     {
         return $"{userId}/sessions/{threadId}.json";
@@ -31,4 +43,5 @@ public class SessionService(IAzureStorageRepository azureStorageRepository, IOpt
 public interface ISessionService
 {
     Task<Session> Create(Guid userId, Guid travelPlanId);
+    Task<Session> Get(Guid userId, Guid sessionId);
 }

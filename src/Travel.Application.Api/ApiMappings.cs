@@ -10,6 +10,7 @@ public static class ApiMappings
 {
     private const string ApiConversationsRoot = "api";
     private const string CreateSessionPath = "travel/plans/session";
+    private const string GetSessionPath = "travel/sessions/{sessionId}";
     private const string GetTravelPlanPath = "travel/plans/{travelPlanId}";
 
     public static WebApplication MapApi(this WebApplication app)
@@ -18,15 +19,25 @@ public static class ApiMappings
 
         api.MapPost(CreateSessionPath, CreateSession);
         api.MapGet(GetTravelPlanPath, GetTravelPlan);
+        api.MapGet(GetSessionPath, GetSession);
 
         return app;
+    }
+
+    private static async Task<Ok<SessionDto>> GetSession(Guid sessionId, ISessionService sessionService, HttpContext context)
+    {
+        var session = await sessionService.Get(context.User.Id(), sessionId);
+
+        var dto = new SessionDto(session.ThreadId, session.TravelPlanId);
+
+        return TypedResults.Ok(dto);
     }
 
     private static async Task<Ok<TravelPlanDto>> GetTravelPlan(HttpContext context, Guid travelPlanId, ITravelPlanService travelPlanService)
     {
         var travelPlan = await travelPlanService.GetTravelPlan(context.User.Id(), travelPlanId);
 
-        var dto = new TravelPlanDto();
+        var dto = new TravelPlanDto(travelPlan.Origin, travelPlan.Destination, travelPlan.StartDate, travelPlan.EndDate);
 
         return TypedResults.Ok(dto);
     }
