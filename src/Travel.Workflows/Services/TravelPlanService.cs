@@ -32,6 +32,28 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
         Converters = { new JsonStringEnumConverter() },
     };
 
+    private async Task<TravelPlanDto> GetTravelPlanFromEndpoint(Guid threadId)
+    {
+        var httpClient = new HttpClient() { BaseAddress = new Uri("https://localhost:7010/")};
+
+        var response = await httpClient.GetAsync($"/api/travel/plans/{threadId}");
+
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException($"Failed to retrieve travel plan: {response.ReasonPhrase}");
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        if (string.IsNullOrEmpty(responseContent))
+            throw new HttpRequestException("Received empty response from travel plan endpoint");
+
+        var travelPlanDto = JsonSerializer.Deserialize<TravelPlanDto>(responseContent, SerializerOptions);
+   
+        if( travelPlanDto == null)
+            throw new InvalidOperationException("Failed to deserialize travel plan from response");
+
+        return travelPlanDto;
+    }
+
     public async Task<TravelPlan> AddFlightSearchOption(FlightSearchResultDto option)
     {
         var travelPlan = await LoadAsync();
