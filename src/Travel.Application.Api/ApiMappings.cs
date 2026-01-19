@@ -33,11 +33,21 @@ public static class ApiMappings
         return TypedResults.Ok(dto);
     }
 
-    private static async Task<Ok<TravelPlanDto>> GetTravelPlan(HttpContext context, Guid travelPlanId, ITravelPlanService travelPlanService)
+    private static async Task<Ok<TravelPlanDto>> GetTravelPlan(HttpContext context, Guid travelPlanId,ISessionService sessionService, ITravelPlanService travelPlanService)
     {
-        var travelPlan = await travelPlanService.GetTravelPlan(context.User.Id(), travelPlanId);
+        var session = await sessionService.Get(context.User.Id(), travelPlanId);
+        
+        var travelPlan = await travelPlanService.GetTravelPlan(context.User.Id(), session.TravelPlanId);
 
-        var dto = new TravelPlanDto(travelPlan.Origin, travelPlan.Destination, travelPlan.StartDate, travelPlan.EndDate);
+        var dto = new TravelPlanDto(
+            travelPlan.Origin, 
+            travelPlan.Destination, 
+            travelPlan.StartDate, 
+            travelPlan.EndDate, 
+            travelPlan.FlightPlan.FlightOptionsStatus, 
+            travelPlan.FlightPlan.UserFlightOptionStatus,
+            travelPlan.TravelPlanStatus
+            );
 
         return TypedResults.Ok(dto);
     }

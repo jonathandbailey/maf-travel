@@ -1,4 +1,4 @@
-﻿namespace Travel.Workflows.Models;
+﻿namespace Travel.Application.Api.Models;
 
 public static class TravelPlanConstants
 {

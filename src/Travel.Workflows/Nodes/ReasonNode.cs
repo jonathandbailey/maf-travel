@@ -80,7 +80,7 @@ public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : R
         {
             var threadId = await context.ReadStateAsync<string>("agent_thread_id", scopeName: "workflow", cancellationToken);
 
-            var travelPlanSummary = await travelPlanService.GetSummary();
+            var travelPlanSummary = await travelPlanService.GetSummary(Guid.Parse(threadId!));
 
             var template = JsonSerializer.Serialize(new ReasoningState(reasoningInput.Observation, travelPlanSummary));
 

@@ -1,18 +1,43 @@
-﻿namespace Travel.Workflows.Models;
+﻿using Travel.Workflows.Dto;
 
-public class TravelPlanSummary(TravelPlan plan)
+namespace Travel.Workflows.Models;
+
+public class TravelPlanSummary
 {
-    public string Origin { get; set; } = !string.IsNullOrEmpty(plan.Origin) ? plan.Origin : TravelPlanConstants.NotSet;
+    public TravelPlanSummary(TravelPlanDto planDto)
+    {
+        Origin = !string.IsNullOrEmpty(planDto.Origin) ? planDto.Origin : TravelPlanConstants.NotSet;
+        Destination = !string.IsNullOrEmpty(planDto.Destination) ? planDto.Destination : TravelPlanConstants.NotSet;
+        StartDate = planDto.StartDate?.ToString("yyyy-MM-dd") ?? TravelPlanConstants.NotSet;
+        EndDate = planDto.EndDate?.ToString("yyyy-MM-dd") ?? TravelPlanConstants.NotSet;
+        FlightOptionStatus = planDto.FlightOptionsStatus.ToString();
+        UserFlightOptionStatus = planDto.UserFlightOptionStatus.ToString();
+        TravelPlanStatus = planDto.TravelPlanStatus.ToString();
+    }
 
-    public string Destination { get; set; } = !string.IsNullOrEmpty(plan.Destination) ? plan.Destination : TravelPlanConstants.NotSet;
+    public TravelPlanSummary(TravelPlan plan)
+    {
+        Origin = !string.IsNullOrEmpty(plan.Origin) ? plan.Origin : TravelPlanConstants.NotSet;
+        Destination = !string.IsNullOrEmpty(plan.Destination) ? plan.Destination : TravelPlanConstants.NotSet;
+        StartDate = plan.StartDate?.ToString("yyyy-MM-dd") ?? TravelPlanConstants.NotSet;
+        EndDate = plan.EndDate?.ToString("yyyy-MM-dd") ?? TravelPlanConstants.NotSet;
+        FlightOptionStatus = plan.FlightPlan.FlightOptionsStatus.ToString();
+        UserFlightOptionStatus = plan.FlightPlan.UserFlightOptionStatus.ToString();
+        TravelPlanStatus = plan.TravelPlanStatus.ToString();
+    }
 
-    public string StartDate { get; set; } = plan.StartDate?.ToString("yyyy-MM-dd") ?? TravelPlanConstants.NotSet;
+    public string Origin { get; set; }
 
-    public string EndDate { get; set; } = plan.EndDate?.ToString("yyyy-MM-dd") ?? TravelPlanConstants.NotSet;
+    public string Destination { get; set; }
 
-    public string FlightOptionStatus { get; set; } = plan.FlightPlan.FlightOptionsStatus.ToString();
+    public string StartDate { get; set; }
 
-    public string UserFlightOptionStatus { get; set; } = plan.FlightPlan.UserFlightOptionStatus.ToString();
+    public string EndDate { get; set; }
 
-    public string TravelPlanStatus { get; set; } = plan.TravelPlanStatus.ToString();
+    public string FlightOptionStatus { get; set; }
+
+    public string UserFlightOptionStatus { get; set; }
+
+    public string TravelPlanStatus { get; set; }
 }
+

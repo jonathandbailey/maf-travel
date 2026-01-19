@@ -20,6 +20,7 @@ public interface ITravelPlanService
     Task<TravelPlan> SelectFlightOption(FlightSearchResultDto option);
     Task<FlightSearchResultDto> GetFlightOptionsAsync();
     Task CreateTravelPlan();
+    Task<TravelPlanSummary> GetSummary(Guid threadId);
 }
 
 public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepository artifactRepository, IOptions<AzureStorageSeedSettings> settings) : ITravelPlanService
@@ -30,7 +31,9 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         Converters = { new JsonStringEnumConverter() },
+        PropertyNameCaseInsensitive = true
     };
+   
 
     private async Task<TravelPlanDto> GetTravelPlanFromEndpoint(Guid threadId)
     {
@@ -128,9 +131,22 @@ public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepo
     public async Task<TravelPlanSummary> GetSummary()
     {
         var travelPlan = await LoadAsync();
-
+    
         var summary = new TravelPlanSummary(travelPlan);
       
+        return summary;
+    }
+
+    public async Task<TravelPlanSummary> GetSummary(Guid threadId)
+    {
+        var travelPlan = await LoadAsync();
+
+        var travelPlanDto = await GetTravelPlanFromEndpoint(threadId);
+
+        var summary = new TravelPlanSummary(travelPlan);
+
+        var summaryEx = new TravelPlanSummary(travelPlanDto);
+
         return summary;
     }
 

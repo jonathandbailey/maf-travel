@@ -1,5 +1,4 @@
 ﻿using Travel.Application.Api.Models;
-using Travel.Workflows.Models;
 
 namespace Travel.Application.Api.Dto;
 

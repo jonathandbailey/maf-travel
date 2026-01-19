@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Infrastructure.Extensions;
 using Infrastructure.Settings;
 using Travel.Application.Api;
@@ -9,7 +10,10 @@ builder.AddServiceDefaults();
 
 builder.Services.Configure<AzureStorageSeedSettings>((options) => builder.Configuration.GetSection("AzureStorageSeedSettings").Bind(options));
 
-
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
