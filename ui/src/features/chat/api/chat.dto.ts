@@ -17,3 +17,8 @@ export interface ChatResponseDto {
     isEndOfStream: boolean;
     source: string;
 }
+
+export interface ChatSessionDto {
+    threadId: string;
+
+}

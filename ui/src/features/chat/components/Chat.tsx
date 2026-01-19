@@ -27,11 +27,13 @@ const Chat = ({ sessionId }: ChatProps) => {
 
     useEffect(() => {
         const agent = new HttpAgent({
-            url: "http://localhost:5000/ag-ui",
+            url: "https://localhost:7266/ag-ui",
             agentId: "unique-agent-id",
             threadId: sessionId
         });
 
+
+        console.log("Initializing agent with sessionId:", sessionId);
         agentRef.current = agent;
 
         const subscription = agentRef.current.subscribe({
