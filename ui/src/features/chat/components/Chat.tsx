@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import type { Exchange } from "../domain/Exchange";
 import { UIFactory } from "../factories/UIFactory";
 import { useStatusUpdateHandler } from "../hooks/useStatusUpdateHandler";
-import type { ChatResponseDto } from "../api/chat.dto";
-import streamingService from "../../../app/api/streaming.api";
 import { EventType, HttpAgent, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import { TravelService } from "../../travel-planning/api/travel.api";
+import { useTravelPlanStore } from "../../travel-planning/stores/travel-plan.store";
+import { mapTravelPlanDtoToDomain } from "../../travel-planning/domain/mappers";
 
 interface ChatProps {
     sessionId: string;
@@ -18,6 +18,8 @@ const Chat = ({ sessionId }: ChatProps) => {
 
     const [activeExchange, setActiveExchange] = useState<Exchange>(UIFactory.createUIExchange(""));
     const agentRef = useRef<HttpAgent | null>(null);
+    const travelService = new TravelService();
+    const { addTravelPlan } = useTravelPlanStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const [statusMessage, setStatusMessage] = useState<string>("");
@@ -54,6 +56,17 @@ const Chat = ({ sessionId }: ChatProps) => {
                 if (event.type === EventType.TEXT_MESSAGE_END) {
                     activeExchange.assistant.isLoading = false;
                     setIsLoading(false);
+
+                    // Call TravelPlan Service and update store
+                    travelService.getTravelPlan(sessionId)
+                        .then(travelPlanDto => {
+                            const travelPlan = mapTravelPlanDtoToDomain(travelPlanDto);
+                            addTravelPlan(travelPlan);
+                            console.log("Travel plan updated in store:", travelPlan);
+                        })
+                        .catch(error => {
+                            console.error("Failed to fetch travel plan:", error);
+                        });
                 }
                 if (event.type === EventType.TEXT_MESSAGE_START) {
                     activeExchange.assistant.isLoading = true;
@@ -80,21 +93,7 @@ const Chat = ({ sessionId }: ChatProps) => {
         subscriptionRef.current = subscription;
     }, [sessionId]);
 
-    useEffect(() => {
-        const handleUserResponse = (response: ChatResponseDto) => {
-            if (!response) return;
 
-            console.log("Received streaming response:", response);
-            streamTextRef.current += response.message;
-            setCurrentStream(streamTextRef.current);
-        }
-
-        streamingService.on("user", handleUserResponse);
-
-        return () => {
-            streamingService.off("user", handleUserResponse);
-        };
-    }, []);
 
     useEffect(() => {
         // Reset stream when activeExchange changes

@@ -3,9 +3,7 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import Flight from "../flights/Flight";
-import type { TravelPlanDto } from "../../api/travel.dto";
-import { useState } from "react";
-import { useTravelPlanUpdateHandler } from "../../hooks/useTravelPlanUpdateHandler";
+import { useTravelPlanStore } from "../../stores/travel-plan.store";
 
 dayjs.extend(advancedFormat);
 
@@ -15,22 +13,20 @@ interface TravelPlanProps {
     sessionId: string;
 }
 
-const formatDate = (dateString: string | undefined): string => {
-    if (!dateString) return '';
-    return dayjs(dateString).format('Do, MMM, YYYY');
+const formatDate = (date: Date | undefined): string => {
+    if (!date) return '';
+    return dayjs(date).format('Do, MMM, YYYY');
 };
 
 const TravelPlan = ({ sessionId }: TravelPlanProps) => {
 
-    const [travelPlan, setTravelPlan] = useState<TravelPlanDto | null>(null);
+    const travelPlan = useTravelPlanStore((state) =>
+        state.travelPlans.find(tp => tp.id === sessionId)
+    );
 
     const showOriginCard = !!(travelPlan?.origin || travelPlan?.startDate);
     const showDestinationCard = !!(travelPlan?.destination || travelPlan?.endDate);
     const showArrow = showOriginCard && showDestinationCard;
-
-
-
-    useTravelPlanUpdateHandler({ sessionId, setTravelPlan });
 
     return (
         <>

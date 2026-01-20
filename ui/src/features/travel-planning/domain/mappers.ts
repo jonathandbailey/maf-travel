@@ -8,7 +8,7 @@ export function mapTravelPlanDtoToDomain(dto: TravelPlanDto): TravelPlan {
         startDate: new Date(dto.startDate),
         endDate: new Date(dto.endDate),
         origin: dto.origin,
-        flightPlan: mapFlightPlanDtoToDomain(dto.flightPlan),
+        flightPlan: dto.flightPlan ? mapFlightPlanDtoToDomain(dto.flightPlan) : { flightOption: null },
     };
 }
 
@@ -19,7 +19,7 @@ export function mapTravelPlanToDto(domain: TravelPlan): TravelPlanDto {
         startDate: domain.startDate.toISOString(),
         endDate: domain.endDate.toISOString(),
         origin: domain.origin,
-        flightPlan: mapFlightPlanToDto(domain.flightPlan),
+        flightPlan: domain.flightPlan ? mapFlightPlanToDto(domain.flightPlan) : undefined,
     };
 }
 

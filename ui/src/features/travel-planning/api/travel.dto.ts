@@ -3,8 +3,8 @@ export interface TravelPlanDto {
     startDate: string;
     endDate: string;
     origin: string;
-    flightPlan: FlightPlanDto;
     id: string;
+    flightPlan?: FlightPlanDto;
 }
 
 export interface FlightSearchResultDto {

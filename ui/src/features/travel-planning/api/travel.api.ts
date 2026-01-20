@@ -17,7 +17,7 @@ export class TravelService {
 
     async getTravelPlan(sessionId: string): Promise<TravelPlanDto> {
 
-        const response = await apiClient.get<TravelPlanDto>(`api/plans/${sessionId}/travel`);
+        const response = await apiClient.get<TravelPlanDto>(`api/travel/plans/${sessionId}`);
         return response.data;
     }
 }

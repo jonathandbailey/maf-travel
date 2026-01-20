@@ -4,7 +4,7 @@ export interface TravelPlan {
     startDate: Date;
     endDate: Date;
     origin: string;
-    flightPlan: FlightPlan;
+    flightPlan?: FlightPlan;
 }
 
 export interface FlightPlan {

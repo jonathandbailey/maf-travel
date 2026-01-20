@@ -1,21 +1,21 @@
 
 import { Card, Flex, Typography } from "antd";
-import type { FlightOptionDto } from "../../api/travel.dto";
 import dayjs from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import { ArrowRightOutlined } from "@ant-design/icons";
+import type { FlightOption } from "../../domain/TravelPlan";
 
 const { Text } = Typography;
 
 dayjs.extend(advancedFormat);
 
-const formatDate = (dateString: string | undefined): string => {
-    if (!dateString) return '';
-    return dayjs(dateString).format('HH:mm');
+const formatDate = (date: Date | undefined): string => {
+    if (!date) return '';
+    return dayjs(date).format('HH:mm');
 };
 
 interface FlightProps {
-    flight: FlightOptionDto;
+    flight: FlightOption;
 }
 
 const Flight = ({ flight }: FlightProps) => {
