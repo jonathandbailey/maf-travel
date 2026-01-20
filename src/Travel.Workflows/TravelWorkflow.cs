@@ -18,7 +18,7 @@ public class TravelWorkflow(
 
     public WorkflowState State { get; set; } = state;
 
-    public async Task<WorkflowResponse> Execute(TravelWorkflowRequestDto requestDto)
+    public async IAsyncEnumerable<WorkflowResponse> Execute(TravelWorkflowRequestDto requestDto)
     {
 
         var startWorkflow = new StartWorkflowDto(requestDto.ThreadId, new ReasoningInputDto(requestDto.Message.Text));
@@ -46,7 +46,8 @@ public class TravelWorkflow(
             if (evt is TravelWorkflowErrorEvent travelWorkflowErrorEvent)
             {
                 logger.LogError(travelWorkflowErrorEvent.Exception, $"Travel Workflow Error:{travelWorkflowErrorEvent.Message}, {travelWorkflowErrorEvent.Description}");
-                return new WorkflowResponse(WorkflowState.Error, "Travel Request has failed.");
+                yield return new WorkflowResponse(WorkflowState.Error, "Travel Request has failed.");
+                yield break;
             }
 
             if (evt is RequestInfoEvent requestInfoEvent)
@@ -59,7 +60,8 @@ public class TravelWorkflow(
 
                         State = WorkflowState.WaitingForUserInput;
 
-                        return response;
+                        yield return response;
+                        yield break;
                     }
                     case WorkflowState.WaitingForUserInput:
                     {
@@ -77,7 +79,7 @@ public class TravelWorkflow(
 
         State = WorkflowState.Completed;
 
-        return new WorkflowResponse(State, string.Empty);
+        yield return new WorkflowResponse(State, string.Empty);
     }
 }
 

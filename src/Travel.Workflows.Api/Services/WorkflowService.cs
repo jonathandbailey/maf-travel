@@ -36,8 +36,22 @@ public class WorkflowService : IWorkflowService
             }
         };
 
-        var workResponse = await _travelWorkflowService.Execute(workflowRequest);
+        await foreach (var response in _travelWorkflowService.Execute(workflowRequest))
+        {
+            if (response.State == WorkflowState.WaitingForUserInput)
+            {
+                var message = new AgentMessage
+                {
+                    Role = MessageRole.Agent,
+                    ContextId = agentTask.ContextId,
+                    Parts = new List<Part> { new TextPart() {Text = response.Message}}
+                };
 
+                await TaskManager.UpdateStatusAsync(agentTask.Id, TaskState.InputRequired, message, final: false, cancellationToken);
+            }
+        }
+
+        /* 
         var artifact = new Artifact
         {
             Parts =
@@ -50,7 +64,7 @@ public class WorkflowService : IWorkflowService
         };
 
         await TaskManager.ReturnArtifactAsync(agentTask.Id, artifact, cancellationToken);
-
+        */
         var finalMessage = new AgentMessage
         {
             Role = MessageRole.Agent,
@@ -61,7 +75,7 @@ public class WorkflowService : IWorkflowService
         // Send final completion status
         await TaskManager.UpdateStatusAsync(agentTask.Id, TaskState.Completed, finalMessage, final: true, cancellationToken);
     }
-
+    /*
     private async Task<A2AResponse> OnMessageReceived(MessageSendParams messageSendParams, CancellationToken cancellationToken)
     {
         var messageText = messageSendParams.Message.Parts.OfType<TextPart>().First().Text;
@@ -89,7 +103,7 @@ public class WorkflowService : IWorkflowService
 
         return message;
     }
-
+    */
     private Task<AgentCard> OnAgentCardQuery(string url, CancellationToken cancellationToken)
     {
         return _agentDiscoveryService.GetAgentCard(url);

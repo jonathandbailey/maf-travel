@@ -78,6 +78,16 @@ public class UserAgent(AIAgent agent, IA2AAgentServiceDiscovery discovery) : Del
                             functionCallContent.Value.CallId,
                             messageText));
                     }
+
+                    if (agentRunUpdate.RawRepresentation is TaskStatusUpdateEvent)
+                    {
+                        var message = agentRunUpdate.RawRepresentation as TaskStatusUpdateEvent;
+                        var messageText = message.Status.Message.Parts.OfType<TextPart>().First().Text;
+
+                        toolResults.Add(new FunctionResultContent(
+                            functionCallContent.Value.CallId,
+                            messageText));
+                    }
                 }
             }
             catch (Exception e)
