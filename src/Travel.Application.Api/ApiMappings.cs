@@ -62,7 +62,8 @@ public static class ApiMappings
             travelPlan.EndDate, 
             travelPlan.FlightPlan.FlightOptionsStatus, 
             travelPlan.FlightPlan.UserFlightOptionStatus,
-            travelPlan.TravelPlanStatus
+            travelPlan.TravelPlanStatus,
+            travelPlan.Id
             );
 
         return TypedResults.Ok(dto);

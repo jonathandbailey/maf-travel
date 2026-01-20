@@ -4,6 +4,7 @@ export interface TravelPlanDto {
     endDate: string;
     origin: string;
     flightPlan: FlightPlanDto;
+    id: string;
 }
 
 export interface FlightSearchResultDto {

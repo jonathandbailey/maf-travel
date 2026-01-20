@@ -48,6 +48,11 @@ public class TravelWorkflow(
                 yield return new WorkflowResponse(WorkflowState.Executing, workflowStatusEvent.Status, WorkflowAction.StatusUpdate);
             }
 
+            if (evt is ArtifactStatusEvent artifactStatusEvent)
+            {
+                yield return new WorkflowResponse(WorkflowState.Executing, artifactStatusEvent.Key, WorkflowAction.ArtifactCreated);
+            }
+
             if (evt is TravelWorkflowErrorEvent travelWorkflowErrorEvent)
             {
                 logger.LogError(travelWorkflowErrorEvent.Exception, $"Travel Workflow Error:{travelWorkflowErrorEvent.Message}, {travelWorkflowErrorEvent.Description}");

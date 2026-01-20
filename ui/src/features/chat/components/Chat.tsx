@@ -8,6 +8,7 @@ import { useStatusUpdateHandler } from "../hooks/useStatusUpdateHandler";
 import type { ChatResponseDto } from "../api/chat.dto";
 import streamingService from "../../../app/api/streaming.api";
 import { EventType, HttpAgent, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
+import { TravelService } from "../../travel-planning/api/travel.api";
 
 interface ChatProps {
     sessionId: string;
@@ -26,6 +27,8 @@ const Chat = ({ sessionId }: ChatProps) => {
     const [currentStream, setCurrentStream] = useState('');
     const streamTextRef = useRef('');
     const subscriptionRef = useRef<any>(null);
+
+
 
     useEffect(() => {
         const agent = new HttpAgent({
