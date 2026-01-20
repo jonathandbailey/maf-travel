@@ -8,3 +8,12 @@ public enum WorkflowState
     Completed,
     Error
 }
+
+public enum WorkflowAction
+{
+    InputRequest,
+    StatusUpdate,
+    ArtifactCreated,
+    ReportError,
+    None
+}

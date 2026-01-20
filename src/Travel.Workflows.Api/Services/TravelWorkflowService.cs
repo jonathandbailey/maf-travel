@@ -34,7 +34,7 @@ public class TravelWorkflowService(
 
         await foreach (var response in travelWorkflow.Execute(new TravelWorkflowRequestDto(new ChatMessage(ChatRole.User, request.Meta.RawUserMessage), request.Meta.ThreadId)))
         {
-            yield return new WorkflowResponse( response.State, response.Message);
+            yield return new WorkflowResponse( response.State, response.Message, response.Action);
         }
 
         await workflowRepository.SaveAsync(request.Meta.ThreadId, travelWorkflow.State, travelWorkflow.CheckpointInfo);

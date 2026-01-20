@@ -46,7 +46,7 @@ public class TravelWorkflow(
             if (evt is TravelWorkflowErrorEvent travelWorkflowErrorEvent)
             {
                 logger.LogError(travelWorkflowErrorEvent.Exception, $"Travel Workflow Error:{travelWorkflowErrorEvent.Message}, {travelWorkflowErrorEvent.Description}");
-                yield return new WorkflowResponse(WorkflowState.Error, "Travel Request has failed.");
+                yield return new WorkflowResponse(WorkflowState.Error, "Travel Request has failed.", WorkflowAction.ReportError);
                 yield break;
             }
 
@@ -79,7 +79,7 @@ public class TravelWorkflow(
 
         State = WorkflowState.Completed;
 
-        yield return new WorkflowResponse(State, string.Empty);
+        yield return new WorkflowResponse(State, string.Empty, WorkflowAction.None);
     }
 }
 

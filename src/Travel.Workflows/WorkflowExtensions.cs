@@ -44,22 +44,22 @@ public static class WorkflowExtensions
         if (data?.Data == null)
         {
             return new WorkflowResponse(WorkflowState.Error,
-                "Invalid request event: missing data");
+                "Invalid request event: missing data", WorkflowAction.ReportError);
         }
 
         if (data.Data.AsType(typeof(UserRequest)) is not UserRequest userRequest)
         {
             return new WorkflowResponse(WorkflowState.Error,
-                "Invalid request event: unable to parse UserRequest");
+                "Invalid request event: unable to parse UserRequest", WorkflowAction.ReportError);
         }
 
         if (string.IsNullOrWhiteSpace(userRequest.Message))
         {
             return new WorkflowResponse(WorkflowState.Error,
-                "Invalid request event: UserRequest message is empty");
+                "Invalid request event: UserRequest message is empty", WorkflowAction.ReportError);
         }
 
-        return new WorkflowResponse(WorkflowState.WaitingForUserInput, userRequest.Message);
+        return new WorkflowResponse(WorkflowState.WaitingForUserInput, userRequest.Message, WorkflowAction.InputRequest);
     }
 
 }
