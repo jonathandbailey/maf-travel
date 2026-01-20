@@ -1,10 +1,12 @@
-﻿using Agents.Observability;
+﻿using A2A;
+using Agents.Extensions;
+using Agents.Observability;
+using Agents.Services;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using Agents.Extensions;
-using Agents.Services;
 
 namespace Agents;
 
@@ -62,16 +64,26 @@ public class UserAgent(AIAgent agent, IA2AAgentServiceDiscovery discovery) : Del
 
             var argument = functionCallContent.Value.Arguments["jsonPayload"].ToString();
 
-            var toolResponse = await agentMeta.Agent.RunAsync(new ChatMessage(ChatRole.User, argument), agentThread, cancellationToken: cancellationToken);
 
-            var resultContent = new FunctionResultContent(
-                functionCallContent.Value.CallId,
-                toolResponse.Messages.First().Text);
-            
-            toolResults.Add(resultContent);
+            try
+            {
+                await foreach (var agentRunUpdate in agentMeta.Agent.RunStreamingAsync(new ChatMessage(ChatRole.User, argument), agentThread, cancellationToken: cancellationToken))
+                {
+                    if (agentRunUpdate.RawRepresentation is TaskArtifactUpdateEvent)
+                    {
+                        var artifactEvent = agentRunUpdate.RawRepresentation as TaskArtifactUpdateEvent;
+                        var messageText = artifactEvent.Artifact.Parts.OfType<TextPart>().First().Text;
 
-            activity?.SetTag("Tool Response", toolResponse.Messages.First().Text);
-
+                        toolResults.Add(new FunctionResultContent(
+                            functionCallContent.Value.CallId,
+                            messageText));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         stateBytes = JsonSerializer.SerializeToUtf8Bytes("Processing Results...");

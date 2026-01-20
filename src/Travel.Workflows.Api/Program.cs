@@ -2,6 +2,7 @@ using Agents.Extensions;
 using Infrastructure.Extensions;
 using Infrastructure.Settings;
 using Travel.Planning.Api.Services;
+using Travel.Workflows.Api.Services;
 using Travel.Workflows.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

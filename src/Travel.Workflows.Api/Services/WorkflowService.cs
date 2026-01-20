@@ -1,7 +1,10 @@
 ﻿using A2A;
+using System.Text;
+using System.Threading.Tasks;
+using Travel.Planning.Api.Services;
 using Travel.Workflows.Dto;
 
-namespace Travel.Planning.Api.Services;
+namespace Travel.Workflows.Api.Services;
 
 public class WorkflowService : IWorkflowService
 {
@@ -16,7 +19,47 @@ public class WorkflowService : IWorkflowService
         _travelWorkflowService = travelWorkflowService;
         
         TaskManager.OnAgentCardQuery+= OnAgentCardQuery;
-        TaskManager.OnMessageReceived += OnMessageReceived;
+        //TaskManager.OnMessageReceived += OnMessageReceived;
+        TaskManager.OnTaskCreated += OnTaskCreated;
+    }
+
+    private async Task OnTaskCreated(AgentTask agentTask, CancellationToken cancellationToken)
+    {
+        var messageText = agentTask.History.OfType<AgentMessage>().First().Parts.OfType<TextPart>().First().Text;
+
+        var workflowRequest = new WorkflowRequest
+        {
+            Meta =
+            {
+                ThreadId = agentTask.ContextId,
+                RawUserMessage = messageText
+            }
+        };
+
+        var workResponse = await _travelWorkflowService.Execute(workflowRequest);
+
+        var artifact = new Artifact
+        {
+            Parts =
+            [
+                new TextPart()
+                {
+                    Text = workResponse.Message
+                }
+            ]
+        };
+
+        await TaskManager.ReturnArtifactAsync(agentTask.Id, artifact, cancellationToken);
+
+        var finalMessage = new AgentMessage
+        {
+            Role = MessageRole.Agent,
+            ContextId = agentTask.ContextId,
+            Parts = []
+        };
+
+        // Send final completion status
+        await TaskManager.UpdateStatusAsync(agentTask.Id, TaskState.Completed, finalMessage, final: true, cancellationToken);
     }
 
     private async Task<A2AResponse> OnMessageReceived(MessageSendParams messageSendParams, CancellationToken cancellationToken)
