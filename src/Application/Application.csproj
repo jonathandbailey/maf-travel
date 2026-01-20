@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Travel.Workflows\Travel.Workflows.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>

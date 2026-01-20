@@ -1,6 +1,5 @@
 using Agents.Extensions;
 using Api.Extensions;
-using Application.Extensions;
 using Infrastructure.Extensions;
 using Travel.Workflows.Extensions;
 
