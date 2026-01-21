@@ -16,7 +16,8 @@ public class ArtifactRepository(IAzureStorageRepository repository, IOptions<Azu
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new JsonStringEnumConverter() }
+        Converters = { new JsonStringEnumConverter() },
+        PropertyNameCaseInsensitive = true
     };
 
     public async Task SaveAsync(string artifact, string name)
@@ -31,6 +32,17 @@ public class ArtifactRepository(IAzureStorageRepository repository, IOptions<Azu
         await repository.UploadTextBlobAsync(GetFlightSearchFileName(id),
             settings.Value.ContainerName,
             artifact, ApplicationJsonContentType);
+    }
+
+    public async Task<FlightSearchResultDto> GetFlightSearch(Guid id)
+    {
+        var filename = GetFlightSearchFileName(id);
+
+        var response = await repository.DownloadTextBlobAsync(filename, settings.Value.ContainerName);
+
+        var flightPlan = JsonSerializer.Deserialize<FlightSearchResultDto>(response, SerializerOptions);
+
+        return flightPlan ?? throw new InvalidOperationException($"Failed to deserialize flight plan from blob: {filename}");
     }
 
     public async Task<FlightSearchResultDto> GetFlightPlanAsync()

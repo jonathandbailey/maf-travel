@@ -7,7 +7,8 @@ import { UIFactory } from "../factories/UIFactory";
 import { EventType, HttpAgent, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import { TravelService } from "../../travel-planning/api/travel.api";
 import { useTravelPlanStore } from "../../travel-planning/stores/travel-plan.store";
-import { mapTravelPlanDtoToDomain } from "../../travel-planning/domain/mappers";
+import { useFlightOptionStore } from "../../travel-planning/stores/flight-option.store";
+import { mapTravelPlanDtoToDomain, mapFlightOptionDtoToDomain } from "../../travel-planning/domain/mappers";
 import type { StatusUpdate } from "../domain/StatusUpdate";
 import { useStatusUpdateStore } from "../stores/status-update.store";
 import { useExchangesStore } from "../stores/exchanges.store";
@@ -23,6 +24,7 @@ const Chat = ({ sessionId }: ChatProps) => {
     const travelService = new TravelService();
     const { addStatusUpdate } = useStatusUpdateStore();
     const { addTravelPlan } = useTravelPlanStore();
+    const { setFlightSearchResults } = useFlightOptionStore();
     const { addExchange } = useExchangesStore();
 
     const [isLoading, setIsLoading] = useState(false);
@@ -134,11 +136,30 @@ const Chat = ({ sessionId }: ChatProps) => {
                             addStatusUpdate(statusUpdate);
                             setStatusMessage(statusUpdate.status);
                         }
+                    }
 
+                    if (typeof snapshot === 'object' && snapshot !== null && 'Type' in snapshot && snapshot.Type === 'ArtifactCreated') {
+                        // Handle ArtifactCreated type
+                        const payload = snapshot.Payload as { Id: string; Key: string; Type: string };
 
-                    } else {
-                        // Handle other snapshot types as before
-                        console.log("Received non-StatusUpdate snapshot:", snapshot);
+                        if (payload.Key === 'Flights') {
+                            // Fetch flight search results using the artifact ID
+                            travelService.getFlightPlan(payload.Id)
+                                .then(flightSearchResult => {
+                                    // Convert DTOs to domain objects and store the complete flight search results
+                                    const departureFlights = flightSearchResult.departureFlightOptions.map(mapFlightOptionDtoToDomain);
+                                    const returnFlights = flightSearchResult.returnFlightOptions.map(mapFlightOptionDtoToDomain);
+                                    
+                                    setFlightSearchResults({
+                                        artifactKey: flightSearchResult.artifactKey,
+                                        departureFlightOptions: departureFlights,
+                                        returnFlightOptions: returnFlights
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Failed to fetch flight search results:', error);
+                                });
+                        }
                     }
                 }
             },

@@ -21,6 +21,7 @@ builder.Services.AddHostedService<AzureStorageSeedService>();
 
 builder.Services.AddScoped<ITravelPlanService, TravelPlanService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<IFlightService, FlightService>();
 
 builder.Services.AddOpenApi();
 

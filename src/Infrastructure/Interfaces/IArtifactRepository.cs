@@ -8,4 +8,5 @@ public interface IArtifactRepository
     Task<FlightSearchResultDto> GetFlightPlanAsync();
     Task<bool> FlightsExistsAsync();
     Task SaveFlightSearchAsync(string artifact, Guid id);
+    Task<FlightSearchResultDto> GetFlightSearch(Guid id);
 }

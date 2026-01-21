@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Extensions;
-using Travel.Application.Api.Models;
 using Travel.Application.Api.Services;
 
 namespace Travel.Application.Api;
@@ -24,6 +23,12 @@ public static class ApiMappings
         api.MapGet(GetTravelPlanPath, GetTravelPlan);
         api.MapGet(GetSessionPath, GetSession);
         api.MapPost(UpdateTravelPlanPath, UpdateTravelPlan);
+
+                    api.MapGet("travel/flights/search/{searchId}", async (Guid searchId, IFlightService flightService, HttpContext context) =>
+            {
+                var result = await flightService.GetFlightSearch(context.User.Id(), searchId);
+                return TypedResults.Ok(result);
+            });
 
         return app;
     }

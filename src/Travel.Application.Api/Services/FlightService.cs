@@ -1,6 +1,19 @@
-﻿namespace Travel.Application.Api.Services
+﻿using Infrastructure.Dto;
+using Infrastructure.Interfaces;
+
+namespace Travel.Application.Api.Services;
+
+
+
+public class FlightService(IArtifactRepository artifactRepository) : IFlightService
 {
-    public class FlightService
+    public async Task<FlightSearchResultDto> GetFlightSearch(Guid userId, Guid searchId)
     {
+        return await artifactRepository.GetFlightSearch(searchId);
     }
+}
+
+public interface IFlightService
+{
+    Task<FlightSearchResultDto> GetFlightSearch(Guid userId, Guid searchId);
 }
