@@ -1,7 +1,7 @@
 import { Card, Flex, Spin } from "antd";
 import { OpenAIOutlined } from "@ant-design/icons";
 import type { Exchange } from "../domain/Exchange";
-import { useStatusStore } from "../stores/status.store";
+import { useStatusUpdateStore } from "../stores/status-update.store";
 
 interface AgentFeedbackProps {
     message: Exchange;
@@ -13,7 +13,7 @@ interface AgentFeedbackProps {
 const AgentFeedback = ({ message, currentStream, isLoading, statusMessage }: AgentFeedbackProps) => {
 
 
-    const { activeStatus } = useStatusStore();
+    const { currentStatusUpdate } = useStatusUpdateStore();
 
     return (
         <> <Flex vertical>

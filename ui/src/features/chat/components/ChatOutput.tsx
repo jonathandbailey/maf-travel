@@ -3,13 +3,13 @@ import UserMessage from "./UserMessage";
 import AssistantMessage from "./AssistantMessage";
 import AgentStatus from "./AgentStatus";
 import { useExchangesStore } from "../stores/exchanges.store";
-import { useStatusStore } from "../stores/status.store";
+import { useStatusUpdateStore } from "../stores/status-update.store";
 
 
 const ChatOutput = () => {
 
     const { exchanges } = useExchangesStore();
-    const { statuses } = useStatusStore();
+    const { statusUpdates } = useStatusUpdateStore();
 
     return (
         <>
@@ -29,7 +29,6 @@ const ChatOutput = () => {
                                             </Flex>
                                             <AssistantMessage message={exchange.assistant} />
                                             <Divider />
-                                            <AgentStatus statusItems={exchange.status || []} />
                                             <Divider />
                                         </div>
                                     ))}
@@ -41,7 +40,7 @@ const ChatOutput = () => {
                             key: 'status',
                             children: (
                                 <div>
-                                    <AgentStatus statusItems={statuses} />
+                                    <AgentStatus statusItems={statusUpdates} />
 
                                 </div>
                             )

@@ -1,8 +1,8 @@
 import { Flex, Timeline, Typography } from "antd";
-import type { Status } from "../domain/Status";
+import type { StatusUpdate } from "../domain/StatusUpdate";
 
 interface AgentStatusProps {
-    statusItems: Status[];
+    statusItems: StatusUpdate[];
 }
 
 const { Text, Title } = Typography;
@@ -17,7 +17,7 @@ const AgentStatus = ({ statusItems }: AgentStatusProps) => {
                             <Flex vertical>
 
                                 <Title level={5} style={{ marginTop: "0px" }}> {status.source}  </Title>
-                                <Text> {status.message}</Text>
+                                <Text> {status.status}</Text>
 
                                 <Text type="secondary" italic style={{ marginTop: "8px", marginBottom: "8px" }}>{status.details}</Text>
 
