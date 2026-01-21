@@ -1,6 +1,7 @@
 ﻿using System.ClientModel;
 using Agents.Dto;
 using Agents.Middleware;
+using Agents.Repository;
 using Agents.Services;
 using Agents.Settings;
 using Azure.AI.OpenAI;
@@ -9,8 +10,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using IAgentMemoryMiddleware = Agents.Middleware.IAgentMemoryMiddleware;
-using IAgentTemplateRepository = Agents.Repository.IAgentTemplateRepository;
+
 
 namespace Agents;
 

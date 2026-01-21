@@ -2,18 +2,12 @@
 using Microsoft.Extensions.AI;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Repository;
-using Travel.Workflows.Services;
 
 namespace Travel.Workflows.Api.Services;
 
-public interface ITravelWorkflowService
-{
-    IAsyncEnumerable<WorkflowResponse> Execute(WorkflowRequest request);
-}
 
 public class TravelWorkflowService(
     ICheckpointRepository repository,
-    ITravelPlanService travelPlanService,
     IWorkflowFactory workflowFactory, 
     ILogger<TravelWorkflowService> logger,
     IWorkflowRepository workflowRepository) : ITravelWorkflowService
@@ -24,13 +18,10 @@ public class TravelWorkflowService(
         var workflow = await workflowFactory.Create();
 
         var state = await workflowRepository.LoadAsync(request.Meta.ThreadId);
-
-        await travelPlanService.CreateTravelPlan();
-
+  
         var checkpointManager = CheckpointManager.CreateJson(new CheckpointStore2(repository, request.Meta.ThreadId));
 
         var travelWorkflow = new TravelWorkflow(workflow, checkpointManager, state.CheckpointInfo, state.State, logger);
-
 
         await foreach (var response in travelWorkflow.Execute(new TravelWorkflowRequestDto(new ChatMessage(ChatRole.User, request.Meta.RawUserMessage), request.Meta.ThreadId)))
         {
@@ -39,4 +30,9 @@ public class TravelWorkflowService(
 
         await workflowRepository.SaveAsync(request.Meta.ThreadId, travelWorkflow.State, travelWorkflow.CheckpointInfo);
     }
+}
+
+public interface ITravelWorkflowService
+{
+    IAsyncEnumerable<WorkflowResponse> Execute(WorkflowRequest request);
 }
