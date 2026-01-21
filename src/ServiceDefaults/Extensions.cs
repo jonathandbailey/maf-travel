@@ -73,7 +73,8 @@ public static class Extensions
             {
                 tracing.AddSource(builder.Environment.ApplicationName)
                     .AddSource("Application.Workflows")
-                    .AddSource("Agents");
+                    .AddSource("Agents")
+                    .AddSource("Travel.Experience.Agents*");
                 // Add your custom ActivitySource (match Telemetry ActivitySource)
                 /*   .AddAspNetCoreInstrumentation(tracing =>
                        // Exclude health check requests from tracing

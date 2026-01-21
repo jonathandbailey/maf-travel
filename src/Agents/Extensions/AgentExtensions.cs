@@ -1,4 +1,5 @@
-﻿using Agents.Middleware;
+﻿using A2A;
+using Agents.Middleware;
 using Agents.Repository;
 using Agents.Services;
 using Agents.Settings;
@@ -25,6 +26,23 @@ public static class AgentExtensions
         services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
 
         return services;
+    }
+
+
+    public static string GetPartText(this TaskStatusUpdateEvent taskStatusUpdateEvent)
+    {
+        return taskStatusUpdateEvent.Status.Message.Parts.OfType<TextPart>().First().Text;
+    }
+
+    public static void AddToolCalls(this Dictionary<string, FunctionCallContent> tools, IList<AIContent> contents)
+    {
+        foreach (var content in contents)
+        {
+            if (content is FunctionCallContent callContent)
+            {
+                tools[callContent.Name] = callContent;
+            }
+        }
     }
 
     public static AgentRunOptions AddThreadId(this AgentRunOptions options, string threadId)

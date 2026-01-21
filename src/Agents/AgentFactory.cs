@@ -119,7 +119,7 @@ public class AgentFactory(
             .AsBuilder()
             .BuildAIAgent(options: clientChatOptions);
 
-        var userAgent = new UserAgent(agent, agentServiceDiscovery, logger);
+        var userAgent = new ConversationAgent(agent, agentServiceDiscovery, logger);
 
         var middlewareAgent = userAgent.AsBuilder()
             .Use(runFunc : null, runStreamingFunc: agentAgUiMiddleware.RunStreamingAsync)

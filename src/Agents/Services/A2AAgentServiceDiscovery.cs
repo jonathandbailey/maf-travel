@@ -37,6 +37,13 @@ public class A2AAgentServiceDiscovery : IA2AAgentServiceDiscovery
         return agentMeta;
     }
 
+    public string GetToolCallArguments(FunctionCallContent functionCallContent)
+    {
+        var argument = functionCallContent.Arguments["jsonPayload"].ToString();
+
+        return argument;
+    }
+
     public async Task Initialize()
     {
         foreach (var agentToolSetting in _agentToolSettings)
@@ -110,4 +117,5 @@ public interface IA2AAgentServiceDiscovery
     Task Initialize();
     List<AITool> GetTools();
     AgentMeta GetAgentMeta(string name);
+    string GetToolCallArguments(FunctionCallContent functionCallContent);
 }
