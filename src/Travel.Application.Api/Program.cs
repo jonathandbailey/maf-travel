@@ -17,6 +17,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
+builder.Services.AddHostedService<AzureStorageSeedService>();
+
 builder.Services.AddScoped<ITravelPlanService, TravelPlanService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 

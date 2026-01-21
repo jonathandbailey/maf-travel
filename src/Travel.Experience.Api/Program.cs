@@ -1,7 +1,6 @@
 using Agents.Extensions;
 using Api.Extensions;
 using Infrastructure.Extensions;
-using Travel.Workflows.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +9,6 @@ builder.AddServiceDefaults();
 builder.AddCorsPolicyFromServiceDiscovery();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
-
-builder.Services.AddWorkflowServices();
 
 builder.Services.AddAgentServices(builder.Configuration);
 
