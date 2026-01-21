@@ -10,6 +10,7 @@ import { useTravelPlanStore } from "../../travel-planning/stores/travel-plan.sto
 import { mapTravelPlanDtoToDomain } from "../../travel-planning/domain/mappers";
 import type { StatusUpdate } from "../domain/StatusUpdate";
 import { useStatusUpdateStore } from "../stores/status-update.store";
+import { useExchangesStore } from "../stores/exchanges.store";
 
 interface ChatProps {
     sessionId: string;
@@ -22,6 +23,7 @@ const Chat = ({ sessionId }: ChatProps) => {
     const travelService = new TravelService();
     const { addStatusUpdate } = useStatusUpdateStore();
     const { addTravelPlan } = useTravelPlanStore();
+    const { addExchange } = useExchangesStore();
 
     const [isLoading, setIsLoading] = useState(false);
     const [statusMessage, setStatusMessage] = useState<string>("");
@@ -68,6 +70,12 @@ const Chat = ({ sessionId }: ChatProps) => {
                         .catch(error => {
                             console.error("Failed to fetch travel plan:", error);
                         });
+
+
+                    activeExchange.assistant.text = streamTextRef.current;
+                    addExchange(activeExchange);
+
+
                 }
                 if (event.type === EventType.TEXT_MESSAGE_START) {
                     activeExchange.assistant.isLoading = true;
@@ -77,6 +85,7 @@ const Chat = ({ sessionId }: ChatProps) => {
                 if (event.type === EventType.RUN_ERROR) {
                     activeExchange.assistant.isLoading = false;
                     setIsLoading(false);
+
                 }
 
                 if (event.type === EventType.STATE_SNAPSHOT) {
@@ -125,6 +134,8 @@ const Chat = ({ sessionId }: ChatProps) => {
 
     function handlePrompt(value: string): void {
         const newExchange = UIFactory.createUIExchange(value);
+
+        console.log("New exchange created:", newExchange);
 
         setActiveExchange(newExchange);
 

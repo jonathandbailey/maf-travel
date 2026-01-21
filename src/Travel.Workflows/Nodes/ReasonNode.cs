@@ -107,7 +107,7 @@ public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : R
             var reasoningOutput = JsonSerializer.Deserialize<ReasoningOutputDto>(response.Text, SerializerOptions)
                 ?? throw new JsonException("Failed to deserialize response to ReasoningOutputDto");
 
-            await context.AddEventAsync(new WorkflowStatusEvent(reasoningOutput.Status, reasoningOutput.Thought, WorkflowConstants.ReasonNodeName), cancellationToken);
+            await context.AddEventAsync(new WorkflowStatusEvent(reasoningOutput.Status, reasoningOutput.Thought, "Travel Planning Agent"), cancellationToken);
 
             return reasoningOutput;
         }

@@ -94,7 +94,7 @@ public static class AgentExtensions
 
     public static AgentRunResponseUpdate ToAgentResponseStatusMessage(this string message)
     {
-        var statusUpdate = new StatusUpdate("StatusUpdate", "ConversationAgent", message, string.Empty);
+        var statusUpdate = new StatusUpdate("StatusUpdate", "Conversation Agent", message, string.Empty);
 
         var snapshot = new SnapShot<StatusUpdate>(statusUpdate.Type, statusUpdate);
 
