@@ -2,7 +2,6 @@ using Agents.Extensions;
 using Infrastructure.Extensions;
 using Infrastructure.Settings;
 using System.Text.Json.Serialization;
-using Travel.Planning.Api.Services;
 using Travel.Workflows.Api.Services;
 using Travel.Workflows.Extensions;
 

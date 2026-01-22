@@ -2,13 +2,11 @@
 using Agents.Dto;
 using Agents.Middleware;
 using Agents.Repository;
-using Agents.Services;
 using Agents.Settings;
 using Azure.AI.OpenAI;
 using Infrastructure.Dto;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 
@@ -18,8 +16,6 @@ public class AgentFactory(
     IAgentTemplateRepository templateRepository, 
     IAgentMemoryMiddleware agentMemoryMiddleware,
     IAgentAgUiMiddleware agentAgUiMiddleware,
-    IA2AAgentServiceDiscovery agentServiceDiscovery,
-    ILogger<IAgentFactory>  logger,
     IOptions<LanguageModelSettings> settings) : IAgentFactory
 {
  

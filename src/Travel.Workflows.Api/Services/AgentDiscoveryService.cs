@@ -1,6 +1,6 @@
 ﻿using A2A;
 
-namespace Travel.Planning.Api.Services;
+namespace Travel.Workflows.Api.Services;
 
 public class AgentDiscoveryService : IAgentDiscoveryService
 {

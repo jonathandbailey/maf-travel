@@ -1,6 +1,7 @@
 ﻿using Agents;
 using Agents.Services;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
+using Travel.Experience.Api.Agents;
 
 namespace Travel.Experience.Api.Extensions;
 

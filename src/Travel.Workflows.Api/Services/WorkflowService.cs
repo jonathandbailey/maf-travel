@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using A2A;
-using Travel.Planning.Api.Services;
 using Travel.Workflows.Dto;
 
 namespace Travel.Workflows.Api.Services;
