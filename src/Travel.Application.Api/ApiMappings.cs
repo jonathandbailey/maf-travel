@@ -1,4 +1,5 @@
 ﻿
+using Infrastructure.Dto;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Travel.Application.Api.Dto;
@@ -14,6 +15,8 @@ public static class ApiMappings
     private const string GetSessionPath = "travel/sessions/{sessionId}";
     private const string GetTravelPlanPath = "travel/plans/{travelPlanId}";
     private const string UpdateTravelPlanPath = "travel/plans/{threadId}";
+    private const string TravelFlightsSearchPath = "travel/flights/search";
+    private const string GetTravelFlightsSearchPath = "travel/flights/search/{id}";
 
     public static WebApplication MapApi(this WebApplication app)
     {
@@ -23,14 +26,28 @@ public static class ApiMappings
         api.MapGet(GetTravelPlanPath, GetTravelPlan);
         api.MapGet(GetSessionPath, GetSession);
         api.MapPost(UpdateTravelPlanPath, UpdateTravelPlan);
-
-                    api.MapGet("travel/flights/search/{searchId}", async (Guid searchId, IFlightService flightService, HttpContext context) =>
-            {
-                var result = await flightService.GetFlightSearch(context.User.Id(), searchId);
-                return TypedResults.Ok(result);
-            });
+        api.MapPost(TravelFlightsSearchPath, SaveFlightSearch);
+        api.MapGet(GetTravelFlightsSearchPath, GetFlightSearch);
 
         return app;
+    }
+
+    private static async Task<Ok<FlightSearchResultDto>> GetFlightSearch(
+        Guid id,
+        IFlightService flightService,
+        HttpContext context)
+    {
+        var result = await flightService.GetFlightSearch(context.User.Id(), id);
+        return TypedResults.Ok(result);
+    }
+
+    private static async Task<Ok<Guid>> SaveFlightSearch(
+        [FromBody] FlightSearchResultDto flightSearch,
+        IFlightService flightService,
+        HttpContext context)
+    {
+        var id = await flightService.SaveFlightSearch(flightSearch);
+        return TypedResults.Ok(id);
     }
 
     private static async Task UpdateTravelPlan(
