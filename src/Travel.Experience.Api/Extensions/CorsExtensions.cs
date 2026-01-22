@@ -1,4 +1,4 @@
-﻿namespace Api.Extensions;
+﻿namespace Travel.Experience.Api.Extensions;
 
 public static class CorsExtensions
 {

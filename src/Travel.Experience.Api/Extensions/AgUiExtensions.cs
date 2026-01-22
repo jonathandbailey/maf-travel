@@ -2,7 +2,7 @@
 using Agents.Services;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
 
-namespace Api.Extensions;
+namespace Travel.Experience.Api.Extensions;
 
 public static class AgUiExtensions
 {

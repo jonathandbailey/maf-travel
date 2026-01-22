@@ -1,6 +1,6 @@
 using Agents.Extensions;
-using Api.Extensions;
 using Infrastructure.Extensions;
+using Travel.Experience.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

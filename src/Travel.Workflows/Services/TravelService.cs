@@ -10,7 +10,7 @@ using Travel.Workflows.Models.Flights;
 
 namespace Travel.Workflows.Services;
 
-public class TravelPlanService(IAzureStorageRepository repository, IArtifactRepository artifactRepository, IOptions<AzureStorageSeedSettings> settings) : ITravelPlanService
+public class TravelService(IAzureStorageRepository repository, IArtifactRepository artifactRepository, IOptions<AzureStorageSeedSettings> settings) : ITravelPlanService
 {
     private const string ApplicationJsonContentType = "application/json";
 

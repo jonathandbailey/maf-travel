@@ -1,7 +1,7 @@
 ﻿using Agents.Services;
 using Infrastructure.Settings;
 
-namespace Api.Extensions;
+namespace Travel.Experience.Api.Extensions;
 
 public static class ApplicationExtensions
 {
