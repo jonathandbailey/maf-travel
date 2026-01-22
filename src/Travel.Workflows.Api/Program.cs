@@ -23,7 +23,7 @@ builder.Services.Configure<AzureStorageSeedSettings>((options) => builder.Config
 
 
 builder.Services.AddSingleton<IAgentDiscoveryService, AgentDiscoveryService>();
-builder.Services.AddSingleton<IWorkflowService, WorkflowService>();
+builder.Services.AddSingleton<IWorkflowTaskManager, WorkflowTaskManager>();
 builder.Services.AddSingleton<ITravelWorkflowService, TravelWorkflowService>();
 
 builder.Services.AddOpenApi();
@@ -39,7 +39,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var workflowService = app.Services.GetRequiredService<IWorkflowService>();
+var workflowService = app.Services.GetRequiredService<IWorkflowTaskManager>();
 
 app.MapA2A(workflowService.TaskManager, "/api/a2a/travel");
 

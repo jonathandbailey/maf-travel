@@ -5,14 +5,14 @@ using Workflows;
 
 namespace Travel.Workflows.Api.Services;
 
-public class WorkflowService : IWorkflowService
+public class WorkflowTaskManager : IWorkflowTaskManager
 {
     private readonly IAgentDiscoveryService _agentDiscoveryService;
     private readonly ITravelWorkflowService _travelWorkflowService;
 
     public ITaskManager TaskManager { get; } = new TaskManager();
 
-    public WorkflowService(IAgentDiscoveryService agentDiscoveryService, ITravelWorkflowService travelWorkflowService)
+    public WorkflowTaskManager(IAgentDiscoveryService agentDiscoveryService, ITravelWorkflowService travelWorkflowService)
     {
         _agentDiscoveryService = agentDiscoveryService;
         _travelWorkflowService = travelWorkflowService;
@@ -96,7 +96,7 @@ public class WorkflowService : IWorkflowService
     }
 }
 
-public interface IWorkflowService
+public interface IWorkflowTaskManager
 {
     ITaskManager TaskManager { get; }
 }
