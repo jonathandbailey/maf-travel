@@ -1,7 +1,7 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-using Travel.Workflows.Dto;
+using Workflows.Dto;
 
-namespace Travel.Workflows.Repository;
+namespace Workflows.Interfaces;
 
 public interface IWorkflowRepository
 {

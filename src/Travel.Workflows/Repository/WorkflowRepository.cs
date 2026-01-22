@@ -4,7 +4,9 @@ using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Options;
-using Travel.Workflows.Dto;
+using Workflows;
+using Workflows.Dto;
+using Workflows.Interfaces;
 
 namespace Travel.Workflows.Repository;
 

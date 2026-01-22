@@ -3,7 +3,8 @@ using System.Text.Json.Serialization;
 using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
-using Travel.Workflows.Dto;
+using Workflows.Dto;
+using Workflows.Interfaces;
 
 namespace Travel.Workflows.Repository;
 

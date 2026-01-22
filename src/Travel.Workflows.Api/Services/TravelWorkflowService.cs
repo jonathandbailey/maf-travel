@@ -1,8 +1,8 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Travel.Workflows.Dto;
-using Travel.Workflows.Repository;
-using Travel.Workflows.Services;
+using Workflows;
+using Workflows.Interfaces;
 
 namespace Travel.Workflows.Api.Services;
 

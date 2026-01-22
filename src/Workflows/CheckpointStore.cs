@@ -1,10 +1,10 @@
 ﻿using System.Text.Json;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Checkpointing;
-using Travel.Workflows.Dto;
-using Travel.Workflows.Repository;
+using Workflows.Dto;
+using Workflows.Interfaces;
 
-namespace Travel.Workflows.Services;
+namespace Workflows;
 
 public class CheckpointStore(ICheckpointRepository checkpointRepository, string threadId) : JsonCheckpointStore
 {

@@ -1,6 +1,6 @@
-﻿using Travel.Workflows.Dto;
+﻿using Workflows.Dto;
 
-namespace Travel.Workflows.Repository;
+namespace Workflows.Interfaces;
 
 public interface ICheckpointRepository
 {

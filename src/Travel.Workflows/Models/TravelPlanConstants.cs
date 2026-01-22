@@ -9,3 +9,16 @@ public enum TravelPlanStatus
     NotStarted,
     Error
 }
+
+public enum FlightOptionsStatus
+{
+    Created,
+    NotCreated
+}
+
+public enum UserFlightOptionsStatus
+{
+    Selected,
+    UserChoiceRequired,
+    NotSelected
+}
