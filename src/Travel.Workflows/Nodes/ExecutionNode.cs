@@ -9,16 +9,18 @@ using Travel.Workflows.Services;
 
 namespace Travel.Workflows.Nodes;
 
-public class ActNode(ITravelService travelService) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), 
+public class ExecutionNode(ITravelService travelService) : ReflectingExecutor<ExecutionNode>(WorkflowConstants.ExecutionNode), 
     IMessageHandler<ReasoningOutputDto>,
     IMessageHandler<AgentResponse>
 {
+    private const string? UnknownNextAction = "Unknown NextAction";
+
     public async ValueTask HandleAsync(ReasoningOutputDto message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        using var activity = Telemetry.Start($"{WorkflowConstants.ActNodeName}{WorkflowConstants.HandleRequest}");
+        using var activity = Telemetry.Start($"{WorkflowConstants.ExecutionNode}{WorkflowConstants.HandleRequest}");
 
-        activity?.SetTag(WorkflowTelemetryTags.Node, WorkflowConstants.ActNodeName);
+        activity?.SetTag(WorkflowTelemetryTags.Node, WorkflowConstants.ExecutionNode);
     
         var serialized = JsonSerializer.Serialize(message);
 
@@ -29,7 +31,7 @@ public class ActNode(ITravelService travelService) : ReflectingExecutor<ActNode>
 
         if (message.TravelPlanUpdate != null)
         {
-            await travelService.UpdateTravelPlan(message.TravelPlanUpdate!, threadId);
+            await travelService.UpdateTravelPlan(message.TravelPlanUpdate, threadId);
 
             await context.AddEventAsync(new TravelPlanUpdatedEvent(), cancellationToken);
         }
@@ -46,7 +48,7 @@ public class ActNode(ITravelService travelService) : ReflectingExecutor<ActNode>
             case NextAction.Error:
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(message),"Unknown NextAction");
+                throw new ArgumentOutOfRangeException(nameof(message),UnknownNextAction);
         }
     }
     public async ValueTask HandleAsync(AgentResponse agentResponse, IWorkflowContext context,

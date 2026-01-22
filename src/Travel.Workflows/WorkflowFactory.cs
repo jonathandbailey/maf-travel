@@ -16,10 +16,10 @@ public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelSe
       
         var requestPort = RequestPort.Create<UserRequest, ReasoningInputDto>("user-input");
 
-        var reasonNode = new ReasonNode(reasonAgent, travelService);
-        var actNode = new ActNode(travelService);
+        var reasonNode = new PlanningNode(reasonAgent, travelService);
+        var actNode = new ExecutionNode(travelService);
      
-        var flightWorkerNode = new FlightWorkerNode(flightAgent, travelService, flightService);
+        var flightWorkerNode = new FlightsNode(flightAgent, flightService);
    
         var startNode = new StartNode();
      

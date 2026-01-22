@@ -5,7 +5,7 @@ using Travel.Workflows.Extensions;
 
 namespace Travel.Workflows.Nodes;
 
-public class StartNode() : ReflectingExecutor<StartNode>("StartNode") ,
+public class StartNode() : ReflectingExecutor<StartNode>(WorkflowConstants.StateNode) ,
 IMessageHandler<StartWorkflowDto, ReasoningInputDto>
 {
     public async ValueTask<ReasoningInputDto> HandleAsync(StartWorkflowDto message, IWorkflowContext context,
