@@ -1,16 +1,16 @@
-﻿using A2A;
+﻿using System.Runtime.CompilerServices;
+using A2A;
+using Agents;
 using Agents.Extensions;
 using Agents.Observability;
 using Agents.Services;
 using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
-using System.Runtime.CompilerServices;
 using Microsoft.Agents.AI.A2A;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.AI;
 
-namespace Agents;
+namespace Travel.Experience.Api.Agents;
 
-public class ConversationAgent(AIAgent agent, IA2AAgentServiceDiscovery discovery, ILogger<IAgentFactory> logger) : DelegatingAIAgent(agent)
+public class ConversationAgent(AIAgent agent, IA2AAgentServiceDiscovery discovery) : DelegatingAIAgent(agent)
 {
     private const string StatusMessageThinking = "Thinking...";
     private const string ExecutingTravelWorkflow = "Executing Travel Workflow...";

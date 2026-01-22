@@ -96,7 +96,7 @@ public class AgentFactory(
         return middlewareAgent;
     }
 
-    public async Task<AIAgent> CreateUserAgent(List<AITool> tools)
+    public async Task<AIAgent> ConversationAgent(List<AITool> tools)
     {
         var template = await templateRepository.Load("Conversation-Agent");
 
@@ -119,10 +119,13 @@ public class AgentFactory(
             .AsBuilder()
             .BuildAIAgent(options: clientChatOptions);
 
-        var userAgent = new ConversationAgent(agent, agentServiceDiscovery, logger);
+        return agent;
+    }
 
-        var middlewareAgent = userAgent.AsBuilder()
-            .Use(runFunc : null, runStreamingFunc: agentAgUiMiddleware.RunStreamingAsync)
+    public AIAgent ExtendConversationAgent(AIAgent agent)
+    {
+        var middlewareAgent = agent.AsBuilder()
+            .Use(runFunc: null, runStreamingFunc: agentAgUiMiddleware.RunStreamingAsync)
             .Use(runFunc: null, runStreamingFunc: agentMemoryMiddleware.RunStreamingAsync)
             .Build();
 
@@ -134,6 +137,7 @@ public interface IAgentFactory
 {
     Task<AIAgent> CreateReasonAgent();
     Task<AIAgent> CreateFlightAgent();
-    Task<AIAgent> CreateUserAgent(List<AITool> tools);
+    Task<AIAgent> ConversationAgent(List<AITool> tools);
+    AIAgent ExtendConversationAgent(AIAgent agent);
 }
 

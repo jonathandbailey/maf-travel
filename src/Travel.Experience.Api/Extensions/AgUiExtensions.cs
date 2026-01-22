@@ -14,10 +14,14 @@ public static class AgUiExtensions
 
         var agentFactory = app.Services.GetRequiredService<IAgentFactory>();
     
-        var agent = await agentFactory.CreateUserAgent(discovery.GetTools());
+        var agent = await agentFactory.ConversationAgent(discovery.GetTools());
 
-        app.MapAGUI("ag-ui", agent);
-        
+        var conversationAgent = new ConversationAgent(agent, discovery);
+
+        var extended = agentFactory.ExtendConversationAgent(conversationAgent);
+
+        app.MapAGUI("ag-ui", extended);
+
         return app;
     }
 }
