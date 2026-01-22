@@ -15,17 +15,6 @@ public class TravelPlanSummary
         TravelPlanStatus = planDto.TravelPlanStatus.ToString();
     }
 
-    public TravelPlanSummary(TravelPlan plan)
-    {
-        Origin = !string.IsNullOrEmpty(plan.Origin) ? plan.Origin : TravelPlanConstants.NotSet;
-        Destination = !string.IsNullOrEmpty(plan.Destination) ? plan.Destination : TravelPlanConstants.NotSet;
-        StartDate = plan.StartDate?.ToString("yyyy-MM-dd") ?? TravelPlanConstants.NotSet;
-        EndDate = plan.EndDate?.ToString("yyyy-MM-dd") ?? TravelPlanConstants.NotSet;
-        FlightOptionStatus = plan.FlightPlan.FlightOptionsStatus.ToString();
-        UserFlightOptionStatus = plan.FlightPlan.UserFlightOptionStatus.ToString();
-        TravelPlanStatus = plan.TravelPlanStatus.ToString();
-    }
-
     public string Origin { get; set; }
 
     public string Destination { get; set; }
@@ -39,5 +28,10 @@ public class TravelPlanSummary
     public string UserFlightOptionStatus { get; set; }
 
     public string TravelPlanStatus { get; set; }
+}
+
+public static class TravelPlanConstants
+{
+    public const string NotSet = "Not_Set";
 }
 
