@@ -81,6 +81,7 @@ const Chat = ({ sessionId }: ChatProps) => {
                         .then(travelPlanDto => {
                             const travelPlan = mapTravelPlanDtoToDomain(travelPlanDto, sessionId);
                             console.log("Storing travel plan with ID:", travelPlan.id, "SessionId:", sessionId);
+                            console.log(travelPlan);
                             addTravelPlan(travelPlan);
                         })
                         .catch(error => {
@@ -149,7 +150,7 @@ const Chat = ({ sessionId }: ChatProps) => {
                                     // Convert DTOs to domain objects and store the complete flight search results
                                     const departureFlights = flightSearchResult.departureFlightOptions.map(mapFlightOptionDtoToDomain);
                                     const returnFlights = flightSearchResult.returnFlightOptions.map(mapFlightOptionDtoToDomain);
-                                    
+
                                     setFlightSearchResults({
                                         artifactKey: flightSearchResult.artifactKey,
                                         departureFlightOptions: departureFlights,

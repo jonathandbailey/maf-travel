@@ -1,4 +1,5 @@
 ﻿
+
 using Infrastructure.Dto;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,9 @@ using Travel.Application.Api.Dto;
 using Travel.Application.Api.Extensions;
 using Travel.Application.Api.Models.Flights;
 using Travel.Application.Api.Services;
+using FlightEndpointDto = Travel.Application.Api.Dto.FlightEndpointDto;
+using FlightOptionDto = Travel.Application.Api.Dto.FlightOptionDto;
+using PriceDto = Travel.Application.Api.Dto.PriceDto;
 
 namespace Travel.Application.Api;
 
@@ -119,7 +123,9 @@ public static class ApiMappings
             travelPlan.FlightPlan.FlightOptionsStatus, 
             travelPlan.FlightPlan.UserFlightOptionStatus,
             travelPlan.TravelPlanStatus,
-            travelPlan.Id
+       
+            travelPlan.Id,
+            MapFlightPlan(travelPlan.FlightPlan)
             );
 
         return TypedResults.Ok(dto);
@@ -160,6 +166,65 @@ public static class ApiMappings
             {
                 Amount = flightOption.Price.Amount,
                 Currency = flightOption.Price.Currency
+            }
+        };
+    }
+
+    private static FlightOption MapFlightOption(Infrastructure.Dto.FlightOptionDto flightOption)
+    {
+        return new FlightOption
+        {
+            Airline = flightOption.Airline,
+            FlightNumber = flightOption.FlightNumber,
+            Departure = new FlightEndpoint
+            {
+                Airport = flightOption.Departure.Airport,
+                Datetime = flightOption.Departure.Datetime
+            },
+            Arrival = new FlightEndpoint
+            {
+                Airport = flightOption.Arrival.Airport,
+                Datetime = flightOption.Arrival.Datetime
+            },
+            Duration = flightOption.Duration,
+            Price = new FlightPrice
+            {
+                Amount = flightOption.Price.Amount,
+                Currency = flightOption.Price.Currency
+            }
+        };
+    }
+
+    private static FlightPlanDto MapFlightPlan(FlightPlan flightPlan)
+    {
+        if (flightPlan?.FlightOption == null)
+        {
+            return null;
+        }
+
+        return new FlightPlanDto
+        {
+            FlightOption = new FlightOptionDto
+            {
+                Airline = flightPlan.FlightOption.Airline,
+                FlightNumber = flightPlan.FlightOption.FlightNumber,
+                Departure = new FlightEndpointDto
+                {
+                    Airport = flightPlan.FlightOption.Departure.Airport,
+                    Datetime = flightPlan.FlightOption.Departure.Datetime
+                },
+                Arrival = new FlightEndpointDto
+                {
+                    Airport = flightPlan.FlightOption.Arrival.Airport,
+                   
+                    Datetime = flightPlan.FlightOption.Arrival.Datetime
+                },
+                Duration = flightPlan.FlightOption.Duration,
+                Price = new PriceDto
+                {
+                    Amount = flightPlan.FlightOption.Price.Amount,
+                    Currency = flightPlan.FlightOption.Price.Currency
+                }
             }
         };
     }

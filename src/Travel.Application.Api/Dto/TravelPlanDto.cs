@@ -15,7 +15,7 @@ public class TravelPlanUpdateDto()
   
 }
 
-public class TravelPlanDto(string? origin, string? destination, DateTimeOffset? startDate, DateTimeOffset? endDate, FlightOptionsStatus flightOptionsStatus, UserFlightOptionsStatus userFlightOptionStatus, TravelPlanStatus travelPlanStatus, Guid id)
+public class TravelPlanDto(string? origin, string? destination, DateTimeOffset? startDate, DateTimeOffset? endDate, FlightOptionsStatus flightOptionsStatus, UserFlightOptionsStatus userFlightOptionStatus, TravelPlanStatus travelPlanStatus, Guid id, FlightPlanDto flightPlan)
 {
     public Guid Id { get; } = id;
 
@@ -33,6 +33,8 @@ public class TravelPlanDto(string? origin, string? destination, DateTimeOffset? 
     public UserFlightOptionsStatus UserFlightOptionStatus { get; private set; } = userFlightOptionStatus;
 
     public TravelPlanStatus TravelPlanStatus { get; private set; } = travelPlanStatus;
+
+    public FlightPlanDto FlightPlan { get; } = flightPlan;
 }
 
 

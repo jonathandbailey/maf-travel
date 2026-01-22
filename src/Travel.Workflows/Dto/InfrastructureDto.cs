@@ -2,10 +2,10 @@
 
 namespace Travel.Workflows.Dto;
 
-public class CreateFlightOptions(TravelPlan travelPlan, ReasoningOutputDto message)
+public class CreateFlightOptions(TravelPlanSummary travelPlan, ReasoningOutputDto message)
 {
     public ReasoningOutputDto Message { get; } = message;
-    public TravelPlan TravelPlan => travelPlan;
+    public TravelPlanSummary TravelPlan => travelPlan;
 }
 
 

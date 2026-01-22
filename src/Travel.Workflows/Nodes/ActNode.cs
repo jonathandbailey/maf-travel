@@ -41,7 +41,7 @@ public class ActNode(ITravelService travelService) : ReflectingExecutor<ActNode>
                 await context.SendMessageAsync(new UserRequest(serialized), cancellationToken: cancellationToken);
                 break;
             case NextAction.FlightAgent:
-                var plan = await travelService.LoadAsync();
+                var plan = await travelService.GetSummary(Guid.Parse(threadId!));
                 await context.SendMessageAsync(new CreateFlightOptions(plan, message), cancellationToken: cancellationToken);
                 break;
             case NextAction.Error:
