@@ -10,7 +10,7 @@ using WorkflowTelemetryTags = Travel.Workflows.Observability.WorkflowTelemetryTa
 
 namespace Travel.Workflows.Nodes;
 
-public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), 
+public class ActNode(ITravelService travelService) : ReflectingExecutor<ActNode>(WorkflowConstants.ActNodeName), 
     IMessageHandler<ReasoningOutputDto>,
     IMessageHandler<AgentResponse>
 {
@@ -30,7 +30,7 @@ public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<
 
         if (message.TravelPlanUpdate != null)
         {
-            await travelPlanService.UpdateTravelPlanFromEndpoint(message.TravelPlanUpdate!, Guid.Parse(threadId!));
+            await travelService.UpdateTravelPlanFromEndpoint(message.TravelPlanUpdate!, Guid.Parse(threadId!));
 
             await context.AddEventAsync(new TravelPlanUpdatedEvent(), cancellationToken);
         }
@@ -41,7 +41,7 @@ public class ActNode(ITravelPlanService travelPlanService) : ReflectingExecutor<
                 await context.SendMessageAsync(new UserRequest(serialized), cancellationToken: cancellationToken);
                 break;
             case NextAction.FlightAgent:
-                var plan = await travelPlanService.LoadAsync();
+                var plan = await travelService.LoadAsync();
                 await context.SendMessageAsync(new CreateFlightOptions(plan, message), cancellationToken: cancellationToken);
                 break;
             case NextAction.Error:

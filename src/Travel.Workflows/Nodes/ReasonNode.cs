@@ -55,7 +55,7 @@ public class NullableDateTimeConverter : JsonConverter<DateTime?>
     }
 }
 
-public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : ReflectingExecutor<ReasonNode>(WorkflowConstants.ReasonNodeName),
+public class ReasonNode(AIAgent agent, ITravelService travelService) : ReflectingExecutor<ReasonNode>(WorkflowConstants.ReasonNodeName),
    
     IMessageHandler<ReasoningInputDto, ReasoningOutputDto>
 {
@@ -80,7 +80,7 @@ public class ReasonNode(AIAgent agent, ITravelPlanService travelPlanService) : R
         {
             var threadId = await context.ReadStateAsync<string>("agent_thread_id", scopeName: "workflow", cancellationToken);
 
-            var travelPlanSummary = await travelPlanService.GetSummary(Guid.Parse(threadId!));
+            var travelPlanSummary = await travelService.GetSummary(Guid.Parse(threadId!));
 
             var template = JsonSerializer.Serialize(new ReasoningState(reasoningInput.Observation, travelPlanSummary));
 

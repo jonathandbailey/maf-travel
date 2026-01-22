@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Infrastructure.Dto;
 using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,7 @@ using Travel.Workflows.Models.Flights;
 
 namespace Travel.Workflows.Services;
 
-public class TravelService(IAzureStorageRepository repository, IArtifactRepository artifactRepository, IOptions<AzureStorageSeedSettings> settings) : ITravelPlanService
+public class TravelService(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : ITravelService
 {
     private const string ApplicationJsonContentType = "application/json";
 
@@ -42,17 +43,6 @@ public class TravelService(IAzureStorageRepository repository, IArtifactReposito
             throw new InvalidOperationException("Failed to deserialize travel plan from response");
 
         return travelPlanDto;
-    }
-
-    public async Task<Guid> AddFlightSearchOption(FlightSearchResultDto option)
-    {
-        var payload = JsonSerializer.Serialize(option, SerializerOptions);
-
-        var id = Guid.NewGuid();
-
-        await artifactRepository.SaveFlightSearchAsync(payload, id);
-
-        return id;
     }
 
     public async Task<TravelPlan> SelectFlightOption(FlightSearchResultDto option)
@@ -149,11 +139,10 @@ public class TravelService(IAzureStorageRepository repository, IArtifactReposito
 
 }
 
-public interface ITravelPlanService
+public interface ITravelService
 {
     Task SaveAsync(TravelPlan state);
     Task<TravelPlan> LoadAsync();
-    Task<Guid> AddFlightSearchOption(FlightSearchResultDto option);
     Task<TravelPlan> SelectFlightOption(FlightSearchResultDto option);
     Task<TravelPlanSummary> GetSummary(Guid threadId);
     Task UpdateTravelPlanFromEndpoint(TravelPlanUpdateDto messageTravelPlanUpdate, Guid threadId);

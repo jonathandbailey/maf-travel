@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Application.Observability;
+using Infrastructure.Dto;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
@@ -9,11 +9,11 @@ using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Observability;
 using Travel.Workflows.Services;
-using WorkflowTelemetryTags = Travel.Workflows.Observability.WorkflowTelemetryTags;
+
 
 namespace Travel.Workflows.Nodes;
 
-public class FlightWorkerNode(AIAgent agent, ITravelPlanService travelPlanService) : 
+public class FlightWorkerNode(AIAgent agent, ITravelService travelService, IFlightService flightService) : 
     ReflectingExecutor<FlightWorkerNode>(WorkflowConstants.FlightWorkerNodeName), 
    
     IMessageHandler<CreateFlightOptions, AgentResponse>
@@ -71,7 +71,7 @@ public class FlightWorkerNode(AIAgent agent, ITravelPlanService travelPlanServic
             {
                 case FlightAction.FlightOptionsCreated:
                 {
-                    var id =  await travelPlanService.AddFlightSearchOption(flightSearchResults.Results);
+                    var id =  await flightService.SaveFlightSearch(flightSearchResults.Results);
 
                     await context.AddEventAsync(new ArtifactStatusEvent(id, flightSearchResults.Results.ArtifactKey, ArtifactStatus.Created), cancellationToken);
 
@@ -80,7 +80,7 @@ public class FlightWorkerNode(AIAgent agent, ITravelPlanService travelPlanServic
                 
                 case FlightAction.FlightOptionsSelected:
                 {
-                    await travelPlanService.SelectFlightOption(flightSearchResults.Results);
+                    await travelService.SelectFlightOption(flightSearchResults.Results);
 
                     return new AgentResponse(FlightAgent, FlightOptionSelected, AgentResponseStatus.Success);
                 }

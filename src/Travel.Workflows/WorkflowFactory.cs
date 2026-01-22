@@ -1,5 +1,4 @@
 ﻿using Agents;
-using Infrastructure.Interfaces;
 using Microsoft.Agents.AI.Workflows;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Nodes;
@@ -7,7 +6,7 @@ using Travel.Workflows.Services;
 
 namespace Travel.Workflows;
 
-public class WorkflowFactory(IAgentFactory agentFactory, IArtifactRepository artifactRepository, ITravelPlanService travelPlanService) : IWorkflowFactory
+public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelService, IFlightService flightService) : IWorkflowFactory
 {
     public async Task<Workflow> Create()
     {
@@ -17,10 +16,10 @@ public class WorkflowFactory(IAgentFactory agentFactory, IArtifactRepository art
       
         var requestPort = RequestPort.Create<UserRequest, ReasoningInputDto>("user-input");
 
-        var reasonNode = new ReasonNode(reasonAgent, travelPlanService);
-        var actNode = new ActNode(travelPlanService);
+        var reasonNode = new ReasonNode(reasonAgent, travelService);
+        var actNode = new ActNode(travelService);
      
-        var flightWorkerNode = new FlightWorkerNode(flightAgent, travelPlanService);
+        var flightWorkerNode = new FlightWorkerNode(flightAgent, travelService, flightService);
    
         var startNode = new StartNode();
      
