@@ -1,80 +1,65 @@
-﻿using Agents.Services;
-using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Travel.Workflows.Repository;
-using Travel.Workflows.Services;
+﻿using Microsoft.Agents.AI.Workflows;
+using Travel.Workflows.Dto;
 
 namespace Travel.Workflows.Extensions;
 
 public static class WorkflowExtensions
 {
-    public static IServiceCollection AddWorkflowServices(this IServiceCollection services)
+    public static async Task<Checkpointed<StreamingRun>> CreateStreamingRun<T>(this Workflow workflow, T message, WorkflowState state, CheckpointManager checkpointManager, CheckpointInfo? checkpointInfo) where T : notnull
     {
-        services.AddSingleton<IWorkflowFactory, WorkflowFactory>();
-        services.AddSingleton<IWorkflowRepository, WorkflowRepository>();
-
-        services.AddSingleton<ITravelService, TravelService>();
-        services.AddSingleton<IFlightService, FlightService>();
-
-        services.AddSingleton<ICheckpointRepository, CheckpointRepository>();
-
-        services.AddSingleton<IA2AAgentServiceDiscovery, A2AAgentServiceDiscovery>();
-
-        return services;
-    }
-
-    public static async Task<Guid> GetThreadId(this IWorkflowContext context, CancellationToken cancellationToken)
-    {
-        return await context.ReadStateAsync<Guid>("agent_thread_id", scopeName: "workflow", cancellationToken);
-    }
-
-    public static async Task AddThreadId(this IWorkflowContext context, string threadId, CancellationToken cancellationToken)
-    {
-        await context.QueueStateUpdateAsync("agent_thread_id", Guid.Parse(threadId), scopeName: "workflow", cancellationToken: cancellationToken);
-    }
-
-    public class NullableDateTimeConverter : JsonConverter<DateTime?>
-    {
-        public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        switch (state)
         {
-            if (reader.TokenType == JsonTokenType.Null)
-            {
-                return null;
-            }
-
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                var stringValue = reader.GetString();
-
-                // Handle empty strings or the string "null"
-                if (string.IsNullOrWhiteSpace(stringValue) || stringValue.Equals("null", StringComparison.OrdinalIgnoreCase))
-                {
-                    return null;
-                }
-
-                // Try to parse the date string
-                if (DateTime.TryParse(stringValue, out var dateTime))
-                {
-                    return dateTime;
-                }
-            }
-
-            // If we can't parse it, return null instead of throwing
-            return null;
-        }
-
-        public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-        {
-            if (value.HasValue)
-            {
-                writer.WriteStringValue(value.Value);
-            }
-            else
-            {
-                writer.WriteNullValue();
-            }
+            case WorkflowState.Initialized:
+            case WorkflowState.Completed:
+                return await StartStreamingRun(workflow, message, checkpointManager);
+            case WorkflowState.WaitingForUserInput:
+                return await ResumeStreamingRun(workflow, checkpointInfo, checkpointManager);
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
+
+    private static async Task<Checkpointed<StreamingRun>> StartStreamingRun<T>(Workflow workflow, T message, CheckpointManager checkpointManager) where T : notnull
+    {
+        return await InProcessExecution.StreamAsync(workflow, message, checkpointManager);
+    }
+
+    private static async Task<Checkpointed<StreamingRun>> ResumeStreamingRun(Workflow workflow,
+        CheckpointInfo? checkpointInfo, CheckpointManager checkpointManager)
+    {
+        if (checkpointInfo == null)
+            throw new ArgumentNullException(nameof(checkpointInfo),"Are CheckpointInfo is required to resume the workflow.");
+        
+        var run = await InProcessExecution.ResumeStreamAsync(workflow, checkpointInfo, checkpointManager,
+            checkpointInfo.RunId);
+    
+        return run;
+
+    }
+
+    public static WorkflowResponse HandleRequestForUserInput(this RequestInfoEvent requestInfoEvent)
+    {
+        var data = requestInfoEvent.Data as ExternalRequest;
+
+        if (data?.Data == null)
+        {
+            return new WorkflowResponse(WorkflowState.Error,
+                "Invalid request event: missing data", WorkflowAction.ReportError);
+        }
+
+        if (data.Data.AsType(typeof(UserRequest)) is not UserRequest userRequest)
+        {
+            return new WorkflowResponse(WorkflowState.Error,
+                "Invalid request event: unable to parse UserRequest", WorkflowAction.ReportError);
+        }
+
+        if (string.IsNullOrWhiteSpace(userRequest.Message))
+        {
+            return new WorkflowResponse(WorkflowState.Error,
+                "Invalid request event: UserRequest message is empty", WorkflowAction.ReportError);
+        }
+
+        return new WorkflowResponse(WorkflowState.WaitingForUserInput, userRequest.Message, WorkflowAction.InputRequest);
+    }
+
 }

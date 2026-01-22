@@ -19,7 +19,7 @@ public class TravelWorkflowService(
 
         var state = await workflowRepository.LoadAsync(request.Meta.ThreadId);
   
-        var checkpointManager = CheckpointManager.CreateJson(new CheckpointStore2(repository, request.Meta.ThreadId));
+        var checkpointManager = CheckpointManager.CreateJson(new CheckpointStore(repository, request.Meta.ThreadId));
 
         var travelWorkflow = new TravelWorkflow(workflow, checkpointManager, state.CheckpointInfo, state.State, logger);
 

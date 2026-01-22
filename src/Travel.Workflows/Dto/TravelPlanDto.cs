@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using Travel.Workflows.Models;
-using Travel.Workflows.Models.Flights;
 
 namespace Travel.Workflows.Dto;
 

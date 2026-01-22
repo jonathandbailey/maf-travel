@@ -24,7 +24,7 @@ public class ReasonNode(AIAgent agent, ITravelService travelService) : Reflectin
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new JsonStringEnumConverter(), new Extensions.WorkflowExtensions.NullableDateTimeConverter() }
+        Converters = { new JsonStringEnumConverter(), new Extensions.WorkflowServiceExtensions.NullableDateTimeConverter() }
     };
 
     public async ValueTask<ReasoningOutputDto> HandleAsync(

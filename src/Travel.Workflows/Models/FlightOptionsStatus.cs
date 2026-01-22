@@ -1,4 +1,4 @@
-﻿namespace Travel.Workflows.Models.Flights;
+﻿namespace Travel.Workflows.Models;
 
 public enum FlightOptionsStatus
 {

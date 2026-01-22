@@ -1,11 +1,12 @@
 ﻿using System.Text.Json;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Checkpointing;
+using Travel.Workflows.Dto;
 using Travel.Workflows.Repository;
 
 namespace Travel.Workflows;
 
-public class CheckpointStore2(ICheckpointRepository checkpointRepository, string threadId) : JsonCheckpointStore
+public class CheckpointStore(ICheckpointRepository checkpointRepository, string threadId) : JsonCheckpointStore
 {
     public override async ValueTask<IEnumerable<CheckpointInfo>> RetrieveIndexAsync(string runId, CheckpointInfo? withParent = null)
     {

@@ -1,4 +1,6 @@
-﻿namespace Travel.Workflows.Repository;
+﻿using Travel.Workflows.Dto;
+
+namespace Travel.Workflows.Repository;
 
 public interface ICheckpointRepository
 {
