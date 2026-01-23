@@ -10,7 +10,7 @@ using Workflows.Interfaces;
 
 namespace Travel.Workflows.Repository;
 
-public class WorkflowRepository(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : IWorkflowRepository
+public class WorkflowRepository(IAzureStorageRepository repository, IOptions<AzureStorageSettings> settings) : IWorkflowRepository
 {
     private const string ApplicationJsonContentType = "application/json";
 

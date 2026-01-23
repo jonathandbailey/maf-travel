@@ -6,7 +6,7 @@ namespace Travel.Application.Api.Services;
 
 public class AzureStorageSeedService(
     IServiceProvider serviceProvider,
-    IOptions<AzureStorageSeedSettings> settings,
+    IOptions<AzureStorageSettings> settings,
     ILogger<AzureStorageSeedService> logger) : IHostedService
 {
     

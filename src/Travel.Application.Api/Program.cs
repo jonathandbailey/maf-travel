@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.Configure<AzureStorageSeedSettings>((options) => builder.Configuration.GetSection("AzureStorageSeedSettings").Bind(options));
+builder.Services.Configure<AzureStorageSettings>((options) => builder.Configuration.GetSection("AzureStorageSeedSettings").Bind(options));
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -23,7 +23,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddHostedService<AzureStorageSeedService>();
 
-builder.Services.AddScoped<ITravelPlanService, TravelPlanService>();
+builder.Services.AddScoped<ITravelPlanRepository, TravelPlanPlanRepository>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IFlightService, FlightService>();
 

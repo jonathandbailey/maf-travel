@@ -8,7 +8,7 @@ using Workflows.Interfaces;
 
 namespace Travel.Workflows.Repository;
 
-public class CheckpointRepository(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : ICheckpointRepository
+public class CheckpointRepository(IAzureStorageRepository repository, IOptions<AzureStorageSettings> settings) : ICheckpointRepository
 {
     private const string ApplicationJsonContentType = "application/json";
 

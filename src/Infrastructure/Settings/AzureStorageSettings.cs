@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Settings;
 
-public class AzureStorageSeedSettings
+public class AzureStorageSettings
 {
     public required string ContainerName { get; init; }
 }

@@ -7,14 +7,14 @@ namespace Travel.Application.Api.Application.Queries;
 
 public record GetTravelPlanQuery(Guid User, Guid TravelPlanId) : IRequest<TravelPlanDto>;
 
-public class GetTravelPlanHandler(ITravelPlanService travelPlanService, ISessionService sessionService)
+public class GetTravelPlanHandler(ITravelPlanRepository travelPlanRepository, ISessionService sessionService)
     : IRequestHandler<GetTravelPlanQuery, TravelPlanDto>
 {
     public async Task<TravelPlanDto> Handle(GetTravelPlanQuery request, CancellationToken cancellationToken)
     {
         var session = await sessionService.Get(request.User, request.TravelPlanId);
 
-        var travelPlan = await travelPlanService.LoadAsync(request.User, session.TravelPlanId);
+        var travelPlan = await travelPlanRepository.LoadAsync(request.User, session.TravelPlanId);
 
         var dto = new TravelPlanDto(
             travelPlan.Origin,

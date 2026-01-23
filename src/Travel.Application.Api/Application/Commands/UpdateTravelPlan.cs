@@ -1,6 +1,5 @@
 ﻿using Infrastructure.Dto;
 using MediatR;
-using System.Threading;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Models.Flights;
 using Travel.Application.Api.Services;
@@ -11,27 +10,43 @@ public record UpdateTravelPlanCommand(Guid UserId, Guid SessionId, TravelPlanUpd
 
 public record UpdateTravelPlanFlightSearchCommand(Guid UserId, Guid SessionId, FlightSearchDto flightSearchDto) : IRequest;
 
-public class UpdateTravelPlanHandler(ITravelPlanService travelPlanService, ISessionService sessionService) : IRequestHandler<UpdateTravelPlanCommand>
+public class UpdateTravelPlanHandler(ITravelPlanRepository travelPlanRepository, ISessionService sessionService) : IRequestHandler<UpdateTravelPlanCommand>
 {
     public async Task Handle(UpdateTravelPlanCommand request, CancellationToken cancellationToken)
     {
         var session = await sessionService.Get(request.UserId, request.SessionId);
 
-        await travelPlanService.UpdateAsync(request.TravelPlanUpdateDto, request.UserId, session.TravelPlanId);
+        var travelPlan = await travelPlanRepository.LoadAsync(request.UserId, session.TravelPlanId);
+
+        if (!string.IsNullOrEmpty(request.TravelPlanUpdateDto.Origin))
+            travelPlan.SetOrigin(request.TravelPlanUpdateDto.Origin);
+
+        if (!string.IsNullOrEmpty(request.TravelPlanUpdateDto.Destination))
+            travelPlan.SetDestination(request.TravelPlanUpdateDto.Destination);
+
+        if (request.TravelPlanUpdateDto.StartDate.HasValue)
+            travelPlan.SetStartDate(request.TravelPlanUpdateDto.StartDate.Value);
+
+        if (request.TravelPlanUpdateDto.EndDate.HasValue)
+            travelPlan.SetEndDate(request.TravelPlanUpdateDto.EndDate.Value);
+
+        await travelPlanRepository.SaveAsync(travelPlan, request.UserId);
     }
 }
 
-public class UpdateTravelPlanFlightSearchHandler(ITravelPlanService travelPlanService, ISessionService sessionService) : IRequestHandler<UpdateTravelPlanFlightSearchCommand>
+public class UpdateTravelPlanFlightSearchHandler(ITravelPlanRepository travelPlanRepository, ISessionService sessionService) : IRequestHandler<UpdateTravelPlanFlightSearchCommand>
 {
     public async Task Handle(UpdateTravelPlanFlightSearchCommand request, CancellationToken cancellationToken)
     {
         var session = await sessionService.Get(request.UserId, request.SessionId);
 
+        var travelPlan = await travelPlanRepository.LoadAsync(request.UserId, session.TravelPlanId);
+
         var flightOption = request.flightSearchDto.DepartureFlightOptions.First();
 
-        var mapped = MapFlightOption(flightOption);
+        travelPlan.SelectFlightOption(MapFlightOption(flightOption));
 
-        await travelPlanService.SaveFlightOption(request.UserId, session.TravelPlanId, mapped);
+        await travelPlanRepository.SaveAsync(travelPlan, request.UserId);
     }
 
     private static FlightOption MapFlightOption(Infrastructure.Dto.FlightOptionDto flightOption)

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Repository;
 
-public class ArtifactRepository(IAzureStorageRepository repository, IOptions<AzureStorageSeedSettings> settings) : IArtifactRepository
+public class ArtifactRepository(IAzureStorageRepository repository, IOptions<AzureStorageSettings> settings) : IArtifactRepository
 {
     private const string ApplicationJsonContentType = "application/json";
 

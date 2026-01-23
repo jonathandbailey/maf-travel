@@ -6,7 +6,7 @@ using Travel.Application.Api.Models;
 
 namespace Travel.Application.Api.Services;
 
-public class SessionService(IAzureStorageRepository azureStorageRepository, IOptions<AzureStorageSeedSettings> settings) : ISessionService
+public class SessionService(IAzureStorageRepository azureStorageRepository, IOptions<AzureStorageSettings> settings) : ISessionService
 {
     private const string ApplicationJsonContentType = "application/json";
 
