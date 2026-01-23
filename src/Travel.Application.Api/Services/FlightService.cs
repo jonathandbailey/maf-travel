@@ -6,12 +6,12 @@ namespace Travel.Application.Api.Services;
 
 public class FlightService(IArtifactRepository artifactRepository) : IFlightService
 {
-    public async Task<FlightSearchResultDto> GetFlightSearch(Guid userId, Guid searchId)
+    public async Task<FlightSearchDto> GetFlightSearch(Guid userId, Guid searchId)
     {
         return await artifactRepository.GetFlightSearch(searchId);
     }
 
-    public async Task<Guid> SaveFlightSearch(FlightSearchResultDto flightSearch)
+    public async Task<Guid> SaveFlightSearch(FlightSearchDto flightSearch)
     {
         var id = Guid.NewGuid();
         var payload = JsonSerializer.Serialize(flightSearch);
@@ -23,6 +23,6 @@ public class FlightService(IArtifactRepository artifactRepository) : IFlightServ
 
 public interface IFlightService
 {
-    Task<FlightSearchResultDto> GetFlightSearch(Guid userId, Guid searchId);
-    Task<Guid> SaveFlightSearch(FlightSearchResultDto flightSearch);
+    Task<FlightSearchDto> GetFlightSearch(Guid userId, Guid searchId);
+    Task<Guid> SaveFlightSearch(FlightSearchDto flightSearch);
 }

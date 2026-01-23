@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using FlightSearchResultDto = Infrastructure.Dto.FlightSearchResultDto;
+using Infrastructure.Dto;
 
 namespace Travel.Workflows.Services;
 
@@ -15,7 +15,7 @@ public class FlightService : IFlightService
         PropertyNameCaseInsensitive = true
     };
 
-    public async Task<Guid> SaveFlightSearch(FlightSearchResultDto option, Guid threadId)
+    public async Task<Guid> SaveFlightSearch(FlightSearchDto option, Guid threadId)
     {
         var payload = JsonSerializer.Serialize(option, SerializerOptions);
 
@@ -34,7 +34,7 @@ public class FlightService : IFlightService
         return id;
     }
 
-    public async Task SaveFlightOption(FlightSearchResultDto option, Guid threadId)
+    public async Task SaveFlightOption(FlightSearchDto option, Guid threadId)
     {
         var payload = JsonSerializer.Serialize(option, SerializerOptions);
 
@@ -51,6 +51,6 @@ public class FlightService : IFlightService
 
 public interface IFlightService
 {
-    Task<Guid> SaveFlightSearch(FlightSearchResultDto option, Guid threadId);
-    Task SaveFlightOption(FlightSearchResultDto option, Guid threadId);
+    Task<Guid> SaveFlightSearch(FlightSearchDto option, Guid threadId);
+    Task SaveFlightOption(FlightSearchDto option, Guid threadId);
 }

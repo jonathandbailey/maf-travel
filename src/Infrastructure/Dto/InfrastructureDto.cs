@@ -3,7 +3,7 @@
 
 public class FlightActionResultDto
 {
-    public FlightSearchResultDto Results { get; set; }
+    public FlightSearchDto Results { get; set; }
     public FlightAction Action { get; set; }
 
     public string Status { get; set; }
@@ -16,7 +16,7 @@ public enum FlightAction
 }
 
 
-public class FlightSearchResultDto
+public class FlightSearchDto
 {
     public string ArtifactKey { get; set; }
     public List<FlightOptionDto> DepartureFlightOptions { get; set; }

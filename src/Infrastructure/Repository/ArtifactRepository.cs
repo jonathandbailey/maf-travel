@@ -34,24 +34,24 @@ public class ArtifactRepository(IAzureStorageRepository repository, IOptions<Azu
             artifact, ApplicationJsonContentType);
     }
 
-    public async Task<FlightSearchResultDto> GetFlightSearch(Guid id)
+    public async Task<FlightSearchDto> GetFlightSearch(Guid id)
     {
         var filename = GetFlightSearchFileName(id);
 
         var response = await repository.DownloadTextBlobAsync(filename, settings.Value.ContainerName);
 
-        var flightPlan = JsonSerializer.Deserialize<FlightSearchResultDto>(response, SerializerOptions);
+        var flightPlan = JsonSerializer.Deserialize<FlightSearchDto>(response, SerializerOptions);
 
         return flightPlan ?? throw new InvalidOperationException($"Failed to deserialize flight plan from blob: {filename}");
     }
 
-    public async Task<FlightSearchResultDto> GetFlightPlanAsync()
+    public async Task<FlightSearchDto> GetFlightPlanAsync()
     {
         var filename = GetArtifactFileName("flights");
 
         var response = await repository.DownloadTextBlobAsync(filename, settings.Value.ContainerName);
 
-        var flightPlan = JsonSerializer.Deserialize<FlightSearchResultDto>(response, SerializerOptions);
+        var flightPlan = JsonSerializer.Deserialize<FlightSearchDto>(response, SerializerOptions);
 
         return flightPlan ?? throw new InvalidOperationException($"Failed to deserialize flight plan from blob: {filename}");
     }

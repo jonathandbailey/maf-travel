@@ -4,13 +4,15 @@ using Travel.Application.Api.Services;
 
 namespace Travel.Application.Api.Application.Commands;
 
-public record CreateSessionCommand(Guid UserId, Guid TravelPlanId) : IRequest<SessionDto>;
+public record CreateSessionCommand(Guid UserId) : IRequest<SessionDto>;
 
-public class CreateSessionCommandHandler(ISessionService sessionService) : IRequestHandler<CreateSessionCommand, SessionDto>
+public class CreateSessionCommandHandler(ISessionService sessionService, ITravelPlanService travelPlanService) : IRequestHandler<CreateSessionCommand, SessionDto>
 {
     public async Task<SessionDto> Handle(CreateSessionCommand request, CancellationToken cancellationToken)
     {
-        var session = await sessionService.Create(request.UserId, request.TravelPlanId);
+        var id = await travelPlanService.CreateAsync(request.UserId);
+
+        var session = await sessionService.Create(request.UserId, id);
         return new SessionDto(session.ThreadId, session.TravelPlanId);
     }
 }

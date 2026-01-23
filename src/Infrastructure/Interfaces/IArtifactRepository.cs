@@ -5,8 +5,8 @@ namespace Infrastructure.Interfaces;
 public interface IArtifactRepository
 {
     Task SaveAsync(string artifact, string name);
-    Task<FlightSearchResultDto> GetFlightPlanAsync();
+    Task<FlightSearchDto> GetFlightPlanAsync();
     Task<bool> FlightsExistsAsync();
     Task SaveFlightSearchAsync(string artifact, Guid id);
-    Task<FlightSearchResultDto> GetFlightSearch(Guid id);
+    Task<FlightSearchDto> GetFlightSearch(Guid id);
 }
