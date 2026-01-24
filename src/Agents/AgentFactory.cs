@@ -1,10 +1,8 @@
 ﻿using System.ClientModel;
-using Agents.Dto;
 using Agents.Middleware;
 using Agents.Repository;
 using Agents.Settings;
 using Azure.AI.OpenAI;
-using Infrastructure.Dto;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
