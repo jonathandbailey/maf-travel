@@ -3,10 +3,11 @@ using Agents.Extensions;
 using Agents.Services;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
 
 namespace Agents.Middleware;
 
-public class AgentMemoryMiddleware(IAgentMemoryService memory) : IAgentMemoryMiddleware
+public class AgentMemoryMiddleware(IAgentMemoryService memory, ILogger<IAgentAgUiMiddleware> logger) : IAgentMemoryMiddleware
 {
     public async Task<AgentRunResponse> RunAsync(
         IEnumerable<ChatMessage> messages,
@@ -15,6 +16,12 @@ public class AgentMemoryMiddleware(IAgentMemoryService memory) : IAgentMemoryMid
         AIAgent innerAgent,
         CancellationToken cancellationToken)
     {
+        if (options == null)
+        {
+            logger.LogError("AgentRunOptions is null. AG-UI middleware requires an Agent Run Options.");
+            throw new ArgumentException("AgentRunOptions is null");
+        }
+
         var threadId = options.GetThreadId();
 
         var memoryThread = await LoadAsync(innerAgent, threadId);
@@ -36,6 +43,12 @@ public class AgentMemoryMiddleware(IAgentMemoryService memory) : IAgentMemoryMid
         AIAgent innerAgent,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        if (options == null)
+        {
+            logger.LogError("AgentRunOptions is null. AG-UI middleware requires an Agent Run Options.");
+            throw new ArgumentException("AgentRunOptions is null");
+        }
+
         var threadId = options.GetThreadId();
         
         var memoryThread = await LoadAsync(innerAgent, threadId);
