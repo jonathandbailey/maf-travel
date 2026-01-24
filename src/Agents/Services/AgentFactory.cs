@@ -1,5 +1,4 @@
 ﻿using System.ClientModel;
-using Agents.Middleware;
 using Agents.Repository;
 using Agents.Settings;
 using Azure.AI.OpenAI;
@@ -10,30 +9,29 @@ using OpenAI.Chat;
 using ChatResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat;
 
 
-namespace Agents;
+namespace Agents.Services;
 
 public class AgentFactory : IAgentFactory
 {
     private readonly IAgentTemplateRepository _templateRepository;
-    private readonly IAgentMemoryMiddleware _agentMemoryMiddleware;
-    private readonly IAgentAgUiMiddleware _agentAgUiMiddleware;
+    private readonly IAgentMiddlewareFactory _agentMiddlewareFactory;
     private readonly ChatClient _chatClient;
 
-    public AgentFactory(IAgentTemplateRepository templateRepository, 
-        IAgentMemoryMiddleware agentMemoryMiddleware,
-        IAgentAgUiMiddleware agentAgUiMiddleware,
-        IOptions<LanguageModelSettings> settings)
+    public AgentFactory(IAgentTemplateRepository templateRepository,
+        IOptions<LanguageModelSettings> settings, IAgentMiddlewareFactory agentMiddlewareFactory)
     {
         _templateRepository = templateRepository;
-        _agentMemoryMiddleware = agentMemoryMiddleware;
-        _agentAgUiMiddleware = agentAgUiMiddleware;
+        _agentMiddlewareFactory = agentMiddlewareFactory;
 
         _chatClient = new AzureOpenAIClient(new Uri(settings.Value.EndPoint),
                 new ApiKeyCredential(settings.Value.ApiKey))
             .GetChatClient(settings.Value.DeploymentName);
     }
 
-    public async Task<AIAgent> Create(string name, ChatResponseFormat? chatResponseFormat = null, List<AITool>? tools = null)
+    public async Task<AIAgent> Create(
+        string name, 
+        ChatResponseFormat? chatResponseFormat = null, 
+        List<AITool>? tools = null)
     {
         var template = await _templateRepository.Load(name);
     
@@ -55,11 +53,7 @@ public class AgentFactory : IAgentFactory
             .AsBuilder()
             .BuildAIAgent(options: clientChatOptions);
 
-        var middlewareAgent = agent.AsBuilder()
-            .Use(runFunc: _agentMemoryMiddleware.RunAsync, runStreamingFunc: _agentMemoryMiddleware.RunStreamingAsync)
-            .Build();
-
-        return middlewareAgent;
+        return agent;
     }
 
     public async Task<AIAgent> Create(string name, List<AITool> tools)
@@ -84,11 +78,12 @@ public class AgentFactory : IAgentFactory
         return agent;
     }
 
-    public AIAgent ExtendConversationAgent(AIAgent agent)
+    public AIAgent UseMiddleware(AIAgent agent, string name)
     {
+        var middleware = _agentMiddlewareFactory.Get(name);
+        
         var middlewareAgent = agent.AsBuilder()
-            .Use(runFunc: null, runStreamingFunc: _agentAgUiMiddleware.RunStreamingAsync)
-            .Use(runFunc: null, runStreamingFunc: _agentMemoryMiddleware.RunStreamingAsync)
+            .Use(runFunc: middleware.RunAsync, runStreamingFunc: middleware.RunStreamingAsync)
             .Build();
 
         return middlewareAgent;
@@ -99,6 +94,6 @@ public interface IAgentFactory
 {
     Task<AIAgent> Create(string name, ChatResponseFormat? chatResponseFormat = null, List<AITool>? tools = null);
     Task<AIAgent> Create(string name, List<AITool> tools);
-    AIAgent ExtendConversationAgent(AIAgent agent);
+    AIAgent UseMiddleware(AIAgent agent, string name);
 }
 

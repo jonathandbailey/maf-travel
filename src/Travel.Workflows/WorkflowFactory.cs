@@ -1,4 +1,4 @@
-﻿using Agents;
+﻿using Agents.Services;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Travel.Workflows.Dto;
@@ -19,7 +19,9 @@ public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelSe
             schemaDescription: "Reasoning State for Act.");
 
 
-        var reasonAgent = await agentFactory.Create("planning_agent", format);
+        var planningAgent = await agentFactory.Create("planning_agent", format);
+
+        agentFactory.UseMiddleware(planningAgent, "agent-thread");
 
         var fllightSchema = AIJsonUtilities.CreateJsonSchema(typeof(FlightActionResultDto));
 
@@ -29,10 +31,12 @@ public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelSe
             schemaDescription: "User Flight Options for their vacation.");
 
         var flightAgent = await agentFactory.Create("flight_agent", flightChatResponseFormat);
+
+        agentFactory.UseMiddleware(flightAgent, "agent-thread");
       
         var requestPort = RequestPort.Create<UserRequest, ReasoningInputDto>("user-input");
 
-        var reasonNode = new PlanningNode(reasonAgent, travelService);
+        var reasonNode = new PlanningNode(planningAgent, travelService);
         var actNode = new ExecutionNode(travelService);
      
         var flightWorkerNode = new FlightsNode(flightAgent, flightService);

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Agents.Middleware;
 
-public class AgentMemoryMiddleware(IAgentMemoryService memory, ILogger<IAgentAgUiMiddleware> logger) : IAgentMemoryMiddleware
+public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgUiMiddleware> logger) :IAgentThreadMiddleware, IAgentMiddleware
 {
     public async Task<AgentRunResponse> RunAsync(
         IEnumerable<ChatMessage> messages,
@@ -35,6 +35,8 @@ public class AgentMemoryMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
 
         return response;
     }
+
+    public string Name { get; } = "agent-thread";
 
     public async IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
@@ -87,7 +89,7 @@ public class AgentMemoryMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
     }
 }
 
-public interface IAgentMemoryMiddleware
+public interface IAgentThreadMiddleware
 {
     IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
@@ -102,4 +104,23 @@ public interface IAgentMemoryMiddleware
         AgentRunOptions? options,
         AIAgent innerAgent,
         CancellationToken cancellationToken);
+}
+
+public interface IAgentMiddleware
+{
+    IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
+        IEnumerable<ChatMessage> messages,
+        AgentThread? thread,
+        AgentRunOptions? options,
+        AIAgent innerAgent,
+        CancellationToken cancellationToken);
+
+    Task<AgentRunResponse> RunAsync(
+        IEnumerable<ChatMessage> messages,
+        AgentThread? thread,
+        AgentRunOptions? options,
+        AIAgent innerAgent,
+        CancellationToken cancellationToken);
+
+    public string Name { get; }
 }

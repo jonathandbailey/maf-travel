@@ -16,9 +16,10 @@ public static  class AgentServiceExtensions
 
 
         services.AddSingleton<IAgentMemoryService, AgentMemoryService>();
-        services.AddSingleton<IAgentMemoryMiddleware, AgentMemoryMiddleware>();
+        services.AddSingleton<IAgentThreadMiddleware, AgentThreadMiddleware>();
         services.AddSingleton<IAgentAgUiMiddleware, AgentAgUiMiddleware>();
         services.AddSingleton<IAgentFactory, AgentFactory>();
+        services.AddSingleton<IAgentMiddlewareFactory, AgentMiddlewareFactory>();
         services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
 
         return services;

@@ -1,5 +1,4 @@
-﻿using Agents;
-using Agents.Services;
+﻿using Agents.Services;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
 using Travel.Experience.Api.Agents;
 
@@ -19,9 +18,11 @@ public static class AgUiExtensions
 
         var conversationAgent = new ConversationAgent(agent, discovery);
 
-        var extended = agentFactory.ExtendConversationAgent(conversationAgent);
+      
+        var agui =  agentFactory.UseMiddleware(conversationAgent, "agent-thread");
+        var thread = agentFactory.UseMiddleware(agui, "agent-ag-ui");
 
-        app.MapAGUI("ag-ui", extended);
+        app.MapAGUI("ag-ui", thread);
 
         return app;
     }

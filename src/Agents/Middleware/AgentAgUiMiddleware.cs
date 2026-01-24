@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Agents.Middleware;
 
-public class AgentAgUiMiddleware(ILogger<IAgentAgUiMiddleware> logger) : IAgentAgUiMiddleware
+public class AgentAgUiMiddleware(ILogger<IAgentAgUiMiddleware> logger) : IAgentMiddleware, IAgentAgUiMiddleware
 {
     public async IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
@@ -30,6 +30,14 @@ public class AgentAgUiMiddleware(ILogger<IAgentAgUiMiddleware> logger) : IAgentA
             yield return update;
         }
     }
+
+    public async Task<AgentRunResponse> RunAsync(IEnumerable<ChatMessage> messages, AgentThread? thread, AgentRunOptions? options, AIAgent innerAgent,
+        CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public string Name { get; } = "agent-ag-ui";
 }
 
 public interface IAgentAgUiMiddleware
