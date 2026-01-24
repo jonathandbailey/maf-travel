@@ -1,56 +1,27 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using Infrastructure.Interfaces;
-using Infrastructure.Settings;
-using Microsoft.Extensions.Options;
 
 namespace Agents.Services;
 
-public class AgentMemoryService(IAzureStorageRepository repository, IOptions<AzureStorageSettings> settings) : IAgentMemoryService
+public class AgentMemoryService(IArtifactRepository artifactRepository) : IAgentMemoryService
 {
-    private const string ApplicationJsonContentType = "application/json";
-
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new JsonStringEnumConverter() }
-    };
+    private const string Container = "agents";
 
     public async Task SaveAsync(AgentState state, string name)
     {
-        var serializedConversation = JsonSerializer.Serialize(state, SerializerOptions);
-
-
-        await repository.UploadTextBlobAsync(
-            GetStorageFileName(name), 
-            settings.Value.ContainerName,
-            serializedConversation, 
-            ApplicationJsonContentType);
+        await artifactRepository.SaveAsync(state, name, Container);
     }
 
     public async Task<bool> ExistsAsync(string name)
     {
-        return await repository.BlobExists(GetStorageFileName(name), settings.Value.ContainerName);
+        return await artifactRepository.ExistsAsync(name, Container);
     }
 
     public async Task<AgentState> LoadAsync(string name)
     {
-        var blob = await repository.DownloadTextBlobAsync(GetStorageFileName(name), settings.Value.ContainerName);
+        var agentState = await artifactRepository.LoadAsyncEx<AgentState>(name, Container);
 
-        var stateDto = JsonSerializer.Deserialize<AgentState>(blob, SerializerOptions);
-
-        if (stateDto == null)
-            throw new JsonException($"Failed to deserialize Checkpoint Store for session : {name}");
-
-
-        return stateDto;
-    }
-
-    private string GetStorageFileName(string name)
-    {
-        return $"agents/{name}.json";
+        return agentState;
     }
 }
 
