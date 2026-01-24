@@ -21,35 +21,6 @@ public class WorkflowRepository(IAzureStorageRepository repository, IOptions<Azu
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         Converters = { new JsonStringEnumConverter() }
     };
-  
-    public async Task SaveAsync(Guid userId, Guid sessionId, WorkflowState state, CheckpointInfo? checkpointInfo)
-    {
-        var workflowStateDto = new WorkflowStateDto(state, checkpointInfo);
-        
-        var serializedWorkflowState = JsonSerializer.Serialize(workflowStateDto, SerializerOptions);
-
-        await repository.UploadTextBlobAsync(GetFileName(userId, sessionId), settings.Value.ContainerName,
-            serializedWorkflowState, ApplicationJsonContentType);
-    }
-
-    public async Task<WorkflowStateDto> LoadAsync(Guid userId, Guid sessionId)
-    {
-        var blobExists = await repository.BlobExists(GetFileName(userId, sessionId), settings.Value.ContainerName);
-
-        if (blobExists == false)
-        {
-            return new WorkflowStateDto(WorkflowState.Initialized, null);
-        }
-
-        var blob = await repository.DownloadTextBlobAsync(GetFileName(userId, sessionId), settings.Value.ContainerName);
-
-        var stateDto = JsonSerializer.Deserialize<WorkflowStateDto>(blob, SerializerOptions);
-
-        if (stateDto == null)
-            throw new JsonException($"Failed to deserialize Checkpoint Store for session : {sessionId}");
-
-        return stateDto;
-    }
 
     public async Task SaveAsync(Guid threadId, WorkflowState state, CheckpointInfo? checkpointInfo)
     {
@@ -82,7 +53,7 @@ public class WorkflowRepository(IAzureStorageRepository repository, IOptions<Azu
 
     private static string GetFileName(Guid threadId)
     {
-        return $"{threadId}/workflows/state.json";
+        return $"workflows/{threadId}/state.json";
     }
 
     private static string GetFileName(Guid userId, Guid sessionId)

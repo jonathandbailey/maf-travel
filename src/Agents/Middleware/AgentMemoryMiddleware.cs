@@ -85,7 +85,7 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
 
     private static string GetResourceName(string agentName, Guid threadId)
     {
-        return $"{agentName}_{threadId}";
+        return $"{threadId}/{agentName}";
     }
 }
 
