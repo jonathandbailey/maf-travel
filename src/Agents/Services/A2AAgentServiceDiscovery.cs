@@ -8,16 +8,6 @@ namespace Agents.Services;
 
 public class A2AAgentServiceDiscovery : IA2AAgentServiceDiscovery
 {
-    private const string _endppoint = "https://localhost:7027";
-
-    private readonly List<AgentToolSettings> _agentToolSettings =
-    [
-        new AgentToolSettings()
-        {
-            CardPath = "/api/a2a/travel/v1/card"
-        }
-    ];
-
     private readonly List<AgentMeta> _agentMetas = [];
 
     public List<AITool> GetTools()
@@ -39,16 +29,33 @@ public class A2AAgentServiceDiscovery : IA2AAgentServiceDiscovery
 
     public string GetToolCallArguments(FunctionCallContent functionCallContent)
     {
-        var argument = functionCallContent.Arguments["jsonPayload"].ToString();
+        if (functionCallContent.Arguments == null)
+        {
+            throw new ArgumentException("Function call content arguments cannot be null");
+        }
 
-        return argument;
+        var arguments = functionCallContent.Arguments;  
+
+        if (!arguments.ContainsKey("jsonPayload"))
+        {
+            throw new ArgumentException("Function call content arguments must contain 'jsonPayload'");
+        }
+
+        var argument = functionCallContent.Arguments["jsonPayload"];
+
+        if (argument == null)
+        {
+            throw new ArgumentException("Function call content arguments 'jsonPayload' cannot be null");
+        }   
+
+        return argument.ToString();
     }
 
-    public async Task Initialize()
+    public async Task Initialize(string url, List<AgentToolSettings> agentToolSettings)
     {
-        foreach (var agentToolSetting in _agentToolSettings)
+        foreach (var agentToolSetting in agentToolSettings)
         {
-            var cardResolver = new A2ACardResolver(new Uri(_endppoint), new HttpClient(), agentCardPath: agentToolSetting.CardPath);
+            var cardResolver = new A2ACardResolver(new Uri(url), new HttpClient(), agentCardPath: agentToolSetting.CardPath);
 
             var card = await cardResolver.GetAgentCardAsync();
 
@@ -114,7 +121,7 @@ public class AgentMeta(string name, A2AAgent agent, AgentCard card, AITool tool,
 
 public interface IA2AAgentServiceDiscovery
 {
-    Task Initialize();
+    Task Initialize(string url, List<AgentToolSettings> agentToolSettings);
     List<AITool> GetTools();
     AgentMeta GetAgentMeta(string name);
     string GetToolCallArguments(FunctionCallContent functionCallContent);

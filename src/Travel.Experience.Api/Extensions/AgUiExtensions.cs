@@ -10,7 +10,12 @@ public static class AgUiExtensions
     {
         var discovery = app.Services.GetRequiredService<IA2AAgentServiceDiscovery>();
 
-        await discovery.Initialize();
+        await discovery.Initialize("https://localhost:7027", [
+            new AgentToolSettings
+            {
+                CardPath = "/api/a2a/travel/v1/card"
+            }
+        ]);
 
         var agentFactory = app.Services.GetRequiredService<IAgentFactory>();
 
