@@ -1,7 +1,7 @@
 ﻿using MediatR;
+using Travel.Application.Api.Domain.Flights;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Infrastructure;
-using Travel.Application.Api.Models.Flights;
 
 namespace Travel.Application.Api.Application.Queries;
 

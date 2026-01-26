@@ -1,17 +1,11 @@
-﻿using Travel.Application.Api.Models;
-using Travel.Application.Api.Models.Flights;
+﻿using Travel.Application.Api.Domain.Flights;
 
-namespace Travel.Application.Api.Infrastructure;
+namespace Travel.Application.Api.Infrastructure.Documents;
 
-public class TravelPlanDocument
+public class FlightSearchDocument
 {
-    public Guid Id { get; set; }
-    public string? Origin { get; set; }
-    public string? Destination { get; set; }
-    public DateTimeOffset? StartDate { get; set; }
-    public DateTimeOffset? EndDate { get; set; }
-    public TravelPlanStatus TravelPlanStatus { get; set; }
-    public FlightPlanDocument FlightPlan { get; set; } = new();
+    public List<FlightOptionDocument> DepartureFlightOptions { get; set; } = [];
+    public List<FlightOptionDocument> ReturnFlightOptions { get; set; } = [];
 }
 
 public class FlightPlanDocument

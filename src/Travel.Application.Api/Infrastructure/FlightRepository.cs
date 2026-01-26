@@ -1,29 +1,32 @@
 ﻿using System.Text.Json;
 using Infrastructure.Interfaces;
-using Travel.Application.Api.Dto;
+using Travel.Application.Api.Domain.Flights;
+using Travel.Application.Api.Infrastructure.Documents;
+using Travel.Application.Api.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Infrastructure;
 
 public class FlightRepository(IArtifactRepository artifactRepository) : IFlightRepository
 {
-    public async Task<FlightSearchDto> GetFlightSearch(Guid userId, Guid searchId)
+    public async Task<FlightSearch> GetFlightSearch(Guid userId, Guid searchId)
     {
-        var paylod = await artifactRepository.LoadAsync(searchId, "flights");
+        var json = await artifactRepository.LoadAsync(searchId, "flights");
 
-        var dto = JsonSerializer.Deserialize<FlightSearchDto>(paylod);
+        var document = JsonSerializer.Deserialize<FlightSearchDocument>(json);
 
-        if (dto == null)
+        if (document == null)
         {
             throw new ArgumentException("Failed to deserialize flight search");
         }
 
-        return dto;
+        return document.ToDomain();
     }
 
-    public async Task<Guid> SaveFlightSearch(FlightSearchDto flightSearch)
+    public async Task<Guid> SaveFlightSearch(FlightSearch flightSearch)
     {
         var id = Guid.NewGuid();
-        var payload = JsonSerializer.Serialize(flightSearch);
+        var document = flightSearch.ToDocument();
+        var payload = JsonSerializer.Serialize(document);
         await artifactRepository.SaveAsync(payload, id, "flights");
 
         return id;
@@ -32,6 +35,6 @@ public class FlightRepository(IArtifactRepository artifactRepository) : IFlightR
 
 public interface IFlightRepository
 {
-    Task<FlightSearchDto> GetFlightSearch(Guid userId, Guid searchId);
-    Task<Guid> SaveFlightSearch(FlightSearchDto flightSearch);
+    Task<FlightSearch> GetFlightSearch(Guid userId, Guid searchId);
+    Task<Guid> SaveFlightSearch(FlightSearch flightSearch);
 }

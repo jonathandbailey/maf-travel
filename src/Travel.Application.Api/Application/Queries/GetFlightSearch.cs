@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Infrastructure;
+using Travel.Application.Api.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Application.Queries;
 
@@ -12,6 +13,6 @@ public class GetFlightSearchHandler(IFlightRepository flightSearchRepository) : 
     {
         var flightSearch = await flightSearchRepository.GetFlightSearch(request.UserId, request.Id);
        
-        return flightSearch;
+        return flightSearch.ToDto(request.Id.ToString());
     }
 }

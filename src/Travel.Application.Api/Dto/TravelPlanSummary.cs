@@ -1,4 +1,4 @@
-﻿using Travel.Application.Api.Models;
+﻿using Travel.Application.Api.Domain;
 
 namespace Travel.Application.Api.Dto;
 

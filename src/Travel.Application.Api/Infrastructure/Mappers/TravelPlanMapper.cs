@@ -1,7 +1,8 @@
-using Travel.Application.Api.Models;
-using Travel.Application.Api.Models.Flights;
+using Travel.Application.Api.Domain;
+using Travel.Application.Api.Domain.Flights;
+using Travel.Application.Api.Infrastructure.Documents;
 
-namespace Travel.Application.Api.Infrastructure;
+namespace Travel.Application.Api.Infrastructure.Mappers;
 
 public static class TravelPlanMapper
 {
@@ -21,20 +22,14 @@ public static class TravelPlanMapper
 
     public static TravelPlan ToDomain(this TravelPlanDocument document)
     {
-        var travelPlan = new TravelPlan();
-        
-        // Use reflection to set private properties since they have private setters
-        var travelPlanType = typeof(TravelPlan);
-        
-        travelPlanType.GetProperty(nameof(TravelPlan.Id))?.SetValue(travelPlan, document.Id);
-        travelPlanType.GetProperty(nameof(TravelPlan.Origin))?.SetValue(travelPlan, document.Origin);
-        travelPlanType.GetProperty(nameof(TravelPlan.Destination))?.SetValue(travelPlan, document.Destination);
-        travelPlanType.GetProperty(nameof(TravelPlan.StartDate))?.SetValue(travelPlan, document.StartDate);
-        travelPlanType.GetProperty(nameof(TravelPlan.EndDate))?.SetValue(travelPlan, document.EndDate);
-        travelPlanType.GetProperty(nameof(TravelPlan.TravelPlanStatus))?.SetValue(travelPlan, document.TravelPlanStatus);
-        travelPlanType.GetProperty(nameof(TravelPlan.FlightPlan))?.SetValue(travelPlan, document.FlightPlan.ToDomain());
-        
-        return travelPlan;
+        return new TravelPlan(
+            document.Id,
+            document.Origin,
+            document.Destination,
+            document.StartDate,
+            document.EndDate,
+            document.TravelPlanStatus,
+            document.FlightPlan.ToDomain());
     }
 
     private static FlightPlanDocument ToDocument(this FlightPlan flightPlan)
@@ -50,15 +45,11 @@ public static class TravelPlanMapper
 
     private static FlightPlan ToDomain(this FlightPlanDocument document)
     {
-        var flightPlan = new FlightPlan();
-        var flightPlanType = typeof(FlightPlan);
-        
-        flightPlanType.GetProperty(nameof(FlightPlan.FlightOptionsStatus))?.SetValue(flightPlan, document.FlightOptionsStatus);
-        flightPlanType.GetProperty(nameof(FlightPlan.UserFlightOptionStatus))?.SetValue(flightPlan, document.UserFlightOptionStatus);
-        flightPlanType.GetProperty(nameof(FlightPlan.FlightOptions))?.SetValue(flightPlan, document.FlightOptions.Select(fo => fo.ToDomain()).ToList());
-        flightPlanType.GetProperty(nameof(FlightPlan.FlightOption))?.SetValue(flightPlan, document.FlightOption?.ToDomain());
-        
-        return flightPlan;
+        return new FlightPlan(
+            document.FlightOptionsStatus,
+            document.UserFlightOptionStatus,
+            document.FlightOption?.ToDomain(),
+            document.FlightOptions.Select(fo => fo.ToDomain()).ToList());
     }
 
     private static FlightOptionSearchDocument ToDocument(this FlightOptionSearch flightOptionSearch)

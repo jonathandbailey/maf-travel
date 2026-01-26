@@ -1,39 +1,43 @@
-﻿using System.Text.Json.Serialization;
-using Travel.Application.Api.Models.Flights;
+﻿using Travel.Application.Api.Domain.Flights;
 
-namespace Travel.Application.Api.Models;
+namespace Travel.Application.Api.Domain;
 
 public class TravelPlan
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; private set; } = Guid.NewGuid();
     
-    
-    [JsonInclude]
     public string? Origin { get; private set; }
     
-    [JsonInclude]
     public string? Destination { get; private set; }
     
-    [JsonInclude]
     public DateTimeOffset? StartDate { get; private set; }
 
-    [JsonInclude]
     public DateTimeOffset? EndDate { get; private set; }
 
-    [JsonInclude]
     public TravelPlanStatus TravelPlanStatus { get; private set; } = TravelPlanStatus.NotStarted;
 
-    [JsonInclude]
     public FlightPlan FlightPlan { get; private set; } = new();
 
-    public TravelPlan() { }
+    public TravelPlan(){}
 
-    public void InProgress()
+    public TravelPlan(
+        Guid id, 
+        string? origin, 
+        string? destination, 
+        DateTimeOffset? startDate, 
+        DateTimeOffset? endDate, 
+        TravelPlanStatus travelPlanStatus,
+        FlightPlan flightPlan)
     {
-        if (TravelPlanStatus == TravelPlanStatus.NotStarted)
-        {
-            TravelPlanStatus = TravelPlanStatus.InProgress;
-        }
+        Id = id;
+        
+        Origin = origin;
+        Destination = destination;
+        StartDate = startDate;
+        EndDate = endDate;
+
+        TravelPlanStatus = travelPlanStatus;
+        FlightPlan = flightPlan;
     }
 
     public void SetStartDate(DateTimeOffset startDate)

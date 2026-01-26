@@ -1,4 +1,4 @@
-﻿namespace Travel.Application.Api.Models.Flights;
+﻿namespace Travel.Application.Api.Domain.Flights;
 
 public class FlightOptionSearch(Guid id)
 {

@@ -1,4 +1,4 @@
-﻿namespace Travel.Application.Api.Models;
+﻿namespace Travel.Application.Api.Domain;
 
 public static class TravelPlanConstants
 {

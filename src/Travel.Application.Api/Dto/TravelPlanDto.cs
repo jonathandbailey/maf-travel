@@ -1,5 +1,5 @@
-﻿using Travel.Application.Api.Models;
-using Travel.Application.Api.Models.Flights;
+﻿using Travel.Application.Api.Domain;
+using Travel.Application.Api.Domain.Flights;
 
 namespace Travel.Application.Api.Dto;
 

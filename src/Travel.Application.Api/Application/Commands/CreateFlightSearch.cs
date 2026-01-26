@@ -1,7 +1,8 @@
 ﻿using MediatR;
+using Travel.Application.Api.Domain.Flights;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Infrastructure;
-using Travel.Application.Api.Models.Flights;
+using Travel.Application.Api.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Application.Commands;
 
@@ -12,7 +13,8 @@ public class CreateFlightSearchCommandHandler(ITravelPlanRepository travelPlanRe
 {
     public async Task<Guid> Handle(CreateFlightSearchCommand request, CancellationToken cancellationToken)
     {
-        var id = await flightRepository.SaveFlightSearch(request.FlightSearch);
+        var flightSearch = request.FlightSearch.ToDomain();
+        var id = await flightRepository.SaveFlightSearch(flightSearch);
 
         var session = await sessionRepository.LoadAsync(request.UserId, request.SessionId);
 

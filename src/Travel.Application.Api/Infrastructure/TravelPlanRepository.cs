@@ -3,7 +3,9 @@ using System.Text.Json.Serialization;
 using Infrastructure.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
-using Travel.Application.Api.Models;
+using Travel.Application.Api.Domain;
+using Travel.Application.Api.Infrastructure.Documents;
+using Travel.Application.Api.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Infrastructure;
 
