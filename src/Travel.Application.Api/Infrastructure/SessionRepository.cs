@@ -1,40 +1,29 @@
-﻿using System.Text.Json;
-using Infrastructure.Interfaces;
-using Infrastructure.Settings;
-using Microsoft.Extensions.Options;
+﻿using Infrastructure.Interfaces;
 using Travel.Application.Api.Domain;
 using Travel.Application.Api.Infrastructure.Documents;
 using Travel.Application.Api.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Infrastructure;
 
-public class SessionRepository(IAzureStorageRepository azureStorageRepository, IOptions<AzureStorageSettings> settings) : ISessionRepository
+public class SessionRepository(IArtifactRepository artifactRepository) : ISessionRepository
 {
-    private const string ApplicationJsonContentType = "application/json";
-
     public async Task SaveAsync(Guid userId, Session session)
     {
-        var serializedSession = JsonSerializer.Serialize(session.ToDocument());
-
-        await azureStorageRepository.UploadTextBlobAsync
-            (GetResource(userId, session.ThreadId), settings.Value.ContainerName, serializedSession, ApplicationJsonContentType);
+        await artifactRepository.SaveAsync(session.ToDocument(), session.ThreadId.ToString(), GetResourceContainer(userId));
     }
 
     public async Task<Session> LoadAsync(Guid userId, Guid sessionId)
     {
-        var payload = await azureStorageRepository.DownloadTextBlobAsync(GetResource(userId, sessionId), settings.Value.ContainerName);
 
-        var session = JsonSerializer.Deserialize<SessionDocument>(payload);
+        var sessionEx = await artifactRepository.LoadAsyncEx<SessionDocument>(sessionId.ToString(), GetResourceContainer(userId));
 
-        if (session == null)
-            throw new ArgumentException("Session not found");
 
-        return session.ToDomain();
+        return sessionEx.ToDomain();
     }
 
-    private string GetResource(Guid userId, Guid threadId)
+    private static string GetResourceContainer(Guid userId)
     {
-        return $"{userId}/sessions/{threadId}.json";
+        return $"{userId}/sessions/";
     }
 }
 
