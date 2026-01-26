@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Infrastructure.Interfaces;
+﻿using Infrastructure.Interfaces;
 using Travel.Application.Api.Domain.Flights;
 using Travel.Application.Api.Infrastructure.Documents;
 using Travel.Application.Api.Infrastructure.Mappers;
@@ -10,14 +9,7 @@ public class FlightRepository(IArtifactRepository artifactRepository) : IFlightR
 {
     public async Task<FlightSearch> GetFlightSearch(Guid userId, Guid searchId)
     {
-        var json = await artifactRepository.LoadAsync(searchId, "flights");
-
-        var document = JsonSerializer.Deserialize<FlightSearchDocument>(json);
-
-        if (document == null)
-        {
-            throw new ArgumentException("Failed to deserialize flight search");
-        }
+        var document = await artifactRepository.LoadAsync<FlightSearchDocument>(searchId.ToString(), GetResourceName());
 
         return document.ToDomain();
     }
@@ -26,10 +18,15 @@ public class FlightRepository(IArtifactRepository artifactRepository) : IFlightR
     {
         var id = Guid.NewGuid();
         var document = flightSearch.ToDocument();
-        var payload = JsonSerializer.Serialize(document);
-        await artifactRepository.SaveAsync(payload, id, "flights");
+        
+        await artifactRepository.SaveAsync(document, id.ToString(), GetResourceName());
 
         return id;
+    }
+
+    private static string GetResourceName()
+    {
+        return $"artifacts/flights";
     }
 }
 

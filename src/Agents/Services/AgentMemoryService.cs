@@ -19,7 +19,7 @@ public class AgentMemoryService(IArtifactRepository artifactRepository) : IAgent
 
     public async Task<AgentState> LoadAsync(string name)
     {
-        var agentState = await artifactRepository.LoadAsyncEx<AgentState>(name, Container);
+        var agentState = await artifactRepository.LoadAsync<AgentState>(name, Container);
 
         return agentState;
     }

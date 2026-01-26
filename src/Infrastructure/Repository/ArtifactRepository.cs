@@ -23,7 +23,7 @@ public class ArtifactRepository(IAzureStorageRepository repository, IOptions<Azu
         return await repository.BlobExists(GetFlightSearchFileName(name, container), settings.Value.ContainerName);
     }
 
-    public async Task<T> LoadAsyncEx<T>(string name, string container)
+    public async Task<T> LoadAsync<T>(string name, string container)
     {
         var filename = GetFlightSearchFileName(name, container);
 
@@ -52,15 +52,6 @@ public class ArtifactRepository(IAzureStorageRepository repository, IOptions<Azu
         await repository.UploadTextBlobAsync(GetFlightSearchFileName(name, container),
             settings.Value.ContainerName,
             content, ApplicationJsonContentType);
-    }
-
-    public async Task<string> LoadAsync(Guid id, string path)
-    {
-        var filename = GetFlightSearchFileName(id, path);
-
-        var response = await repository.DownloadTextBlobAsync(filename, settings.Value.ContainerName);
-
-        return response;
     }
 
     private string GetFlightSearchFileName(string name, string container)

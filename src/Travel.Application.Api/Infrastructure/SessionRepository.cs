@@ -15,7 +15,7 @@ public class SessionRepository(IArtifactRepository artifactRepository) : ISessio
     public async Task<Session> LoadAsync(Guid userId, Guid sessionId)
     {
 
-        var sessionEx = await artifactRepository.LoadAsyncEx<SessionDocument>(sessionId.ToString(), GetResourceContainer(userId));
+        var sessionEx = await artifactRepository.LoadAsync<SessionDocument>(sessionId.ToString(), GetResourceContainer(userId));
 
 
         return sessionEx.ToDomain();
@@ -23,7 +23,7 @@ public class SessionRepository(IArtifactRepository artifactRepository) : ISessio
 
     private static string GetResourceContainer(Guid userId)
     {
-        return $"{userId}/sessions/";
+        return $"{userId}/sessions";
     }
 }
 

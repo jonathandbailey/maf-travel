@@ -1,51 +1,29 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using Infrastructure.Interfaces;
-using Infrastructure.Settings;
-using Microsoft.Extensions.Options;
+﻿using Infrastructure.Interfaces;
 using Travel.Application.Api.Domain;
 using Travel.Application.Api.Infrastructure.Documents;
 using Travel.Application.Api.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Infrastructure;
 
-public class TravelPlanPlanRepository(IAzureStorageRepository repository, IOptions<AzureStorageSettings> settings) : ITravelPlanRepository
+public class TravelPlanPlanRepository(IArtifactRepository artifactRepository) : ITravelPlanRepository
 {
-    private const string ApplicationJsonContentType = "application/json";
-    private const string StoragePathTemplate = "{0}/travel-plans/{1}.json";
-
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new JsonStringEnumConverter() },
-    };
+    private const string StoragePathTemplate = "{0}/travel-plans";
 
     public async Task<TravelPlan> LoadAsync(Guid userId, Guid travelPlanId)
     {
-        var blob = await repository.DownloadTextBlobAsync(GetStorageFileName(userId, travelPlanId), settings.Value.ContainerName);
-
-        var document = JsonSerializer.Deserialize<TravelPlanDocument>(blob, SerializerOptions);
-
-        if (document == null)
-            throw new JsonException($"Failed to deserialize Travel Plan for session.");
-
+        var document = await artifactRepository.LoadAsync<TravelPlanDocument>(travelPlanId.ToString(), GetStorageFileName(userId));
+       
         return document.ToDomain();
     }
 
     public async Task SaveAsync(TravelPlan travelPlan, Guid userId)
     {
-        var serializedConversation = JsonSerializer.Serialize(travelPlan.ToDocument(), SerializerOptions);
-
-        await repository.UploadTextBlobAsync(
-            GetStorageFileName(userId, travelPlan.Id),
-            settings.Value.ContainerName,
-            serializedConversation,
-            ApplicationJsonContentType);
+        await artifactRepository.SaveAsync(travelPlan, travelPlan.Id.ToString(), GetStorageFileName(userId));
     }
 
-    private string GetStorageFileName(Guid userId, Guid travelPlanId)
+    private static string GetStorageFileName(Guid userId)
     {
-        return string.Format(StoragePathTemplate, userId, travelPlanId);
+        return string.Format(StoragePathTemplate, userId);
     }
 }
 
