@@ -6,14 +6,14 @@ using Travel.Application.Api.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Application.Commands;
 
-public record CreateFlightSearchCommand(Guid UserId, Guid SessionId, FlightSearchDto FlightSearch) : IRequest<Guid>;
+public record SaveFlightSearchCommand(Guid UserId, Guid SessionId, FlightSearchResultDto FlightSearchResult) : IRequest<Guid>;
 
-public class CreateFlightSearchCommandHandler(ITravelPlanRepository travelPlanRepository, IFlightRepository flightRepository, ISessionRepository sessionRepository) :
-    IRequestHandler<CreateFlightSearchCommand, Guid>
+public class SaveFlightSearchCommandHandler(ITravelPlanRepository travelPlanRepository, IFlightRepository flightRepository, ISessionRepository sessionRepository) :
+    IRequestHandler<SaveFlightSearchCommand, Guid>
 {
-    public async Task<Guid> Handle(CreateFlightSearchCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(SaveFlightSearchCommand request, CancellationToken cancellationToken)
     {
-        var flightSearch = request.FlightSearch.ToDomain();
+        var flightSearch = request.FlightSearchResult.ToDomain();
         var id = await flightRepository.SaveFlightSearch(flightSearch);
 
         var session = await sessionRepository.LoadAsync(request.UserId, request.SessionId);

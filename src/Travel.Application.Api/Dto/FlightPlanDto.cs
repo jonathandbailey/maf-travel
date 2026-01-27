@@ -31,8 +31,27 @@ public class PriceDto
 
 public class FlightSearchDto
 {
+    public string Origin { get; set; }
+    public string Destination { get; set; }
+    public DateTimeOffset DepartureDate { get; set; }
+    public DateTimeOffset ReturnDate { get; set; }
+}
+
+public class FlightSearchResultDto
+{
+    public Guid Id { get; set; }
+    
     public string ArtifactKey { get; set; }
+
     public List<FlightOptionDto> DepartureFlightOptions { get; set; }
 
     public List<FlightOptionDto> ReturnFlightOptions { get; set; }
+}
+
+public class FlightSearchRequestDto
+{
+    public string Origin { get; set; }
+    public string Destination { get; set; }
+    public DateTimeOffset DepartureDate { get; set; }
+    public DateTime? ReturnDate { get; set; }
 }

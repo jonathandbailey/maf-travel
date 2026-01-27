@@ -10,4 +10,6 @@ public class FlightSearch
 
     public List<FlightOption> DepartureFlightOptions { get; set; }
     public List<FlightOption> ReturnFlightOptions { get; set; }
+
+    public Guid Id { get; set; } = Guid.NewGuid();
 }

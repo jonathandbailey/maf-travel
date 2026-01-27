@@ -27,9 +27,12 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddHostedService<AzureStorageSeedService>();
 
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+
 builder.Services.AddScoped<ITravelPlanRepository, TravelPlanPlanRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+builder.Services.AddScoped<IFlightSearchService, FlightSearchService>();
 
 builder.Services.AddOpenApi();
 

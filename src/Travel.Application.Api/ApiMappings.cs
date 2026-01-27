@@ -24,43 +24,45 @@ public static class ApiMappings
 
 public static class FlightsApiMappings
 {
-    private const string TravelFlightsSearchPath = "travel/flights/search/{threadId}";
     private const string TravelPlanFlightsSearchPath = "travel/flights/search/{threadId}";
     private const string GetTravelFlightsSearchPath = "travel/flights/search/{id}";
 
+    private const string TravelFlightsCreateSearchPath = "travel/flights/search/{threadId}";
+
     public static void MapFlightApi(this RouteGroupBuilder api)
     {
-        api.MapPost(TravelFlightsSearchPath, SaveFlightSearch);
         api.MapGet(GetTravelFlightsSearchPath, GetFlightSearch);
 
         api.MapPut(TravelPlanFlightsSearchPath, SaveFlightSearchToTravelPlan);
+        
+        api.MapPost(TravelFlightsCreateSearchPath, CreateFlightSearch);
     }
 
-    private static async Task<Ok<FlightSearchDto>> GetFlightSearch(Guid id, IMediator mediator, HttpContext context)
+    private static async Task<Ok<FlightSearchResultDto>> GetFlightSearch(Guid id, IMediator mediator, HttpContext context)
     {
         var result = await mediator.Send(new GetFlightSearchQuery(context.User.Id(), id));
         return TypedResults.Ok(result);
     }
 
-    private static async Task<Ok<Guid>> SaveFlightSearch(
+    private static async Task<Ok<FlightSearchResultDto>> CreateFlightSearch(
         [FromBody] FlightSearchDto flightSearch,
         Guid threadId,
         IMediator mediator,
         HttpContext context)
     {
-        var id = await mediator.Send(new CreateFlightSearchCommand(context.User.Id(), threadId, flightSearch));
+        var id = await mediator.Send(new SearchFlightsCommand(context.User.Id(), threadId, flightSearch.Origin, flightSearch.Destination, flightSearch.DepartureDate, flightSearch.ReturnDate));
 
         return TypedResults.Ok(id);
     }
 
     private static async Task<Ok> SaveFlightSearchToTravelPlan(
-        [FromBody] FlightSearchDto flightSearch,
+        [FromBody] FlightSearchResultDto flightSearchResult,
         Guid threadId,
         IMediator mediator,
         HttpContext context)
     {
 
-        await mediator.Send(new UpdateTravelPlanFlightSearchCommand(context.User.Id(), threadId, flightSearch));
+        await mediator.Send(new UpdateTravelPlanFlightSearchCommand(context.User.Id(), threadId, flightSearchResult));
 
         return TypedResults.Ok();
     }

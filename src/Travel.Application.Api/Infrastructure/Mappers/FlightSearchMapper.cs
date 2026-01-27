@@ -9,6 +9,8 @@ public static class FlightSearchMapper
     {
         return new FlightSearchDocument
         {
+            Id = flightSearch.Id,
+            
             DepartureFlightOptions = flightSearch.DepartureFlightOptions.Select(fo => fo.ToDocument()).ToList(),
             ReturnFlightOptions = flightSearch.ReturnFlightOptions.Select(fo => fo.ToDocument()).ToList()
         };

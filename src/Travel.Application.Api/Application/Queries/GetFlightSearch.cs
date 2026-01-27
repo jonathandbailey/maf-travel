@@ -5,11 +5,11 @@ using Travel.Application.Api.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Application.Queries;
 
-public record GetFlightSearchQuery(Guid UserId, Guid Id) : IRequest<FlightSearchDto>;
+public record GetFlightSearchQuery(Guid UserId, Guid Id) : IRequest<FlightSearchResultDto>;
 
-public class GetFlightSearchHandler(IFlightRepository flightSearchRepository) : IRequestHandler<GetFlightSearchQuery, FlightSearchDto>
+public class GetFlightSearchHandler(IFlightRepository flightSearchRepository) : IRequestHandler<GetFlightSearchQuery, FlightSearchResultDto>
 {
-    public async Task<FlightSearchDto> Handle(GetFlightSearchQuery request, CancellationToken cancellationToken)
+    public async Task<FlightSearchResultDto> Handle(GetFlightSearchQuery request, CancellationToken cancellationToken)
     {
         var flightSearch = await flightSearchRepository.GetFlightSearch(request.UserId, request.Id);
        

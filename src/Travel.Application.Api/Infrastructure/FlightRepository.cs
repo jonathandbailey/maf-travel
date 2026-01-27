@@ -16,12 +16,11 @@ public class FlightRepository(IArtifactRepository artifactRepository) : IFlightR
 
     public async Task<Guid> SaveFlightSearch(FlightSearch flightSearch)
     {
-        var id = Guid.NewGuid();
         var document = flightSearch.ToDocument();
-        
-        await artifactRepository.SaveAsync(document, id.ToString(), GetResourceName());
 
-        return id;
+        await artifactRepository.SaveAsync(document, document.Id.ToString(), GetResourceName());
+
+        return document.Id;
     }
 
     private static string GetResourceName()

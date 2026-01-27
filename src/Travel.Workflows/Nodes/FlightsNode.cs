@@ -21,7 +21,6 @@ public class FlightsNode(AIAgent agent, IFlightService flightService) :
     private const string FlightWorkerNodeError = "Flight Worker Node has failed to execute.";
     private const string FlightAgent = "Flight Agent";
     private const string FlightsOptionsCreated = "Flights Options Created";
-    private const string FlightOptionSelected = "Flight Option Selected";
     private const string FailedToDeserializeFlightOptionsInFlightWorkerNode = "Failed to deserialize flight options in Flight Worker Node";
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
@@ -52,32 +51,16 @@ public class FlightsNode(AIAgent agent, IFlightService flightService) :
    
             WorkflowTelemetryTags.SetOutputPreview(activity, response.Text);
        
-            var flightSearchResults = JsonSerializer.Deserialize<FlightActionResultDto>(response.Text, SerializerOptions);
+            var flightSearchResults = JsonSerializer.Deserialize<FlightSearchDto>(response.Text, SerializerOptions);
 
             if (flightSearchResults == null)
                 throw new JsonException(FailedToDeserializeFlightOptionsInFlightWorkerNode);
-      
-            switch (flightSearchResults.Action)
-            {
-                case FlightAction.FlightOptionsCreated:
-                {
-                    var id =  await flightService.SaveFlightSearch(flightSearchResults.Results, threadId);
 
-                    await context.AddEventAsync(new ArtifactStatusEvent(id, flightSearchResults.Results.ArtifactKey, ArtifactStatus.Created), cancellationToken);
+            var id = await flightService.CreateFlightSearch(flightSearchResults, threadId);
 
-                    return new AgentResponse(FlightAgent, FlightsOptionsCreated, AgentResponseStatus.Success);
-                }
-                
-                case FlightAction.FlightOptionsSelected:
-                {
-                    await flightService.SaveFlightOption(flightSearchResults.Results, threadId);
+            await context.AddEventAsync(new ArtifactStatusEvent(id, "Flights", ArtifactStatus.Created), cancellationToken);
 
-                    return new AgentResponse(FlightAgent, FlightOptionSelected, AgentResponseStatus.Success);
-                }
-                
-                default:
-                    throw new ArgumentException("Action value is not valid.", nameof(flightSearchResults));
-            }
+            return new AgentResponse(FlightAgent, FlightsOptionsCreated, AgentResponseStatus.Success);
         }
         catch (Exception exception)
         {

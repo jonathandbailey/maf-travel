@@ -30,9 +30,11 @@ public enum AgentResponseStatus
         Error
 }
 
+
+
 public class FlightActionResultDto
 {
-    public FlightSearchDto Results { get; set; }
+    public FlightSearchResultDto Results { get; set; }
     public FlightAction Action { get; set; }
 
     public string Status { get; set; }
@@ -44,9 +46,19 @@ public enum FlightAction
     FlightOptionsSelected
 }
 
-
 public class FlightSearchDto
 {
+    public string Origin { get; set; }
+    public string Destination { get; set; }
+    public DateTimeOffset DepartureDate { get; set; }
+    public DateTimeOffset ReturnDate { get; set; }
+}
+
+
+public class FlightSearchResultDto
+{
+    public Guid Id { get; set; }
+    
     public string ArtifactKey { get; set; }
     public List<FlightOptionDto> DepartureFlightOptions { get; set; }
 

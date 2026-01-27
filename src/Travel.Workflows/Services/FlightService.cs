@@ -15,7 +15,7 @@ public class FlightService : IFlightService
         PropertyNameCaseInsensitive = true
     };
 
-    public async Task<Guid> SaveFlightSearch(FlightSearchDto option, Guid threadId)
+    public async Task<Guid> SaveFlightSearch(FlightSearchResultDto option, Guid threadId)
     {
         var payload = JsonSerializer.Serialize(option, SerializerOptions);
 
@@ -34,7 +34,31 @@ public class FlightService : IFlightService
         return id;
     }
 
-    public async Task SaveFlightOption(FlightSearchDto option, Guid threadId)
+    public async Task<Guid> CreateFlightSearch(FlightSearchDto option, Guid threadId)
+    {
+        var payload = JsonSerializer.Serialize(option, SerializerOptions);
+
+        var httpClient = new HttpClient() { BaseAddress = new Uri("https://localhost:7010/") };
+
+        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+        var response = await httpClient.PostAsync($"/api/travel/flights/search/{threadId}", content);
+
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException($"Failed to retrieve travel plan: {response.ReasonPhrase}");
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var flightSearchResultDto = JsonSerializer.Deserialize<FlightSearchResultDto>(responseContent, SerializerOptions);
+
+        if (flightSearchResultDto == null)
+        {
+            throw new InvalidOperationException("Failed to deserialize flight search result.");
+        }
+
+        return flightSearchResultDto.Id;
+    }
+
+    public async Task SaveFlightOption(FlightSearchResultDto option, Guid threadId)
     {
         var payload = JsonSerializer.Serialize(option, SerializerOptions);
 
@@ -51,6 +75,7 @@ public class FlightService : IFlightService
 
 public interface IFlightService
 {
-    Task<Guid> SaveFlightSearch(FlightSearchDto option, Guid threadId);
-    Task SaveFlightOption(FlightSearchDto option, Guid threadId);
+    Task<Guid> SaveFlightSearch(FlightSearchResultDto option, Guid threadId);
+    Task SaveFlightOption(FlightSearchResultDto option, Guid threadId);
+    Task<Guid> CreateFlightSearch(FlightSearchDto option, Guid threadId);
 }

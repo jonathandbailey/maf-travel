@@ -5,21 +5,22 @@ namespace Travel.Application.Api.Infrastructure.Mappers;
 
 public static class FlightSearchDtoMapper
 {
-    public static FlightSearchDto ToDto(this FlightSearch flightSearch, string artifactKey)
+    public static FlightSearchResultDto ToDto(this FlightSearch flightSearch, string artifactKey)
     {
-        return new FlightSearchDto
+        return new FlightSearchResultDto
         {
+            Id = flightSearch.Id,
             ArtifactKey = artifactKey,
             DepartureFlightOptions = flightSearch.DepartureFlightOptions.Select(fo => fo.ToDto()).ToList(),
             ReturnFlightOptions = flightSearch.ReturnFlightOptions.Select(fo => fo.ToDto()).ToList()
         };
     }
 
-    public static FlightSearch ToDomain(this FlightSearchDto dto)
+    public static FlightSearch ToDomain(this FlightSearchResultDto resultDto)
     {
         return new FlightSearch(
-            dto.DepartureFlightOptions.Select(fo => fo.ToDomain()).ToList(),
-            dto.ReturnFlightOptions.Select(fo => fo.ToDomain()).ToList());
+            resultDto.DepartureFlightOptions.Select(fo => fo.ToDomain()).ToList(),
+            resultDto.ReturnFlightOptions.Select(fo => fo.ToDomain()).ToList());
     }
 
     private static FlightOptionDto ToDto(this FlightOption flightOption)
@@ -53,7 +54,7 @@ public static class FlightSearchDtoMapper
         return new FlightEndpointDto
         {
             Airport = flightEndpoint.Airport,
-            AirportCode = string.Empty, // Not available in domain model
+            AirportCode =flightEndpoint.AirportCode,
             Datetime = flightEndpoint.Datetime
         };
     }
@@ -63,7 +64,8 @@ public static class FlightSearchDtoMapper
         return new FlightEndpoint
         {
             Airport = dto.Airport,
-            Datetime = dto.Datetime
+            Datetime = dto.Datetime,
+            AirportCode = dto.AirportCode
         };
     }
 

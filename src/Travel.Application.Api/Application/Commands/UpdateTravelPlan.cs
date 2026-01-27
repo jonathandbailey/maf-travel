@@ -9,7 +9,7 @@ namespace Travel.Application.Api.Application.Commands;
 
 public record UpdateTravelPlanCommand(Guid UserId, Guid SessionId, TravelPlanUpdateDto TravelPlanUpdateDto) : IRequest;
 
-public record UpdateTravelPlanFlightSearchCommand(Guid UserId, Guid SessionId, FlightSearchDto flightSearchDto) : IRequest;
+public record UpdateTravelPlanFlightSearchCommand(Guid UserId, Guid SessionId, FlightSearchResultDto FlightSearchResultDto) : IRequest;
 
 public class UpdateTravelPlanHandler(ITravelPlanRepository travelPlanRepository, ISessionRepository sessionRepository) : IRequestHandler<UpdateTravelPlanCommand>
 {
@@ -43,7 +43,7 @@ public class UpdateTravelPlanFlightSearchHandler(ITravelPlanRepository travelPla
 
         var travelPlan = await travelPlanRepository.LoadAsync(request.UserId, session.TravelPlanId);
 
-        var flightOption = request.flightSearchDto.DepartureFlightOptions.First();
+        var flightOption = request.FlightSearchResultDto.DepartureFlightOptions.First();
 
         travelPlan.SelectFlightOption(MapFlightOption(flightOption));
 

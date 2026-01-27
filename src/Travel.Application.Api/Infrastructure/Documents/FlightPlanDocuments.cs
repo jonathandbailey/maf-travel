@@ -4,6 +4,8 @@ namespace Travel.Application.Api.Infrastructure.Documents;
 
 public class FlightSearchDocument
 {
+    public Guid Id { get; set; }
+    
     public List<FlightOptionDocument> DepartureFlightOptions { get; set; } = [];
     public List<FlightOptionDocument> ReturnFlightOptions { get; set; } = [];
 }

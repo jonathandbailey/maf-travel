@@ -23,7 +23,7 @@ public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelSe
 
         agentFactory.UseMiddleware(planningAgent, "agent-thread");
 
-        var fllightSchema = AIJsonUtilities.CreateJsonSchema(typeof(FlightActionResultDto));
+        var fllightSchema = AIJsonUtilities.CreateJsonSchema(typeof(FlightSearchDto));
 
         var flightChatResponseFormat = ChatResponseFormat.ForJsonSchema(
             schema: fllightSchema,
