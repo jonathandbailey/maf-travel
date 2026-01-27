@@ -40,7 +40,7 @@ public static class FlightsApiMappings
 
     private static async Task<Ok<FlightSearchResultDto>> GetFlightSearch(Guid id, IMediator mediator, HttpContext context)
     {
-        var result = await mediator.Send(new GetFlightSearchQuery(context.User.Id(), id));
+        var result = await mediator.Send(new GetFlightSearchQuery(id));
         return TypedResults.Ok(result);
     }
 

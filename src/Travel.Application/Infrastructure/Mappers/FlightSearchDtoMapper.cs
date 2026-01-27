@@ -1,7 +1,7 @@
 using Travel.Application.Api.Dto;
 using Travel.Application.Domain.Flights;
 
-namespace Travel.Application.Api.Infrastructure.Mappers;
+namespace Travel.Application.Infrastructure.Mappers;
 
 public static class FlightSearchDtoMapper
 {

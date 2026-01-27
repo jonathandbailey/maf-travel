@@ -1,7 +1,7 @@
 using Travel.Application.Api.Infrastructure.Documents;
 using Travel.Application.Domain;
 
-namespace Travel.Application.Api.Infrastructure.Mappers;
+namespace Travel.Application.Infrastructure.Mappers;
 
 public static class SessionMapper
 {

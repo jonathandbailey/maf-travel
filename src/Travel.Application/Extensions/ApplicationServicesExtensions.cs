@@ -8,7 +8,7 @@ public static class ApplicationServicesExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddHostedService<AzureStorageSeedService>();
+        
 
         services.AddScoped<ILocationRepository, LocationRepository>();
 

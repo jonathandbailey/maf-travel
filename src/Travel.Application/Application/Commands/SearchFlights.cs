@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Infrastructure;
-using Travel.Application.Api.Infrastructure.Mappers;
 using Travel.Application.Domain.Flights;
+using Travel.Application.Infrastructure.Mappers;
 using Travel.Application.Services;
 
 namespace Travel.Application.Application.Commands;

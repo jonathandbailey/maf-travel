@@ -2,7 +2,7 @@ using Travel.Application.Api.Infrastructure.Documents;
 using Travel.Application.Domain;
 using Travel.Application.Domain.Flights;
 
-namespace Travel.Application.Api.Infrastructure.Mappers;
+namespace Travel.Application.Infrastructure.Mappers;
 
 public static class TravelPlanMapper
 {

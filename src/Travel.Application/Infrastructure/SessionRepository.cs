@@ -1,7 +1,7 @@
 ﻿using Infrastructure.Interfaces;
 using Travel.Application.Api.Infrastructure.Documents;
-using Travel.Application.Api.Infrastructure.Mappers;
 using Travel.Application.Domain;
+using Travel.Application.Infrastructure.Mappers;
 
 namespace Travel.Application.Api.Infrastructure;
 

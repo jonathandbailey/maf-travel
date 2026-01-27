@@ -4,12 +4,15 @@ using System.Text.Json.Serialization;
 using Travel.Application.Api;
 using Travel.Application.Api.Middleware;
 using Travel.Application.Extensions;
+using Travel.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
 builder.Services.Configure<AzureStorageSettings>((options) => builder.Configuration.GetSection("AzureStorageSeedSettings").Bind(options));
+
+builder.Services.AddHostedService<AzureStorageSeedService>();
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
