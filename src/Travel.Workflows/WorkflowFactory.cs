@@ -8,7 +8,7 @@ using Travel.Workflows.Services;
 
 namespace Travel.Workflows;
 
-public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelService, IFlightService flightService) : IWorkflowFactory
+public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelService) : IWorkflowFactory
 {
     public async Task<Workflow> Create()
     {
@@ -26,14 +26,12 @@ public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelSe
 
         var fllightSchema = AIJsonUtilities.CreateJsonSchema(typeof(FlightAgentReponseDto));
 
-
         var flightChatResponseFormat = ChatResponseFormat.ForJsonSchema(
             schema: fllightSchema,
             schemaName: "FlightPlan",
             schemaDescription: "User Flight Options for their vacation.");
 
         var httpClient = new HttpClient();
-
       
         var serverUrl = "http://localhost:5146/";
         var transport = new HttpClientTransport(new()
@@ -44,7 +42,7 @@ public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelSe
 
         var mcpClient = await McpClient.CreateAsync(transport);
 
-        var mcpTools = await mcpClient.ListToolsAsync().ConfigureAwait(false);
+        var mcpTools = await mcpClient.ListToolsAsync();
 
         var flightAgent = await agentFactory.Create("flight_agent", flightChatResponseFormat, tools: [..mcpTools]);
 
@@ -55,7 +53,7 @@ public class WorkflowFactory(IAgentFactory agentFactory, ITravelService travelSe
         var reasonNode = new PlanningNode(planningAgent, travelService);
         var actNode = new ExecutionNode(travelService);
      
-        var flightWorkerNode = new FlightsNode(flightAgent, flightService);
+        var flightWorkerNode = new FlightsNode(flightAgent);
    
         var startNode = new StartNode();
      

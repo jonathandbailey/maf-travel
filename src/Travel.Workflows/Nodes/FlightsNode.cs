@@ -8,12 +8,11 @@ using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Observability;
-using Travel.Workflows.Services;
 
 
 namespace Travel.Workflows.Nodes;
 
-public class FlightsNode(AIAgent agent, IFlightService flightService) : 
+public class FlightsNode(AIAgent agent) : 
     ReflectingExecutor<FlightsNode>(WorkflowConstants.FlightNodeName), 
    
     IMessageHandler<CreateFlightOptions, AgentResponse>

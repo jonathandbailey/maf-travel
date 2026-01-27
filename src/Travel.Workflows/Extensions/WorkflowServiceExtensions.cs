@@ -19,8 +19,7 @@ public static class WorkflowServiceExtensions
         services.AddSingleton<IWorkflowRepository, WorkflowRepository>();
 
         services.AddSingleton<ITravelService, TravelService>();
-        services.AddSingleton<IFlightService, FlightService>();
-
+   
         services.AddSingleton<ICheckpointRepository, CheckpointRepository>();
 
         services.AddSingleton<IA2AAgentServiceDiscovery, A2AAgentServiceDiscovery>();
