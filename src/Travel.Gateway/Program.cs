@@ -1,3 +1,4 @@
+using ServiceDefaults;
 using Travel.Gateway;
 
 var builder = WebApplication.CreateBuilder(args);

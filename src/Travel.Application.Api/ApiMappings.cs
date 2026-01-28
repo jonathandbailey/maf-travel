@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Extensions;
 using Travel.Application.Api.Observability;

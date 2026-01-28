@@ -6,7 +6,7 @@ using Travel.Workflows.Models;
 
 namespace Travel.Workflows.Services;
 
-public class TravelService : ITravelService
+public class TravelService(HttpClient httpClient) : ITravelService
 {
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -18,8 +18,6 @@ public class TravelService : ITravelService
 
     private async Task<TravelPlanDto> GetTravelPlan(Guid threadId)
     {
-        var httpClient = new HttpClient() { BaseAddress = new Uri("https://localhost:7010/")};
-
         var response = await httpClient.GetAsync($"/api/travel/plans/{threadId}");
 
         if (!response.IsSuccessStatusCode)
@@ -50,8 +48,6 @@ public class TravelService : ITravelService
 
     public async Task UpdateTravelPlan(TravelPlanUpdateDto messageTravelPlanUpdate, Guid threadId)
     {
-        var httpClient = new HttpClient() { BaseAddress = new Uri("https://localhost:7010/") };
-
         var content = new StringContent(JsonSerializer.Serialize(messageTravelPlanUpdate), Encoding.UTF8, "application/json");
 
         var response = await httpClient.PostAsync($"/api/travel/plans/{threadId}", content);

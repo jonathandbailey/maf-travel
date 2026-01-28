@@ -1,5 +1,6 @@
 using Infrastructure.Extensions;
 using Infrastructure.Settings;
+using ServiceDefaults;
 using Travel.Application.Extensions;
 using Travel.Application.Mcp.Tools;
 

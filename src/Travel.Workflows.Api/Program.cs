@@ -2,8 +2,10 @@ using Agents.Extensions;
 using Infrastructure.Extensions;
 using Infrastructure.Settings;
 using System.Text.Json.Serialization;
+using ServiceDefaults;
 using Travel.Workflows.Api.Services;
 using Travel.Workflows.Extensions;
+using Travel.Workflows.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.Configure<AzureStorageSettings>((options) => builder.Configuration.GetSection("AzureStorageSeedSettings").Bind(options));
 
-
+builder.Services.AddHttpClient<ITravelService, TravelService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7010/");
+});
 
 builder.Services.AddSingleton<IAgentDiscoveryService, AgentDiscoveryService>();
 builder.Services.AddSingleton<IWorkflowTaskManager, WorkflowTaskManager>();

@@ -1,6 +1,7 @@
 using Infrastructure.Extensions;
 using Infrastructure.Settings;
 using System.Text.Json.Serialization;
+using ServiceDefaults;
 using Travel.Application.Api;
 using Travel.Application.Api.Middleware;
 using Travel.Application.Extensions;
