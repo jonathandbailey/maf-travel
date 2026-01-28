@@ -24,13 +24,13 @@ public static class TravelApiTelemetry
         activity.SetTag("travel.plan.id", sessionDto.TravelPlanId);
     }
 
-    public static Activity? UpdateTravelPlan(Guid userId)
+    public static Activity? UpdateTravelPlan(Guid userId, ActivityContext parentId)
     {
         var tags = new ActivityTagsCollection
         {
             { "travel.user.id", userId }
         };
 
-        return Source.StartActivity($"update_travel_plan", ActivityKind.Internal, null, tags);
+        return Source.StartActivity($"update_travel_plan", ActivityKind.Internal, parentContext: parentId, tags);
     }
 }

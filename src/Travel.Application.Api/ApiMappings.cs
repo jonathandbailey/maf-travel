@@ -1,6 +1,8 @@
-﻿using MediatR;
+﻿using Azure.Core;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using OpenTelemetry.Resources;
 using System.Diagnostics;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Extensions;
@@ -119,7 +121,11 @@ public static class TravelApiMappings
         HttpContext context,
         IMediator mediator)
     {
-        using var activity = TravelApiTelemetry.UpdateTravelPlan(context.User.Id());
+        string traceParent = context.Request.Headers["traceparent"];
+
+        ActivityContext.TryParse(traceParent, null, out var parentContext);
+
+        using var activity = TravelApiTelemetry.UpdateTravelPlan(context.User.Id(), parentContext);
 
         await mediator.Send(new UpdateTravelPlanCommand(context.User.Id(), threadId, travelPlanUpdateDto));
     }

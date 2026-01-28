@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using OpenTelemetry;
+using OpenTelemetry.Context.Propagation;
+using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Travel.Workflows.Dto;
@@ -48,9 +51,23 @@ public class TravelService(HttpClient httpClient) : ITravelService
 
     public async Task UpdateTravelPlan(TravelPlanUpdateDto messageTravelPlanUpdate, Guid threadId)
     {
-        var content = new StringContent(JsonSerializer.Serialize(messageTravelPlanUpdate), Encoding.UTF8, "application/json");
+        var activity = Activity.Current;
 
-        var response = await httpClient.PostAsync($"/api/travel/plans/{threadId}", content);
+        using var request = new HttpRequestMessage(HttpMethod.Post, $"/api/travel/plans/{threadId}");
+
+        if (activity != null)
+        {
+            var manualTraceParent = $"00-{activity.TraceId}-{activity.SpanId}-01";
+
+            request.Headers.TryAddWithoutValidation("traceparent", manualTraceParent);
+        }
+
+        request.Content = new StringContent(
+            JsonSerializer.Serialize(messageTravelPlanUpdate),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await httpClient.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
             throw new HttpRequestException($"Failed to retrieve travel plan: {response.ReasonPhrase}");
