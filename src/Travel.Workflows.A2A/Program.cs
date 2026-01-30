@@ -3,7 +3,7 @@ using Infrastructure.Extensions;
 using Infrastructure.Settings;
 using System.Text.Json.Serialization;
 using ServiceDefaults;
-using Travel.Workflows.Api.Services;
+using Travel.Workflows.A2A.Services;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Services;
 

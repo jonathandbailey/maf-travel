@@ -4,7 +4,7 @@ using Microsoft.Extensions.AI;
 using Travel.Workflows.Dto;
 using Workflows;
 
-namespace Travel.Workflows.Api.Services;
+namespace Travel.Workflows.A2A.Services;
 
 public class WorkflowTaskManager : IWorkflowTaskManager
 {
