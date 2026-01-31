@@ -1,4 +1,6 @@
 
+using Agents.Extensions;
+using Infrastructure.Extensions;
 using Microsoft.Extensions.Options;
 using ServiceDefaults;
 using Travel.Agents.A2A.Services;
@@ -13,6 +15,10 @@ builder.Services.Configure<CardSettings>(settings =>
 
 builder.Services.AddSingleton<IFlightsTaskManager, FlightsTaskManager>();
 builder.Services.AddSingleton<IA2ACardService, A2ACardService>();
+
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
+builder.Services.AddAgentServices(builder.Configuration);
 
 builder.Services.AddOpenApi();
 

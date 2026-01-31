@@ -36,7 +36,9 @@ builder.AddProject<Projects.Travel_Application_Mcp>("travel-application-mcp")
     .WaitFor(storage);
 
 
-builder.AddProject<Projects.Travel_Agents_A2A>("travel-agents-a2a");
+builder.AddProject<Projects.Travel_Agents_A2A>("travel-agents-a2a")
+    .WithReference(blobs)
+    .WaitFor(storage);
 
 
 
