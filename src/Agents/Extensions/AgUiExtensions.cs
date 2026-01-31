@@ -64,12 +64,12 @@ public static class AgUiExtensions
 
         if (chatClientAgentOptions.ChatOptions == null)
         {
-            throw new ArgumentException("The provided ChatClientAgentRunOptions must have ChatOptions set.");
+            chatClientAgentOptions.ChatOptions = new ChatOptions();
         }
 
         if (chatClientAgentOptions.ChatOptions.AdditionalProperties == null)
         {
-            throw new ArgumentException("The provided ChatClientAgentRunOptions must have ChatOptions.AdditionalProperties set.");
+            chatClientAgentOptions.ChatOptions.AdditionalProperties = new AdditionalPropertiesDictionary();
         }
 
         return chatClientAgentOptions.ChatOptions.AdditionalProperties;
