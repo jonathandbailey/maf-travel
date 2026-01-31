@@ -1,8 +1,7 @@
 ﻿using A2A;
+using Travel.Agents.A2A.Extensions;
 
 namespace Travel.Agents.A2A.Services;
-
-
 
 public class FlightsTaskManager : IFlightsTaskManager
 {
@@ -23,7 +22,11 @@ public class FlightsTaskManager : IFlightsTaskManager
 
     private async Task OnTaskCreated(AgentTask agentTask, CancellationToken cancellationToken)
     {
+        var dataPart = agentTask.ExtractDataPartWithSkillId();
 
+        var id = dataPart.GetSkillId();
+
+        var dto = A2AExtensions.ToFlightSearchDto(dataPart.Data);
 
         var message = new AgentMessage
         {
