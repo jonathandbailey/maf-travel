@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Infrastructure;
+using Travel.Application.Exceptions;
 using Travel.Application.Infrastructure.Mappers;
 using Travel.Application.Services;
 
@@ -16,14 +17,25 @@ public class SearchFlightsCommandHandler(IFlightSearchService flightSearchServic
 {
     public async Task<FlightSearchResultDto> Handle(SearchFlightsCommand request, CancellationToken cancellationToken)
     {
-        var result = await flightSearchService.SearchFlights(
-            request.Origin,
-            request.Destination,
-            request.DepartureDate,
-            request.ReturnDate);
+        try
+        {
+            var result = await flightSearchService.SearchFlights(
+                request.Origin,
+                request.Destination,
+                request.DepartureDate,
+                request.ReturnDate);
 
-        await flightRepository.SaveFlightSearch(result);
+            await flightRepository.SaveFlightSearch(result);
 
-        return result.ToDto("Flights");
+            return result.ToDto("Flights");
+        }
+        catch (FlightSearchException exception)
+        {
+            return new FlightSearchResultDto() { Summary = exception.Message, IsError = true, Status = "Error"};
+        }
+        catch (Exception exception)
+        {
+            return new FlightSearchResultDto() {Summary = "An Unknown error occurred", IsError = true, Status = "Error"};
+        }
     }
 }

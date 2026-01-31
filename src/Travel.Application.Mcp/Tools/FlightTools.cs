@@ -29,6 +29,6 @@ public class FlightTools(IMediator mediator)
         
         var flightSearchResultDto = await mediator.Send(new SearchFlightsCommand(flightSearch.Origin, flightSearch.Destination, flightSearch.DepartureDate, flightSearch.ReturnDate));
 
-        return new FlightSearchResponseDto(flightSearchResultDto.Id);
+        return new FlightSearchResponseDto(flightSearchResultDto.Id, flightSearchResultDto.Summary, flightSearchResultDto.Status);
     }
 }

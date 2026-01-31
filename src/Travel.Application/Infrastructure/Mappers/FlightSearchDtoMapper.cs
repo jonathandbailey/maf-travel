@@ -11,6 +11,8 @@ public static class FlightSearchDtoMapper
         {
             Id = flightSearch.Id,
             ArtifactKey = artifactKey,
+            Summary = "Flight Search Results Created",
+            Status = "Success",
             DepartureFlightOptions = flightSearch.DepartureFlightOptions.Select(fo => fo.ToDto()).ToList(),
             ReturnFlightOptions = flightSearch.ReturnFlightOptions.Select(fo => fo.ToDto()).ToList()
         };

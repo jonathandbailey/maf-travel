@@ -29,10 +29,15 @@ public class PriceDto
     public string Currency { get; set; }
 }
 
-public class FlightSearchResponseDto(Guid id)
+public class FlightSearchResponseDto(Guid id, string summary, string status)
 {
-    public Guid Id { get; private set; } = id;
+    public Guid Id { get;  } = id;
+
+    public string Summary { get;  } = summary;
+
+    public string Status { get;  } = status;
 }
+
 
 public class FlightSearchDto
 {
@@ -45,6 +50,12 @@ public class FlightSearchDto
 public class FlightSearchResultDto
 {
     public Guid Id { get; set; }
+
+    public string Summary { get; set; }
+
+    public bool IsError { get; set; }
+
+    public string Status { get; set; }
     
     public string ArtifactKey { get; set; }
 

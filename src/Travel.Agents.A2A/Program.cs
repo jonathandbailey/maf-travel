@@ -14,6 +14,7 @@ builder.Services.Configure<CardSettings>(settings =>
     builder.Configuration.GetSection(nameof(CardSettings)).Bind(settings));
 
 builder.Services.AddSingleton<IFlightsTaskManager, FlightsTaskManager>();
+builder.Services.AddSingleton<IFlightService, FlightService>();
 builder.Services.AddSingleton<IA2ACardService, A2ACardService>();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);

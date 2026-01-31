@@ -1,5 +1,6 @@
 ﻿using Travel.Application.Api.Infrastructure.Seed;
 using Travel.Application.Domain.Flights;
+using Travel.Application.Exceptions;
 
 namespace Travel.Application.Services;
 
@@ -12,9 +13,14 @@ public class FlightSearchService : IFlightSearchService
         var originAirport = DataRegistry.EuropeanCities.FirstOrDefault(c => c.City == origin);
         var destinationAirport = DataRegistry.EuropeanCities.FirstOrDefault(c => c.City == destination);
 
-        if (originAirport == null || destinationAirport == null)
+        if (originAirport == null)
         {
-            return new FlightSearch(new List<FlightOption>(), new List<FlightOption>());
+            throw new FlightSearchException($"The origin city {origin} is not available on the supported list of cities. Only European cities supported.");
+        }
+
+        if (destinationAirport == null)
+        {
+            throw new FlightSearchException($"The destination city {destination} is not available on the supported list of cities. Only European cities supported.");
         }
 
         var departureFlights = new List<FlightOption>();
