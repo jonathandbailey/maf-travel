@@ -37,7 +37,7 @@ public static class ConversationAgentTelemetry
         return source;
     }
 
-    public static Activity? AddEvent(this Activity activity, AgentRunResponseUpdate agentRunUpdate, TaskState state, string content)
+    public static Activity? AddEvent(this Activity activity, AgentResponseUpdate agentRunUpdate, TaskState state, string content)
     {
         var updateType = agentRunUpdate.RawRepresentation?.GetType().Name ?? "Unknown";
 
@@ -53,7 +53,7 @@ public static class ConversationAgentTelemetry
         return activity;
     }
 
-    public static Activity? AddEvent(this Activity activity, AgentRunResponseUpdate agentRunUpdate, string content)
+    public static Activity? AddEvent(this Activity activity, AgentResponseUpdate agentRunUpdate, string content)
     {
         var updateType = agentRunUpdate.RawRepresentation?.GetType().Name ?? "Unknown";
 

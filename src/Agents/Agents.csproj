@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>e7bf6b00-7792-4fcf-8aa2-51f8f9d84f3c</UserSecretsId>
@@ -12,12 +12,12 @@
     
     <PackageReference Include="Azure.AI.OpenAI" />
     
-    <PackageReference Include="Microsoft.Agents.AI"  />
-    <PackageReference Include="Microsoft.Agents.AI.A2A"  />
-    <PackageReference Include="Microsoft.Agents.AI.OpenAI"  />
-    <PackageReference Include="Microsoft.Agents.AI.Workflows"  />
+    <PackageReference Include="Microsoft.Agents.AI" />
+    <PackageReference Include="Microsoft.Agents.AI.A2A" />
+    <PackageReference Include="Microsoft.Agents.AI.OpenAI" />
+    <PackageReference Include="Microsoft.Agents.AI.Workflows" />
     
-    <PackageReference Include="Microsoft.Extensions.AI"  />
+    <PackageReference Include="Microsoft.Extensions.AI" />
   </ItemGroup>
 
   <ItemGroup>

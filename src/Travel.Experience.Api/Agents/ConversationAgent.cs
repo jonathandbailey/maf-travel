@@ -17,8 +17,8 @@ public class ConversationAgent(AIAgent agent, IA2AAgentServiceDiscovery discover
     private const string ExecutingTravelWorkflow = "Executing Travel Workflow...";
     private const string ProcessingResults = "Processing Results...";
     
-    protected override async IAsyncEnumerable<AgentRunResponseUpdate> RunCoreStreamingAsync(IEnumerable<ChatMessage> messages,
-        AgentThread? thread = null,
+    protected override async IAsyncEnumerable<AgentResponseUpdate> RunCoreStreamingAsync(IEnumerable<ChatMessage> messages,
+        AgentSession? thread = null,
         AgentRunOptions? options = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -60,12 +60,12 @@ public class ConversationAgent(AIAgent agent, IA2AAgentServiceDiscovery discover
        
             var agentMeta = discovery.GetAgentMeta(functionCallContent.Key);
 
-            var agentThread = agentMeta.Agent.GetNewThread(threadId);
+            var agentThread = await agentMeta.Agent.GetNewSessionAsync(threadId);
 
             var ex = new A2AAgentEx(agentMeta.Agent);
 
             await foreach (var agentRunUpdate in ex.RunCoreStreamingAsync(agentMeta.Client,
-                               new List<ChatMessage> { new(ChatRole.User, arguments) },(A2AAgentThread) agentThread,
+                               new List<ChatMessage> { new(ChatRole.User, arguments) },(A2AAgentSession) agentThread,
                                cancellationToken: cancellationToken))
             {
        
