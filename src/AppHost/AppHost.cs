@@ -39,7 +39,5 @@ builder.AddProject<Projects.Travel_Application_Mcp>("travel-application-mcp")
 builder.AddProject<Projects.Travel_Agents_A2A>("travel-agents-a2a");
 
 
-builder.AddProject<Projects.Travel_Workflows_A2A>("travel-workflows-a2a");
-
 
 builder.Build().Run();
