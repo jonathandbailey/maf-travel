@@ -1,7 +1,7 @@
-﻿using System.ClientModel;
-using Agents.Repository;
+﻿using Agents.Repository;
 using Agents.Settings;
 using Azure.AI.OpenAI;
+using Azure.Identity;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
@@ -23,8 +23,14 @@ public class AgentFactory : IAgentFactory
         _templateRepository = templateRepository;
         _agentMiddlewareFactory = agentMiddlewareFactory;
 
-        _chatClient = new AzureOpenAIClient(new Uri(settings.Value.EndPoint),
-                new ApiKeyCredential(settings.Value.ApiKey))
+
+        var credential = new ChainedTokenCredential(
+            new VisualStudioCredential(),
+            new AzureCliCredential(),
+            new AzureDeveloperCliCredential()
+        );
+
+        _chatClient = new AzureOpenAIClient(new Uri(settings.Value.EndPoint), credential)
             .GetChatClient(settings.Value.DeploymentName);
     }
 
