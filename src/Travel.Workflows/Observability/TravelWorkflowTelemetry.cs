@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Agents.AI;
+using Travel.Workflows.Dto;
 
 namespace Travel.Workflows.Observability;
 
@@ -24,11 +25,11 @@ public static class TravelWorkflowTelemetry
         return Source.StartActivity($"invoke_node {name}", ActivityKind.Internal, null, tags);
     }
 
-    public static void AddNodeUsage(this Activity activity, AgentRunResponse agentRunResponse)
+    public static void AddNodeUsage(this Activity activity, AgentResponse agentWorkflowResponse)
     {
-        activity.SetTag("gen_ai.usage.input_tokens", agentRunResponse.Usage?.InputTokenCount );
-        activity.SetTag("gen_ai.usage.output_tokens", agentRunResponse.Usage?.OutputTokenCount );
-        activity.SetTag("gen_ai.usage.total_tokens", agentRunResponse.Usage?.TotalTokenCount );
+        activity.SetTag("gen_ai.usage.input_tokens", agentWorkflowResponse.Usage?.InputTokenCount );
+        activity.SetTag("gen_ai.usage.output_tokens", agentWorkflowResponse.Usage?.OutputTokenCount );
+        activity.SetTag("gen_ai.usage.total_tokens", agentWorkflowResponse.Usage?.TotalTokenCount );
     }
 
     public static void AddNodeInput(this Activity activity, string input)

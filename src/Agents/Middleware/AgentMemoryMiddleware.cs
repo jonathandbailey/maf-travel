@@ -9,9 +9,9 @@ namespace Agents.Middleware;
 
 public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgUiMiddleware> logger) :IAgentThreadMiddleware, IAgentMiddleware
 {
-    public async Task<AgentRunResponse> RunAsync(
+    public async Task<AgentResponse> RunAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread,
+        AgentSession? thread,
         AgentRunOptions? options,
         AIAgent innerAgent,
         CancellationToken cancellationToken)
@@ -38,9 +38,9 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
 
     public string Name { get; } = "agent-thread";
 
-    public async IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
+    public async IAsyncEnumerable<AgentResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread,
+        AgentSession? thread,
         AgentRunOptions? options,
         AIAgent innerAgent,
         [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -65,19 +65,19 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
         await memory.SaveAsync(new AgentState(threadState), GetResourceName(innerAgent.Name!, threadId));
     }
 
-    private async Task<AgentThread> LoadAsync(AIAgent agent, Guid threadId)
+    private async Task<AgentSession> LoadAsync(AIAgent agent, Guid threadId)
     {
-        AgentThread? thread;
+        AgentSession? thread;
 
         if (!await memory.ExistsAsync(GetResourceName(agent.Name!, threadId)))
         {
-            thread = agent.GetNewThread();
+            thread = await agent.GetNewSessionAsync();
         }
         else
         {
             var stateDto = await memory.LoadAsync(GetResourceName(agent.Name!, threadId));
 
-            thread = agent.DeserializeThread(stateDto.Thread);
+            thread = await agent.DeserializeSessionAsync(stateDto.Thread);
         }
 
         return thread;
@@ -91,16 +91,16 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
 
 public interface IAgentThreadMiddleware
 {
-    IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
+    IAsyncEnumerable<AgentResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread,
+        AgentSession? thread,
         AgentRunOptions? options,
         AIAgent innerAgent,
         CancellationToken cancellationToken);
 
-    Task<AgentRunResponse> RunAsync(
+    Task<AgentResponse> RunAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread,
+        AgentSession? thread,
         AgentRunOptions? options,
         AIAgent innerAgent,
         CancellationToken cancellationToken);
@@ -108,16 +108,16 @@ public interface IAgentThreadMiddleware
 
 public interface IAgentMiddleware
 {
-    IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
+    IAsyncEnumerable<AgentResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread,
+        AgentSession? thread,
         AgentRunOptions? options,
         AIAgent innerAgent,
         CancellationToken cancellationToken);
 
-    Task<AgentRunResponse> RunAsync(
+    Task<AgentResponse> RunAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread,
+        AgentSession? thread,
         AgentRunOptions? options,
         AIAgent innerAgent,
         CancellationToken cancellationToken);

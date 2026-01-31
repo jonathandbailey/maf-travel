@@ -81,31 +81,31 @@ public static class AgentExtensions
         }
     }
 
-    public static AgentRunResponseUpdate ToAgentResponseStatusMessage(this StatusUpdate statusUpdate)
+    public static AgentResponseUpdate ToAgentResponseStatusMessage(this StatusUpdate statusUpdate)
     {
         var snapshot = new SnapShot<StatusUpdate>(statusUpdate.Type, statusUpdate);
 
         var stateBytes = JsonSerializer.SerializeToUtf8Bytes(snapshot);
 
-        return new AgentRunResponseUpdate
+        return new AgentResponseUpdate
         {
             Contents = [new DataContent(stateBytes, ApplicationJsonMediaType)]
         };
     }
 
-    public static AgentRunResponseUpdate ToAgentResponseStatusMessage(this ArtifactCreated artifactCreated)
+    public static AgentResponseUpdate ToAgentResponseStatusMessage(this ArtifactCreated artifactCreated)
     {
         var snapshot = new SnapShot<ArtifactCreated>(artifactCreated.Type, artifactCreated);
 
         var stateBytes = JsonSerializer.SerializeToUtf8Bytes(snapshot);
 
-        return new AgentRunResponseUpdate
+        return new AgentResponseUpdate
         {
             Contents = [new DataContent(stateBytes, ApplicationJsonMediaType)]
         };
     }
 
-    public static AgentRunResponseUpdate ToAgentResponseStatusMessage(this string message)
+    public static AgentResponseUpdate ToAgentResponseStatusMessage(this string message)
     {
         var statusUpdate = new StatusUpdate("StatusUpdate", "Conversation Agent", message, string.Empty);
 
@@ -113,7 +113,7 @@ public static class AgentExtensions
 
         var stateBytes = JsonSerializer.SerializeToUtf8Bytes(snapshot);
 
-        return new AgentRunResponseUpdate
+        return new AgentResponseUpdate
         {
             Contents = [new DataContent(stateBytes, ApplicationJsonMediaType)]
         };

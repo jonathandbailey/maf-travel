@@ -11,7 +11,7 @@ namespace Travel.Workflows.Nodes;
 
 public class ExecutionNode(ITravelService travelService) : ReflectingExecutor<ExecutionNode>(WorkflowConstants.ExecutionNode), 
     IMessageHandler<ReasoningOutputDto>,
-    IMessageHandler<AgentResponse>
+    IMessageHandler<AgentWorkflowResponse>
 {
     private const string? UnknownNextAction = "Unknown NextAction";
 
@@ -48,7 +48,7 @@ public class ExecutionNode(ITravelService travelService) : ReflectingExecutor<Ex
                 throw new ArgumentOutOfRangeException(nameof(message),UnknownNextAction);
         }
     }
-    public async ValueTask HandleAsync(AgentResponse agentResponse, IWorkflowContext context,
+    public async ValueTask HandleAsync(AgentWorkflowResponse agentWorkflowResponse, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         await context.AddEventAsync(new TravelPlanUpdatedEvent(), cancellationToken);

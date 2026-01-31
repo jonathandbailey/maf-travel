@@ -9,13 +9,13 @@ namespace Agents.Custom;
 
 public class A2AAgentEx(AIAgent agent)
 {
-    public async IAsyncEnumerable<AgentRunResponseUpdate> RunCoreStreamingAsync(
+    public async IAsyncEnumerable<AgentResponseUpdate> RunCoreStreamingAsync(
         A2AClient client,
         IEnumerable<ChatMessage> messages, 
-        A2AAgentThread thread, 
+        A2AAgentSession thread, 
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        A2AAgentThread typedThread = thread;
+        A2AAgentSession typedThread = thread;
 
 
         MessageSendParams sendParams = new()

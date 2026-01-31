@@ -10,7 +10,7 @@ public class CreateFlightOptions(TravelPlanSummary travelPlan, ReasoningOutputDt
 
 
 
-public class AgentResponse(string source, string message, AgentResponseStatus status)
+public class AgentWorkflowResponse(string source, string message, AgentResponseStatus status)
 {
     public string Source { get; } = source;
     

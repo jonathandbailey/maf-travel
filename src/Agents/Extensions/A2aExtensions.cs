@@ -8,9 +8,9 @@ namespace Agents.Extensions;
 
 public static class A2aExtensions
 {
-    public static AgentRunResponseUpdate ConvertToAgentResponseUpdate(this AgentMessage message, string agentId)
+    public static AgentResponseUpdate ConvertToAgentResponseUpdate(this AgentMessage message, string agentId)
     {
-        return new AgentRunResponseUpdate
+        return new AgentResponseUpdate
         {
             AgentId = agentId,
             ResponseId = message.MessageId,
@@ -22,9 +22,9 @@ public static class A2aExtensions
         };
     }
 
-    public static AgentRunResponseUpdate ConvertToAgentResponseUpdate(this AgentTask task, string agentId)
+    public static AgentResponseUpdate ConvertToAgentResponseUpdate(this AgentTask task, string agentId)
     {
-        return new AgentRunResponseUpdate
+        return new AgentResponseUpdate
         {
             AgentId = agentId,
             ResponseId = task.Id,
@@ -35,9 +35,9 @@ public static class A2aExtensions
         };
     }
 
-    public static AgentRunResponseUpdate ConvertToAgentResponseUpdate(this TaskUpdateEvent taskUpdateEvent, string agentId)
+    public static AgentResponseUpdate ConvertToAgentResponseUpdate(this TaskUpdateEvent taskUpdateEvent, string agentId)
     {
-        AgentRunResponseUpdate responseUpdate = new()
+        AgentResponseUpdate responseUpdate = new()
         {
             AgentId = agentId,
             ResponseId = taskUpdateEvent.TaskId,
@@ -55,13 +55,13 @@ public static class A2aExtensions
         return responseUpdate;
     }
 
-    public static AgentMessage CreateA2AMessage(this IEnumerable<ChatMessage> messages, A2AAgentThread typedThread )
+    public static AgentMessage CreateA2AMessage(this IEnumerable<ChatMessage> messages, A2AAgentSession typedSession)
     {
         var a2aMessage = messages.ToA2AMessage();
 
-        a2aMessage.ContextId = typedThread.ContextId;
+        a2aMessage.ContextId = typedSession.ContextId;
 
-        a2aMessage.ReferenceTaskIds = typedThread.TaskId is null ? null : [typedThread.TaskId];
+        a2aMessage.ReferenceTaskIds = typedSession.TaskId is null ? null : [typedSession.TaskId];
 
         return a2aMessage;
     }

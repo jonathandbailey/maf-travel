@@ -15,7 +15,7 @@ namespace Travel.Workflows.Nodes;
 public class FlightsNode(AIAgent agent) : 
     ReflectingExecutor<FlightsNode>(WorkflowConstants.FlightNodeName), 
    
-    IMessageHandler<CreateFlightOptions, AgentResponse>
+    IMessageHandler<CreateFlightOptions, AgentWorkflowResponse>
 {
     private const string FlightWorkerNodeError = "Flight Worker Node has failed to execute.";
     private const string FlightAgent = "Flight Agent";
@@ -30,7 +30,7 @@ public class FlightsNode(AIAgent agent) :
         PropertyNameCaseInsensitive = true
     };
 
-    public async ValueTask<AgentResponse> HandleAsync(CreateFlightOptions message, IWorkflowContext context,
+    public async ValueTask<AgentWorkflowResponse> HandleAsync(CreateFlightOptions message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
    
@@ -63,13 +63,13 @@ public class FlightsNode(AIAgent agent) :
 
             await context.AddEventAsync(new ArtifactStatusEvent(id, Flights, ArtifactStatus.Created), cancellationToken);
 
-            return new AgentResponse(FlightAgent, FlightsOptionsCreated, AgentResponseStatus.Success);
+            return new AgentWorkflowResponse(FlightAgent, FlightsOptionsCreated, AgentResponseStatus.Success);
         }
         catch (Exception exception)
         {
             await context.AddEventAsync(new TravelWorkflowErrorEvent(exception.Message, FlightWorkerNodeError, WorkflowConstants.FlightNodeName, exception), cancellationToken);
 
-            return new AgentResponse(FlightAgent, exception.Message, AgentResponseStatus.Error);
+            return new AgentWorkflowResponse(FlightAgent, exception.Message, AgentResponseStatus.Error);
         }
     }
 }

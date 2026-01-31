@@ -8,9 +8,9 @@ namespace Agents.Middleware;
 
 public class AgentAgUiMiddleware(ILogger<IAgentAgUiMiddleware> logger) : IAgentMiddleware, IAgentAgUiMiddleware
 {
-    public async IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
+    public async IAsyncEnumerable<AgentResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread,
+        AgentSession? thread,
         AgentRunOptions? options,
         AIAgent innerAgent,
         [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ public class AgentAgUiMiddleware(ILogger<IAgentAgUiMiddleware> logger) : IAgentM
         }
     }
 
-    public async Task<AgentRunResponse> RunAsync(IEnumerable<ChatMessage> messages, AgentThread? thread, AgentRunOptions? options, AIAgent innerAgent,
+    public async Task<AgentResponse> RunAsync(IEnumerable<ChatMessage> messages, AgentSession? thread, AgentRunOptions? options, AIAgent innerAgent,
         CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
@@ -42,9 +42,9 @@ public class AgentAgUiMiddleware(ILogger<IAgentAgUiMiddleware> logger) : IAgentM
 
 public interface IAgentAgUiMiddleware
 {
-    IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
+    IAsyncEnumerable<AgentResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread,
+        AgentSession? thread,
         AgentRunOptions? options,
         AIAgent innerAgent,
         CancellationToken cancellationToken);
