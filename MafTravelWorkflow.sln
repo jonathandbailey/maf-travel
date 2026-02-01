@@ -47,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "src\AppHost\AppH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDefaults", "src\ServiceDefaults\ServiceDefaults.csproj", "{E3C0E21B-371B-ACD5-5FF0-77C353D89E20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Agents.A2A.Flights", "src\Travel.Agents.A2A.Flights\Travel.Agents.A2A.Flights.csproj", "{85EB82FD-4D82-4EBF-9B9E-8CB0EBEF3B54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Agents.A2A.Shared", "src\Travel.Agents.A2A.Shared\Travel.Agents.A2A.Shared.csproj", "{6DFE9906-959C-4BC8-9C67-C64143B9D77F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +109,14 @@ Global
 		{E3C0E21B-371B-ACD5-5FF0-77C353D89E20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3C0E21B-371B-ACD5-5FF0-77C353D89E20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3C0E21B-371B-ACD5-5FF0-77C353D89E20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85EB82FD-4D82-4EBF-9B9E-8CB0EBEF3B54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85EB82FD-4D82-4EBF-9B9E-8CB0EBEF3B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85EB82FD-4D82-4EBF-9B9E-8CB0EBEF3B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85EB82FD-4D82-4EBF-9B9E-8CB0EBEF3B54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DFE9906-959C-4BC8-9C67-C64143B9D77F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DFE9906-959C-4BC8-9C67-C64143B9D77F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DFE9906-959C-4BC8-9C67-C64143B9D77F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DFE9906-959C-4BC8-9C67-C64143B9D77F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +135,8 @@ Global
 		{E71B83B5-AF4B-32AC-1EDB-8A0525CD96C0} = {1E82CFC0-41A2-4EC1-B0B2-1F7A80B584FB}
 		{BB9C41FD-1395-49AC-C085-55B269795333} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{E3C0E21B-371B-ACD5-5FF0-77C353D89E20} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{85EB82FD-4D82-4EBF-9B9E-8CB0EBEF3B54} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
+		{6DFE9906-959C-4BC8-9C67-C64143B9D77F} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CECF4BFE-6870-4849-BFB1-EC0B46CF01E1}
