@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Agents.A2A.Flights",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Agents.A2A.Shared", "src\Travel.Agents.A2A.Shared\Travel.Agents.A2A.Shared.csproj", "{6DFE9906-959C-4BC8-9C67-C64143B9D77F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Agents.A2A.Planning", "src\Travel.Agents.A2A.Planning\Travel.Agents.A2A.Planning.csproj", "{174106E7-A3A0-4D12-9D10-B5630931F23D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{6DFE9906-959C-4BC8-9C67-C64143B9D77F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DFE9906-959C-4BC8-9C67-C64143B9D77F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DFE9906-959C-4BC8-9C67-C64143B9D77F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{174106E7-A3A0-4D12-9D10-B5630931F23D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{174106E7-A3A0-4D12-9D10-B5630931F23D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{174106E7-A3A0-4D12-9D10-B5630931F23D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{174106E7-A3A0-4D12-9D10-B5630931F23D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +143,7 @@ Global
 		{E3C0E21B-371B-ACD5-5FF0-77C353D89E20} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{85EB82FD-4D82-4EBF-9B9E-8CB0EBEF3B54} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
 		{6DFE9906-959C-4BC8-9C67-C64143B9D77F} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
+		{174106E7-A3A0-4D12-9D10-B5630931F23D} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CECF4BFE-6870-4849-BFB1-EC0B46CF01E1}
