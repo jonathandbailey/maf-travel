@@ -1,17 +1,16 @@
-﻿using ModelContextProtocol.Client;
-using System.Threading;
+﻿using Microsoft.Extensions.Options;
+using ModelContextProtocol.Client;
+using Travel.Agents.A2A.Settings;
 
 namespace Travel.Agents.A2A.Services;
 
-public class McpToolsService(Uri serverUri)
+public class McpToolsService(HttpClient httpClient, IOptions<ServerSettings> serverSettings) : IMcpToolsService
 {
     public async Task<IList<McpClientTool>> ListToolsAsync(CancellationToken cancellationToken)
     {
-        var httpClient = new HttpClient();
-
         var transport = new HttpClientTransport(new()
         {
-            Endpoint = serverUri,
+            Endpoint = new Uri(serverSettings.Value.ServiceUrl),
             Name = "Travel MCP Client",
         }, httpClient);
 
@@ -21,4 +20,9 @@ public class McpToolsService(Uri serverUri)
    
         return mcpTools;
     }
+}
+
+public interface IMcpToolsService
+{
+    Task<IList<McpClientTool>> ListToolsAsync(CancellationToken cancellationToken);
 }

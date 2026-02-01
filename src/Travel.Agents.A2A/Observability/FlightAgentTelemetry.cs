@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using A2A;
-using Microsoft.Agents.AI;
 
 namespace Travel.Agents.A2A.Observability;
 
@@ -22,50 +20,5 @@ public static class FlightAgentTelemetry
         var source = Source.StartActivity($"invoke_agent {Name}", ActivityKind.Internal, null, tags);
      
         return source;
-    }
-
-    public static Activity? StartTool(string key, string arguments, Activity? parent)
-    {
-        var tags = new ActivityTagsCollection
-        {
-            { "gen_ai.tool.name", key },
-            { "gen_ai.tool.parameters", arguments }
-        };
-
-        var source = Source.StartActivity($"execute_tool {key}", ActivityKind.Internal, parent?.Id, tags);
-
-        return source;
-    }
-
-    public static Activity? AddEvent(this Activity activity, AgentResponseUpdate agentRunUpdate, TaskState state, string content)
-    {
-        var updateType = agentRunUpdate.RawRepresentation?.GetType().Name ?? "Unknown";
-
-
-        activity?.AddEvent(new ActivityEvent("gen_ai.stream.chunk",
-            tags: new ActivityTagsCollection
-            {
-                { "gen_ai.content.part", content },
-                { "gen_ai.task.state", state.ToString()},
-                { "gen_ai.event.type", updateType },
-            }));
-
-        return activity;
-    }
-
-    public static Activity? AddEvent(this Activity activity, AgentResponseUpdate agentRunUpdate, string content)
-    {
-        var updateType = agentRunUpdate.RawRepresentation?.GetType().Name ?? "Unknown";
-
-
-        activity?.AddEvent(new ActivityEvent("gen_ai.stream.chunk",
-            tags: new ActivityTagsCollection
-            {
-                { "gen_ai.content.part", content },
-             
-                { "gen_ai.event.type", updateType },
-            }));
-
-        return activity;
     }
 }
