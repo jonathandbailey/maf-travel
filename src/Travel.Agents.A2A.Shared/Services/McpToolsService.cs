@@ -2,7 +2,7 @@
 using ModelContextProtocol.Client;
 using Travel.Agents.A2A.Settings;
 
-namespace Travel.Agents.A2A.Services;
+namespace Travel.Agents.A2A.Shared.Services;
 
 public class McpToolsService(HttpClient httpClient, IOptions<ServerSettings> serverSettings) : IMcpToolsService
 {

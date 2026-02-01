@@ -3,8 +3,9 @@ using Agents.Extensions;
 using Infrastructure.Extensions;
 using Microsoft.Extensions.Options;
 using ServiceDefaults;
-using Travel.Agents.A2A.Services;
+using Travel.Agents.A2A.Flights.Services;
 using Travel.Agents.A2A.Settings;
+using Travel.Agents.A2A.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

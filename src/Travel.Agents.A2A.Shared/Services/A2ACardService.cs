@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using Travel.Agents.A2A.Settings;
 
-namespace Travel.Agents.A2A.Services;
+namespace Travel.Agents.A2A.Shared.Services;
 
 public class A2ACardService(IOptions<CardSettings> cardSettings) : IA2ACardService
 {

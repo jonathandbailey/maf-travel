@@ -1,8 +1,9 @@
 ﻿using A2A;
 using Travel.Agents.A2A.Dto;
-using Travel.Agents.A2A.Extensions;
+using Travel.Agents.A2A.Flights.Extensions;
+using Travel.Agents.A2A.Shared.Services;
 
-namespace Travel.Agents.A2A.Services;
+namespace Travel.Agents.A2A.Flights.Services;
 
 public class FlightsTaskManager : IFlightsTaskManager
 {

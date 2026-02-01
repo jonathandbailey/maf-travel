@@ -1,13 +1,14 @@
-﻿using Microsoft.Extensions.AI;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Agents.Extensions;
 using Agents.Services;
 using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
 using Travel.Agents.A2A.Dto;
 using Travel.Agents.A2A.Observability;
+using Travel.Agents.A2A.Shared.Services;
 
-namespace Travel.Agents.A2A.Services;
+namespace Travel.Agents.A2A.Flights.Services;
 
 public class FlightService(IAgentFactory agentFactory, IMcpToolsService mcpToolsService) : IFlightService
 {

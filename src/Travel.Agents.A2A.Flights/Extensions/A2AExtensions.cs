@@ -1,8 +1,8 @@
-﻿using A2A;
-using System.Text.Json;
+﻿using System.Text.Json;
+using A2A;
 using Travel.Agents.A2A.Dto;
 
-namespace Travel.Agents.A2A.Extensions;
+namespace Travel.Agents.A2A.Flights.Extensions;
 
 public static class A2AExtensions
 {
