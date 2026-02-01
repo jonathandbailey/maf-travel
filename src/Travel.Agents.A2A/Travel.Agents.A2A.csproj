@@ -27,6 +27,8 @@
     <ProjectReference Include="..\Agents\Agents.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Travel.Agents.A2A.Flights\Travel.Agents.A2A.Flights.csproj" />
+    <ProjectReference Include="..\Travel.Agents.A2A.Shared\Travel.Agents.A2A.Shared.csproj" />
   </ItemGroup>
 
 </Project>
