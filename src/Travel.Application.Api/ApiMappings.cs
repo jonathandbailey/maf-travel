@@ -1,8 +1,6 @@
-﻿using Azure.Core;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using OpenTelemetry.Resources;
 using System.Diagnostics;
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Extensions;
