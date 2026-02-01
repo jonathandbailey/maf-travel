@@ -6,17 +6,75 @@ namespace Travel.Agents.A2A.Extensions;
 
 public static class A2AExtensions
 {
-    private static readonly JsonSerializerOptions _options = new()
+    private static readonly JsonSerializerOptions Options = new()
     {
         PropertyNameCaseInsensitive = true
     };
+
+    public static AgentMessage CreateResponseFailed(this Exception exception, AgentTask agentTask)
+    {
+        var dataPart = new DataPart
+        {
+            Data = new Dictionary<string, JsonElement>
+            {
+                ["message"] = JsonSerializer.SerializeToElement(exception.Message),
+            }
+        };
+
+        var message = new AgentMessage
+        {
+            Role = MessageRole.Agent,
+            ContextId = agentTask.ContextId,
+            Parts = [dataPart]
+        };
+
+
+        return message;
+    }
+
+    public static AgentMessage CreateResponseCompleted(this FlightAgentResponseDto flightResponse, AgentTask agentTask)
+    {
+        var dataPart = new DataPart
+        {
+            Data = new Dictionary<string, JsonElement>
+            {
+                ["flightSearchId"] = JsonSerializer.SerializeToElement(flightResponse.FlightSearchId),
+                ["summary"] = JsonSerializer.SerializeToElement(flightResponse.Summary),
+                ["status"] = JsonSerializer.SerializeToElement(flightResponse.Status)
+            }
+        };
+
+        var message = new AgentMessage
+        {
+            Role = MessageRole.Agent,
+            ContextId = agentTask.ContextId,
+            Parts = [dataPart]
+        };
+
+
+        return message;
+    }
+
+    public static DataPart CreateDataPartResponse(this FlightAgentResponseDto flightResponse)
+    {
+        var dataPart = new DataPart
+        {
+            Data = new Dictionary<string, JsonElement>
+            {
+                ["flightSearchId"] = JsonSerializer.SerializeToElement(flightResponse.FlightSearchId),
+                ["summary"] = JsonSerializer.SerializeToElement(flightResponse.Summary),
+                ["status"] = JsonSerializer.SerializeToElement(flightResponse.Status)
+            }
+        };
+        return dataPart;
+    }
 
     public static FlightSearchDto? ToFlightSearchDto(Dictionary<string, JsonElement> data)
     {
         try
         {
             var json = JsonSerializer.Serialize(data);
-            return JsonSerializer.Deserialize<FlightSearchDto>(json, _options);
+            return JsonSerializer.Deserialize<FlightSearchDto>(json, Options);
         }
         catch (JsonException)
         {

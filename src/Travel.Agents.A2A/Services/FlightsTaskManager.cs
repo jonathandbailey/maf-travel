@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using A2A;
+﻿using A2A;
+using Travel.Agents.A2A.Dto;
 using Travel.Agents.A2A.Extensions;
 
 namespace Travel.Agents.A2A.Services;
@@ -26,30 +26,31 @@ public class FlightsTaskManager : IFlightsTaskManager
 
     private async Task OnTaskCreated(AgentTask agentTask, CancellationToken cancellationToken)
     {
-        var dataPart = agentTask.ExtractDataPartWithSkillId();
+        try
+        {
+            await TaskManager.UpdateStatusAsync(agentTask.Id, TaskState.Working, cancellationToken: cancellationToken);
+
+            var dataPart = agentTask.ExtractDataPartWithSkillId();
       
-        var dto = A2AExtensions.ToFlightSearchDto(dataPart.Data);
+            var dto = A2AExtensions.ToFlightSearchDto(dataPart.Data);
 
-        var response = await _flightService.SearchFlights(dto!, agentTask.ContextId, cancellationToken);
+            var response = await _flightService.SearchFlights(dto!, agentTask.ContextId, cancellationToken);
 
-        var responsePart = new DataPart
-        {
-            Data = new Dictionary<string, JsonElement>
+            if (response.Status == FlightAgentStatus.Failed)
             {
-                ["flightSearchId"] = JsonSerializer.SerializeToElement(response.FlightSearchId),
-                ["summary"] = JsonSerializer.SerializeToElement(response.Summary),
-                ["status"] = JsonSerializer.SerializeToElement(response.Status)
+                throw new InvalidOperationException(response.Summary);
             }
-        };
+     
+            var message = response.CreateResponseCompleted(agentTask);
 
-        var message = new AgentMessage
+            await TaskManager.UpdateStatusAsync(agentTask.Id, TaskState.Completed, message, final: true, cancellationToken);
+        }
+        catch (Exception exception)
         {
-            Role = MessageRole.Agent,
-            ContextId = agentTask.ContextId,
-            Parts = [responsePart]
-        };
+            var message = exception.CreateResponseFailed(agentTask);
 
-        await TaskManager.UpdateStatusAsync(agentTask.Id, TaskState.Completed, message, final: true, cancellationToken);
+            await TaskManager.UpdateStatusAsync(agentTask.Id, TaskState.Failed, message, final: true, cancellationToken);
+        }
     }
 }
 

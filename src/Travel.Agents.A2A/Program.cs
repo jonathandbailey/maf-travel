@@ -13,6 +13,17 @@ builder.AddServiceDefaults();
 builder.Services.Configure<CardSettings>(settings =>
     builder.Configuration.GetSection(nameof(CardSettings)).Bind(settings));
 
+builder.Services.Configure<ServerSettings>(settings =>
+{
+    settings.ServiceUrl = builder.Configuration["services:travel-application-mcp:https:0"]
+                          ?? throw new InvalidOperationException("MCP service URL not configured");
+});
+
+
+builder.Services.AddHttpClient<IMcpToolsService, McpToolsService>();
+
+builder.Services.AddSingleton<IMcpToolsService, McpToolsService>();
+
 builder.Services.AddSingleton<IFlightsTaskManager, FlightsTaskManager>();
 builder.Services.AddSingleton<IFlightService, FlightService>();
 builder.Services.AddSingleton<IA2ACardService, A2ACardService>();
@@ -22,6 +33,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddAgentServices(builder.Configuration);
 
 builder.Services.AddOpenApi();
+
+
 
 var app = builder.Build();
 

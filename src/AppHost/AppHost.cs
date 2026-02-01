@@ -11,7 +11,7 @@ var gateway =  builder.AddProject<Projects.Travel_Gateway>("travel-gateway");
 
 var api = builder.AddProject<Projects.Travel_Experience_Api>("travel-experience-api").
 WithReference(blobs).
-    WaitFor(storage)
+    WaitFor(blobs)
     .WithEndpoint("http", endpoint => { endpoint.Port = 5000;})
     .WithEndpoint("https", endpoint => { endpoint.Port = 5001; });
 
@@ -23,22 +23,23 @@ gateway.WithReference(ui);
 
 
 builder.AddProject<Projects.Travel_Workflows_A2A>("travel-workflows-a2a")
-    .WithReference(blobs)
-    .WaitFor(storage);
+.WithReference(blobs)
+.WaitFor(blobs);
 
 builder.AddProject<Projects.Travel_Application_Api>("travel-application-api")
-    .WithReference(blobs)
-    .WaitFor(storage);
+.WithReference(blobs)
+.WaitFor(blobs);
 
 
-builder.AddProject<Projects.Travel_Application_Mcp>("travel-application-mcp")
-    .WithReference(blobs)
-    .WaitFor(storage);
+var mcp = builder.AddProject<Projects.Travel_Application_Mcp>("travel-application-mcp")
+.WithReference(blobs)
+.WaitFor(blobs);
 
 
 builder.AddProject<Projects.Travel_Agents_A2A>("travel-agents-a2a")
-    .WithReference(blobs)
-    .WaitFor(storage);
+.WithReference(mcp)
+.WithReference(blobs)
+.WaitFor(blobs);
 
 
 
