@@ -1,4 +1,4 @@
-﻿namespace Travel.Agents.A2A.Dto;
+﻿namespace Travel.Agents.A2A.Flights.Dto;
 
 public enum FlightAgentStatus
 {

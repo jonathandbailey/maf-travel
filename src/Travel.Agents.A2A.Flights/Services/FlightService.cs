@@ -4,8 +4,9 @@ using Agents.Extensions;
 using Agents.Services;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using Travel.Agents.A2A.Dto;
+using Travel.Agents.A2A.Flights.Dto;
 using Travel.Agents.A2A.Observability;
+using Travel.Agents.A2A.Shared.Dto;
 using Travel.Agents.A2A.Shared.Services;
 
 namespace Travel.Agents.A2A.Flights.Services;

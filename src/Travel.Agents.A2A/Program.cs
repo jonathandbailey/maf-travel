@@ -4,6 +4,8 @@ using Infrastructure.Extensions;
 using Microsoft.Extensions.Options;
 using ServiceDefaults;
 using Travel.Agents.A2A.Flights.Services;
+using Travel.Agents.A2A.Planning.Extensions;
+using Travel.Agents.A2A.Planning.Services;
 using Travel.Agents.A2A.Settings;
 using Travel.Agents.A2A.Shared.Services;
 
@@ -20,6 +22,7 @@ builder.Services.Configure<ServerSettings>(settings =>
                           ?? throw new InvalidOperationException("MCP service URL not configured");
 });
 
+builder.Services.AddPlanningServices();
 
 builder.Services.AddHttpClient<IMcpToolsService, McpToolsService>();
 
@@ -27,6 +30,7 @@ builder.Services.AddSingleton<IMcpToolsService, McpToolsService>();
 
 builder.Services.AddSingleton<IFlightsTaskManager, FlightsTaskManager>();
 builder.Services.AddSingleton<IFlightService, FlightService>();
+builder.Services.AddSingleton<IPlanningService, PlanningService>();
 builder.Services.AddSingleton<IA2ACardService, A2ACardService>();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -60,6 +64,19 @@ var agentCard = cardSettings.Value.AgentCards.First(c => c.Name == Flights)
                 ?? throw new InvalidOperationException(FlightsAgentCardConfigurationNotFound);
 
 app.MapA2A(workflowService.TaskManager, $"{agentCard.Url}");
+
+
+var planning = app.Services.GetRequiredService<IPlanningTaskManager>();
+
+
+const string Planning = "Planning";
+const string? PlanningAgentCardConfigurationNotFound = "Planning agent card configuration not found";
+
+
+var planningCard = cardSettings.Value.AgentCards.First(c => c.Name == Planning)
+                ?? throw new InvalidOperationException(PlanningAgentCardConfigurationNotFound);
+
+app.MapA2A(planning.TaskManager, $"{planningCard.Url}");
 
 
 app.Run();

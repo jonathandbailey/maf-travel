@@ -30,6 +30,9 @@
     <None Update="Templates\Parser-Agent.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Templates\planning_agent_ex.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\planning_agent.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
