@@ -7,12 +7,14 @@ namespace Travel.Agents.A2A.Planning.Services;
 public class PlanningTaskManager : IPlanningTaskManager
 {
     private readonly IA2ACardService _cardService;
+    private readonly IPlanningService _planningService;
     public ITaskManager TaskManager { get; } = new TaskManager();
 
-    public PlanningTaskManager(IA2ACardService cardService)
+    public PlanningTaskManager(IA2ACardService cardService, IPlanningService planningService)
     {
         _cardService = cardService;
- 
+        _planningService = planningService;
+
         TaskManager.OnTaskCreated += OnTaskCreated;
         TaskManager.OnAgentCardQuery += OnAgentCardQuery;
     }
@@ -25,6 +27,10 @@ public class PlanningTaskManager : IPlanningTaskManager
     private async Task OnTaskCreated(AgentTask agentTask, CancellationToken cancellationToken)
     {
         var travelPlan = agentTask.ExtractTravelPlanSnapshot();
+
+        var observation = agentTask.ExtractObservation();
+
+        await _planningService.RunPlanningAsync(travelPlan!, observation!, agentTask.ContextId, cancellationToken);
 
         var message = new AgentMessage
         {

@@ -30,6 +30,7 @@ builder.Services.AddSingleton<IMcpToolsService, McpToolsService>();
 
 builder.Services.AddSingleton<IFlightsTaskManager, FlightsTaskManager>();
 builder.Services.AddSingleton<IFlightService, FlightService>();
+builder.Services.AddSingleton<IPlanningService, PlanningService>();
 builder.Services.AddSingleton<IA2ACardService, A2ACardService>();
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
