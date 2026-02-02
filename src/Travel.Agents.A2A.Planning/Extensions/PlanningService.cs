@@ -11,7 +11,7 @@ namespace Travel.Agents.A2A.Planning.Extensions;
 
 public class PlanningService(IAgentFactory agentFactory) : IPlanningService
 {
-    public async Task RunPlanningAsync(TravelPlanDto travelPlan, string observation, string threadId, CancellationToken cancellationToken)
+    public async Task<AgentResponse> RunPlanningAsync(TravelPlanDto travelPlan, string observation, string threadId, CancellationToken cancellationToken)
     {
         var agent = await agentFactory.Create("planning_agent_ex", tools: PlanningTools.GetDeclarationOnlyTools());
 
@@ -29,11 +29,11 @@ public class PlanningService(IAgentFactory agentFactory) : IPlanningService
 
         var response = await agent.RunAsync(message, options: agentRunOptions, cancellationToken: cancellationToken);
 
-
+        return response;
     }
 }
 
 public interface IPlanningService
 {
-    Task RunPlanningAsync(TravelPlanDto travelPlan, string observation, string threadId, CancellationToken cancellationToken);
+    Task<AgentResponse> RunPlanningAsync(TravelPlanDto travelPlan, string observation, string threadId, CancellationToken cancellationToken);
 }
