@@ -1,5 +1,4 @@
 using ServiceDefaults;
-using Travel.Gateway;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +6,6 @@ builder.AddServiceDefaults();
 
 builder.Services.AddOpenApi();
 
-builder.AddCorsPolicyFromServiceDiscovery();
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
@@ -37,7 +35,6 @@ app.UseHttpsRedirection();
 
 app.MapReverseProxy();
 
-app.UseCorsPolicyServiceDiscovery();
 
 app.Run();
 
