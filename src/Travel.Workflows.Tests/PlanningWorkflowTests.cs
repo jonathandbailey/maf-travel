@@ -4,6 +4,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
 using Travel.Workflows.Planning.Services;
+using System.Text.Json;
 
 namespace Travel.Workflows.Tests;
 
@@ -83,9 +84,145 @@ public class PlanningWorkflowTests
         Assert.True(fakeAgent.WasInvoked);
     }
 
+    [Fact]
+    public async Task FakeAgent_ShouldReturnToolCall_ForUpdateTravelPlan()
+    {
+        var userId = Guid.NewGuid();
+        var sessionId = Guid.NewGuid();
+        
+        var updateDto = new
+        {
+            Origin = "New York",
+            Destination = "Paris",
+            StartDate = DateTimeOffset.UtcNow.AddDays(30),
+            EndDate = DateTimeOffset.UtcNow.AddDays(37)
+        };
+
+        var toolCallArguments = new Dictionary<string, object?>
+        {
+            ["userId"] = userId,
+            ["sessionId"] = sessionId,
+            ["travelPlanUpdateDto"] = updateDto
+        };
+
+        var toolCallContent = new FunctionCallContent(
+            callId: "call_123",
+            name: "UpdateTravelPlan",
+            arguments: toolCallArguments);
+
+        var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
+        var agentResponse = new AgentResponse([responseMessage]);
+
+        var fakeAgent = new FakeAgent(agentResponse);
+
+        var inputMessages = new[] { new ChatMessage(ChatRole.User, "Update my travel plan") };
+        var result = await fakeAgent.RunAsync(inputMessages);
+
+        Assert.NotNull(result);
+        Assert.True(fakeAgent.WasInvoked);
+        Assert.Single(result.Messages);
+        
+        var message = result.Messages.First();
+        Assert.Equal(ChatRole.Assistant, message.Role);
+        
+        var toolCall = message.Contents.OfType<FunctionCallContent>().FirstOrDefault();
+        Assert.NotNull(toolCall);
+        Assert.Equal("update_travel_plan", toolCall.Name);
+        Assert.Equal("call_123", toolCall.CallId);
+        
+        Assert.True(toolCall.Arguments is IDictionary<string, object?>);
+        var args = (IDictionary<string, object?>)toolCall.Arguments!;
+        Assert.Equal(userId, args["userId"]);
+        Assert.Equal(sessionId, args["sessionId"]);
+    }
+
+    [Fact]
+    public async Task WorkflowFactory_ShouldRunWorkflow_WithToolCallResponse()
+    {
+        var userId = Guid.NewGuid();
+        var sessionId = Guid.NewGuid();
+        
+        var updateDto = new
+        {
+            Origin = "Seattle",
+            Destination = "Tokyo",
+            StartDate = DateTimeOffset.UtcNow.AddDays(60),
+            EndDate = DateTimeOffset.UtcNow.AddDays(67)
+        };
+
+        var toolCallArguments = new Dictionary<string, object?>
+        {
+            ["userId"] = userId,
+            ["sessionId"] = sessionId,
+            ["travelPlanUpdateDto"] = updateDto
+        };
+
+        var toolCallContent = new FunctionCallContent(
+            callId: "call_456",
+            name: "update_travel_plan",
+            arguments: toolCallArguments);
+
+        var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
+        var agentResponse = new AgentResponse([responseMessage]);
+
+        var fakeAgent = new FakeAgent(agentResponse);
+
+        var mockAgentFactory = new Mock<IAgentFactory>();
+        mockAgentFactory
+            .Setup(x => x.Create(It.IsAny<string>(), It.IsAny<ChatResponseFormat>(), It.IsAny<List<AITool>>()))
+            .ReturnsAsync(fakeAgent);
+
+        var workflowFactory = new WorkflowFactory(mockAgentFactory.Object);
+        var workflow = await workflowFactory.Build();
+
+        Assert.NotNull(workflow);
+
+        var inputMessage = new ChatMessage(ChatRole.User, "Update my travel plan to Tokyo");
+
+        var run = await InProcessExecution.StreamAsync(workflow, inputMessage, (string?)null);
+
+        Assert.NotNull(run);
+
+        var results = new List<object>();
+        await foreach (var evt in run.WatchStreamAsync())
+        {
+            results.Add(evt);
+        }
+
+        Assert.NotEmpty(results);
+        Assert.True(fakeAgent.WasInvoked);
+
+        var messages = results.OfType<List<ChatMessage>>().FirstOrDefault();
+        Assert.NotNull(messages);
+        Assert.Single(messages);
+
+        var message = messages.First();
+        Assert.Equal(ChatRole.Assistant, message.Role);
+
+        var toolCall = message.Contents.OfType<FunctionCallContent>().FirstOrDefault();
+        Assert.NotNull(toolCall);
+        Assert.Equal("UpdateTravelPlan", toolCall.Name);
+        Assert.Equal("call_456", toolCall.CallId);
+
+        var args = (IDictionary<string, object?>)toolCall.Arguments!;
+        Assert.Equal(userId, args["userId"]);
+        Assert.Equal(sessionId, args["sessionId"]);
+    }
+
     private class FakeAgent : AIAgent
     {
+        private readonly AgentResponse? _response;
+
         public bool WasInvoked { get; private set; }
+
+        public FakeAgent()
+        {
+        }
+
+        public FakeAgent(AgentResponse response)
+        {
+            _response = response;
+        }
 
         protected override async Task<AgentResponse> RunCoreAsync(
             IEnumerable<ChatMessage> messages,
@@ -94,6 +231,11 @@ public class PlanningWorkflowTests
             CancellationToken cancellationToken = default)
         {
             WasInvoked = true;
+
+            if (_response is not null)
+            {
+                return _response;
+            }
 
             var responseMessages = new List<ChatMessage>
             {

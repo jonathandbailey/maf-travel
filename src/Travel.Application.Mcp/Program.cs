@@ -34,9 +34,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddApplicationServices();
 
 builder.Services
-    .AddMcpServer().
-    WithHttpTransport().
-    WithTools<FlightTools>();
+.AddMcpServer().
+WithHttpTransport().
+WithTools<FlightTools>()
+.WithTools<TravelPlanTools>();
 
 var app = builder.Build();
 
