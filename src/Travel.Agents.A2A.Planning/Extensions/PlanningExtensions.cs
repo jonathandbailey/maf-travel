@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using A2A;
-using Infrastructure.Dto;
 using Microsoft.Extensions.DependencyInjection;
 using Travel.Agents.A2A.Planning.Dto;
 using Travel.Agents.A2A.Planning.Services;
