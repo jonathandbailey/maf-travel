@@ -1,6 +1,7 @@
 ﻿using Agents.Services;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Travel.Workflows.Planning.Dto;
 using Travel.Workflows.Planning.Nodes;
 
 namespace Travel.Workflows.Planning.Services;
@@ -17,6 +18,8 @@ public class WorkflowFactory(IAgentFactory agentFactory)
         var travelPlanNode = new TravelPlanNode();
         var requestInformationNode = new RequestInformationNode();
 
+        var requestInformationPort = RequestPort.Create<InformationRequest, InformationResponse>("information");
+
         var builder = new WorkflowBuilder(planningNode);
 
         builder.AddEdge(planningNode, executionNode);
@@ -31,7 +34,10 @@ public class WorkflowFactory(IAgentFactory agentFactory)
         builder.AddEdge<FunctionCallContent>(
             source: executionNode,
             target: requestInformationNode,
-            condition: result => result is { Name: "request_information" });
+            condition: result => result is { Name: "information_request" });
+
+
+        builder.AddEdge(requestInformationNode, requestInformationPort);
 
         return builder.Build();
     }
