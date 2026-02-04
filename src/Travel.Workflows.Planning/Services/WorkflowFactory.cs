@@ -1,5 +1,6 @@
 ﻿using Agents.Services;
 using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.AI;
 using Travel.Workflows.Planning.Nodes;
 
 namespace Travel.Workflows.Planning.Services;
@@ -10,9 +11,27 @@ public class WorkflowFactory(IAgentFactory agentFactory)
     {
         var planningAgent = await agentFactory.Create("planning_agent");
 
-        var planning = new PlanningNode(planningAgent);
+        var planningNode = new PlanningNode(planningAgent);
 
-        var builder = new WorkflowBuilder(planning);
+        var executionNode = new ExecutionNode();
+        var travelPlanNode = new TravelPlanNode();
+        var requestInformationNode = new RequestInformationNode();
+
+        var builder = new WorkflowBuilder(planningNode);
+
+        builder.AddEdge(planningNode, executionNode);
+        builder.AddEdge(executionNode, planningNode);
+        
+
+        builder.AddEdge<FunctionCallContent>(
+            source: executionNode, 
+            target:travelPlanNode,
+            condition: result => result is { Name: "update_travel_plan" });
+
+        builder.AddEdge<FunctionCallContent>(
+            source: executionNode,
+            target: requestInformationNode,
+            condition: result => result is { Name: "request_information" });
 
         return builder.Build();
     }
