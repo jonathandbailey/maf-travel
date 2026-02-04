@@ -21,9 +21,6 @@
     <ProjectReference Include="..\Travel.Agents.A2A\Travel.Agents.A2A.csproj" />
     <ProjectReference Include="..\Travel.Application.Api\Travel.Application.Api.csproj" />
     <ProjectReference Include="..\Travel.Application.Mcp\Travel.Application.Mcp.csproj" />
-    <ProjectReference Include="..\Travel.Experience.Api\Travel.Experience.Api.csproj" />
-    <ProjectReference Include="..\Travel.Gateway\Travel.Gateway.csproj" />
-    <ProjectReference Include="..\Travel.Workflows.A2A\Travel.Workflows.A2A.csproj" />
   </ItemGroup>
 
 </Project>
