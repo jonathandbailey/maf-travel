@@ -52,9 +52,7 @@ public class TestHelper
     public static AgentResponse CreateToolCallInformationRequestResponse()
     {
         var informationRequest =
-            new InformationRequestDetails(
-                "Travel Plan Information is missing.",
-                ["Origin", "Destination", "StartDate", "EndDate"]);
+            Create();
 
         var arguments = new Dictionary<string, object?>
         {
@@ -68,5 +66,15 @@ public class TestHelper
 
         var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
         return new AgentResponse([responseMessage]);
+    }
+
+    public static InformationRequestDetails Create()
+    {
+        var informationRequest =
+            new InformationRequestDetails(
+                "Travel Plan Information is missing.",
+                ["Origin", "Destination", "StartDate", "EndDate"]);
+
+        return informationRequest;
     }
 }
