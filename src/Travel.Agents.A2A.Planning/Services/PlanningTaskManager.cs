@@ -1,5 +1,4 @@
 ﻿using A2A;
-using Agents.Extensions;
 using Microsoft.Extensions.AI;
 using System.Text.Json;
 using Travel.Agents.A2A.Planning.Extensions;

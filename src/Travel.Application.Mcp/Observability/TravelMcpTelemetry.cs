@@ -10,4 +10,9 @@ public static class TravelMcpTelemetry
     {
         return Source.StartActivity($"search_flights", ActivityKind.Internal, null);
     }
+
+    public static Activity? UpdateTravelPlan()
+    {
+        return Source.StartActivity($"update_travel_plan", ActivityKind.Internal, null);
+    }
 }
