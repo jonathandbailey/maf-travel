@@ -25,9 +25,9 @@ public class RequestInformationNode() : ReflectingExecutor<RequestInformationNod
         await context.SendMessageAsync(new InformationRequest(details.Context, details.Entities), cancellationToken: cancellationToken);
     }
 
-    public async ValueTask HandleAsync(InformationResponse message, IWorkflowContext context,
-        CancellationToken cancellationToken = new CancellationToken())
+    public async ValueTask HandleAsync(InformationResponse informationResponse, IWorkflowContext context,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await context.SendMessageAsync(informationResponse.Message, cancellationToken);
     }
 }

@@ -47,6 +47,9 @@ public class WorkflowFactory(IAgentFactory agentFactory)
         builder.AddEdge(requestInformationNode, requestInformationPort);
         builder.AddEdge( requestInformationPort, requestInformationNode);
 
+        builder.AddEdge(requestInformationNode, planningNode);
+        builder.AddEdge(travelPlanNode, planningNode);
+
         return builder.Build();
     }
 }

@@ -4,11 +4,11 @@ using Microsoft.Extensions.AI;
 
 namespace Travel.Workflows.Planning.Nodes;
 
-public class TravelPlanNode() : ReflectingExecutor<TravelPlanNode>("TravelPlan"), IMessageHandler<FunctionCallContent>
+public class TravelPlanNode() : ReflectingExecutor<TravelPlanNode>("TravelPlan"), IMessageHandler<FunctionCallContent, ChatMessage>
 {
-    public async ValueTask HandleAsync(FunctionCallContent message, IWorkflowContext context,
+    public ValueTask<ChatMessage> HandleAsync(FunctionCallContent message, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return new ValueTask<ChatMessage>(new ChatMessage(ChatRole.User, "Travel plan updated successfully."));
     }
 }
