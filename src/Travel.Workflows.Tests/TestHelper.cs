@@ -10,9 +10,9 @@ namespace Travel.Workflows.Tests;
 
 public class TestHelper
 {
-    public static FakeAgent SetupFakeAgent(AgentResponse agentResponse, Mock<IAgentFactory> mockAgentFactory)
+    public static FakeAgent SetupFakeAgent(List<AgentResponse> agentResponse, Mock<IAgentFactory> mockAgentFactory)
     {
-        var fakeAgent = new FakeAgent([agentResponse]);
+        var fakeAgent = new FakeAgent(agentResponse);
         mockAgentFactory
             .Setup(x => x.Create(It.IsAny<string>(), It.IsAny<ChatResponseFormat>(), It.IsAny<List<AITool>>()))
             .ReturnsAsync(fakeAgent);

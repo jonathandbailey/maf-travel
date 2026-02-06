@@ -2,6 +2,7 @@
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
+using Travel.Workflows.Planning;
 using Travel.Workflows.Planning.Dto;
 
 namespace Travel.Workflows.Tests;
@@ -9,6 +10,7 @@ namespace Travel.Workflows.Tests;
 public class PlanningWorkflowTests
 {
     private readonly Mock<IAgentFactory> _mockAgentFactory = new();
+  
 
     [Fact]
     public async Task ShouldPublishRequestInfoEventWithCorrectData_WhenPlannerRequestsInformation()
@@ -17,7 +19,7 @@ public class PlanningWorkflowTests
         
         var agentResponse = TestHelper.CreateToolCallInformationRequestResponse();
         
-        TestHelper.SetupFakeAgent(agentResponse, _mockAgentFactory);
+        TestHelper.SetupFakeAgent([agentResponse], _mockAgentFactory);
 
         var workflow = await TestHelper.CreateWorkflowAsync(_mockAgentFactory);
         
@@ -25,11 +27,9 @@ public class PlanningWorkflowTests
 
         var inputMessage = new ChatMessage(ChatRole.User, "Update my travel plan to Tokyo");
 
-        var run = await InProcessExecution.StreamAsync(workflow, inputMessage);
-
-        Assert.NotNull(run);
+        var travelPlanningWorkflow = new TravelPlanningWorkflow(workflow, CheckpointManager.Default);
        
-        await foreach (var evt in run.WatchStreamAsync())
+        await foreach (var evt in travelPlanningWorkflow.Run(inputMessage))
         {
             if (evt is RequestInfoEvent requestInfoEvent)
             {
