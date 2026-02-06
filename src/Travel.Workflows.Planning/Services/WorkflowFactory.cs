@@ -18,6 +18,8 @@ public class WorkflowFactory(IAgentFactory agentFactory)
         var travelPlanNode = new TravelPlanNode();
         var requestInformationNode = new RequestInformationNode();
 
+        var finalizerNode = new FinalizerNode();
+
         var requestInformationPort = RequestPort.Create<InformationRequest, InformationResponse>("information");
 
         var builder = new WorkflowBuilder(planningNode);
@@ -30,6 +32,11 @@ public class WorkflowFactory(IAgentFactory agentFactory)
             source: executionNode, 
             target:travelPlanNode,
             condition: result => result is { Name: "update_travel_plan" });
+
+        builder.AddEdge<FunctionCallContent>(
+            source: executionNode,
+            target: finalizerNode,
+            condition: result => result is { Name: "finalize_travel_plan" });
 
         builder.AddEdge<FunctionCallContent>(
             source: executionNode,

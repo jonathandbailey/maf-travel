@@ -49,6 +49,16 @@ public class TestHelper
         return new AgentResponse([responseMessage]);
     }
 
+    public static AgentResponse CreateToolCallTravelPlanFinalizeResponse()
+    {
+        var toolCallContent = new FunctionCallContent(
+            callId: "call_451",
+            name: "finalize_travel_plan");
+
+        var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
+        return new AgentResponse([responseMessage]);
+    }
+
     public static AgentResponse CreateToolCallInformationRequestResponse()
     {
         var informationRequest =
