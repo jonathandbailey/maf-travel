@@ -45,6 +45,7 @@ public class WorkflowFactory(IAgentFactory agentFactory)
 
 
         builder.AddEdge(requestInformationNode, requestInformationPort);
+        builder.AddEdge( requestInformationPort, requestInformationNode);
 
         return builder.Build();
     }

@@ -6,7 +6,9 @@ using Travel.Workflows.Planning.Dto;
 
 namespace Travel.Workflows.Planning.Nodes;
 
-public class RequestInformationNode() : ReflectingExecutor<RequestInformationNode>("RequestInformation"), IMessageHandler<FunctionCallContent>
+public class RequestInformationNode() : ReflectingExecutor<RequestInformationNode>("RequestInformation"), 
+    IMessageHandler<FunctionCallContent>,
+    IMessageHandler<InformationResponse>
 {
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
@@ -21,5 +23,11 @@ public class RequestInformationNode() : ReflectingExecutor<RequestInformationNod
         var details = JsonSerializer.Deserialize<InformationRequestDetails>(argumentsJson, _serializerOptions);
         
         await context.SendMessageAsync(new InformationRequest(details.Context, details.Entities), cancellationToken: cancellationToken);
+    }
+
+    public async ValueTask HandleAsync(InformationResponse message, IWorkflowContext context,
+        CancellationToken cancellationToken = new CancellationToken())
+    {
+        throw new NotImplementedException();
     }
 }

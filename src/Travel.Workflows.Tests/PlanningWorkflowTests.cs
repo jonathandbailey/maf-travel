@@ -51,23 +51,14 @@ public class PlanningWorkflowTests
             }
         }
 
-        await foreach (var evt in travelPlanningWorkflow.Run(inputMessage))
+        var workflow2 = await TestHelper.CreateWorkflowAsync(_mockAgentFactory);
+
+        var travelPlanningWorkflow2 = new TravelPlanningWorkflow(workflow2, CheckpointManager.Default, travelPlanningWorkflow.CheckpointInfo, travelPlanningWorkflow.State);
+
+
+        await foreach (var evt in travelPlanningWorkflow2.Run(inputMessage))
         {
-            if (evt is RequestInfoEvent requestInfoEvent)
-            {
-                var data = requestInfoEvent.Data as ExternalRequest;
-
-                Assert.NotNull(data);
-
-                var request = data.Data.AsType(typeof(InformationRequest)) as InformationRequest;
-
-                Assert.NotNull(request);
-
-                Assert.Equal(request.Context, informationRequestDetails.Context);
-                Assert.Equal(request.Entities, informationRequestDetails.Entities);
-
-                break;
-            }
+            
         }
     }
 

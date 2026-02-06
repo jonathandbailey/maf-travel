@@ -5,14 +5,15 @@ using Travel.Workflows.Planning.Dto;
 namespace Travel.Workflows.Planning;
 
 public class TravelPlanningWorkflow(Workflow workflow,
-    CheckpointManager checkpointManager)
+    CheckpointManager checkpointManager, CheckpointInfo? checkpointInfo = null, WorkflowState state = WorkflowState.Created)
 {
-    private CheckpointInfo? _checkpointInfo;
-    private WorkflowState _state = WorkflowState.Created;
+    private CheckpointInfo? _checkpointInfo = checkpointInfo;
+    private WorkflowState _state = state;
 
     public CheckpointInfo? CheckpointInfo => _checkpointInfo;
 
     public WorkflowState State => _state;
+
 
     public async IAsyncEnumerable<WorkflowEvent> Run(ChatMessage message)
     {
