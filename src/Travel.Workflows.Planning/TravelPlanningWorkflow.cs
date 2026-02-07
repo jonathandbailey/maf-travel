@@ -59,6 +59,8 @@ public class TravelPlanningWorkflow(Workflow workflow,
                     }
                 }
             }
+
+            yield return evt;
         }
     }
 

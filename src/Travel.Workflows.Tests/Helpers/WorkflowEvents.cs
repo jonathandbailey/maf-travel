@@ -1,5 +1,7 @@
 ﻿using Microsoft.Agents.AI.Workflows;
+
 using Travel.Workflows.Planning.Dto;
+using Travel.Workflows.Planning.Events;
 
 namespace Travel.Workflows.Tests.Helpers;
 
@@ -17,6 +19,18 @@ public static class WorkflowEvents
 
         Assert.Equal(request.Context, informationRequestDetails.Context);
         Assert.Equal(request.Entities, informationRequestDetails.Entities);
+    }
+
+    public static void MatchesAgentFunctionCallResponse(this TravelPlanUpdateEvent travelPlanUpdateEvent, TravelPlanDto travelPlanDto)
+    {
+        var data = travelPlanUpdateEvent.TravelPlanDto;
+
+        Assert.NotNull(data);
+
+        Assert.Equal(travelPlanDto.Origin, data.Origin);
+        Assert.Equal(travelPlanDto.Destination, data.Destination);
+        Assert.Equal(travelPlanDto.StartDate, data.StartDate);
+        Assert.Equal(travelPlanDto.EndDate, data.EndDate);
     }
 
 }

@@ -2,6 +2,8 @@
 using Microsoft.Extensions.AI;
 using Moq;
 using Travel.Workflows.Planning;
+using Travel.Workflows.Planning.Dto;
+using Travel.Workflows.Planning.Events;
 using Travel.Workflows.Planning.Services;
 using Travel.Workflows.Tests.Helpers;
 
@@ -13,24 +15,20 @@ public class PlanningWorkflowTests
     public async Task UpdateAndComplete()
     {
         var informationRequest = TestHelper.CreateInformationRequest();
+        var travelUpdateRequest = TestHelper.CreateTravelUpdateRequest();
 
-        var agent = new FakeAgent().
-             ReturnsInformationRequestFunctionCall(informationRequest)
-            .ReturnsUpdateTravelPlanFunctionCall()
-            .ReturnsFinalizeTravelPlanFunctionCall();
-
-
-       
-        var updateTravelPlanTool = AIFunctionFactory.Create(
-            (string message) => $"The travel plan has been updated with the following information: {message}",
-            name: "update_travel_plan",
-            description: "Update the travel plan");
+        var agent = new FakeAgent()
+            .UpdateTravelPlan(travelUpdateRequest)
+            .InformationRequest(informationRequest)
+            .UpdateTravelPlan(travelUpdateRequest)
+            .FinalizeTravelPlan();
+     
 
         var agentFactory = AgentMocks.CreateAgentFactory(agent);
 
-        var travelPlanService = new Mock<ITravelPlanService>().Object;
+        var travelPlanService = new Mock<ITravelPlanService>();
     
-        var workflowFactory = new WorkflowFactory(agentFactory, travelPlanService);
+        var workflowFactory = new WorkflowFactory(agentFactory, travelPlanService.Object);
 
         var workflow = await workflowFactory.Build();
 
@@ -40,25 +38,49 @@ public class PlanningWorkflowTests
 
         var travelPlanningWorkflow = new TravelPlanningWorkflow(workflow, CheckpointManager.Default);
 
+        var events = new List<WorkflowEvent>();
+
         await foreach (var evt in travelPlanningWorkflow.Run(inputMessage))
         {
-            if (evt is RequestInfoEvent requestInfoEvent)
+            events.Add(evt);
+
+            switch (evt)
             {
-                requestInfoEvent.MatchesAgentFunctionCallResponse(informationRequest);
+                case TravelPlanUpdateEvent travelPlanUpdateEvent:
+                    travelPlanUpdateEvent.MatchesAgentFunctionCallResponse(travelUpdateRequest);
+                    break;
+                case RequestInfoEvent requestInfoEvent:
+                    requestInfoEvent.MatchesAgentFunctionCallResponse(informationRequest);
+                    break;
             }
         }
 
-        workflowFactory = new WorkflowFactory(agentFactory, travelPlanService);
+        Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
+        Assert.Contains(events, @event => @event is RequestInfoEvent);
+
+        workflowFactory = new WorkflowFactory(agentFactory, travelPlanService.Object);
 
         workflow = await workflowFactory.Build();
 
         travelPlanningWorkflow = new TravelPlanningWorkflow(workflow, CheckpointManager.Default, travelPlanningWorkflow.CheckpointInfo, travelPlanningWorkflow.State);
-
+     
+        events.Clear();
 
         await foreach (var evt in travelPlanningWorkflow.Run(inputMessage))
         {
-            
+            events.Add(evt);
+
+            switch (evt)
+            {
+                case TravelPlanUpdateEvent travelPlanUpdateEvent:
+                    travelPlanUpdateEvent.MatchesAgentFunctionCallResponse(travelUpdateRequest);
+                    break;
+            }
         }
+
+        Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
+      
+        travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Exactly(2));
     }
 
 
@@ -67,7 +89,7 @@ public class PlanningWorkflowTests
     {
         var informationRequest = TestHelper.CreateInformationRequest();
 
-        var agent = new FakeAgent().ReturnsInformationRequestFunctionCall(informationRequest);
+        var agent = new FakeAgent().InformationRequest(informationRequest);
      
         var agentFactory = AgentMocks.CreateAgentFactory(agent);
 
