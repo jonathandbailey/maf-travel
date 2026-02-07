@@ -1,5 +1,6 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Moq;
 using Travel.Workflows.Planning;
 using Travel.Workflows.Planning.Services;
 using Travel.Workflows.Tests.Helpers;
@@ -18,9 +19,18 @@ public class PlanningWorkflowTests
             .ReturnsUpdateTravelPlanFunctionCall()
             .ReturnsFinalizeTravelPlanFunctionCall();
 
+
+       
+        var updateTravelPlanTool = AIFunctionFactory.Create(
+            (string message) => $"The travel plan has been updated with the following information: {message}",
+            name: "update_travel_plan",
+            description: "Update the travel plan");
+
         var agentFactory = AgentMocks.CreateAgentFactory(agent);
 
-        var workflowFactory = new WorkflowFactory(agentFactory);
+        var travelPlanService = new Mock<ITravelPlanService>().Object;
+    
+        var workflowFactory = new WorkflowFactory(agentFactory, travelPlanService);
 
         var workflow = await workflowFactory.Build();
 
@@ -38,7 +48,7 @@ public class PlanningWorkflowTests
             }
         }
 
-        workflowFactory = new WorkflowFactory(agentFactory);
+        workflowFactory = new WorkflowFactory(agentFactory, travelPlanService);
 
         workflow = await workflowFactory.Build();
 
@@ -61,7 +71,11 @@ public class PlanningWorkflowTests
      
         var agentFactory = AgentMocks.CreateAgentFactory(agent);
 
-        var workflowFactory = new WorkflowFactory(agentFactory);
+        var workflowTools = new WorkflowTools();
+
+        var travelPlanService = new Mock<ITravelPlanService>().Object;
+
+        var workflowFactory = new WorkflowFactory(agentFactory, travelPlanService);
         
         var workflow =  await workflowFactory.Build();
      

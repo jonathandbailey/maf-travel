@@ -1,7 +1,8 @@
-﻿using Travel.Application.Domain;
+﻿using Travel.Application.Api.Dto;
+using Travel.Application.Domain;
 using Travel.Application.Domain.Flights;
 
-namespace Travel.Application.Api.Dto;
+namespace Travel.Application.Dto;
 
 public class TravelPlanUpdateDto()
 {

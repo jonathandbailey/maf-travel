@@ -6,7 +6,7 @@ using Travel.Workflows.Planning.Nodes;
 
 namespace Travel.Workflows.Planning.Services;
 
-public class WorkflowFactory(IAgentFactory agentFactory)
+public class WorkflowFactory(IAgentFactory agentFactory,ITravelPlanService travelPlanService)
 {
     public async Task<Workflow> Build()
     {
@@ -15,7 +15,7 @@ public class WorkflowFactory(IAgentFactory agentFactory)
         var planningNode = new PlanningNode(planningAgent);
 
         var executionNode = new ExecutionNode();
-        var travelPlanNode = new TravelPlanNode();
+        var travelPlanNode = new TravelPlanNode(travelPlanService);
         var requestInformationNode = new RequestInformationNode();
 
         var finalizerNode = new FinalizerNode();

@@ -30,12 +30,6 @@ public static  class TestHelper
         return mockAgentFactory.Object;
     }
 
-    public static async Task<Workflow> CreateWorkflowAsync(Mock<IAgentFactory> mockAgentFactory)
-    {
-        var workflowFactory = new WorkflowFactory(mockAgentFactory.Object);
-        return await workflowFactory.Build();
-    }
-
     public static AgentResponse CreateToolCallTravelPlanUpdateResponse()
     {
         var updateDto = new
