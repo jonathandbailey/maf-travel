@@ -4,20 +4,14 @@ using Travel.Workflows.Planning.Dto;
 
 namespace Travel.Workflows.Planning;
 
-public class TravelPlanningWorkflow(Workflow workflow,
-    CheckpointManager checkpointManager, CheckpointInfo? checkpointInfo = null, WorkflowState state = WorkflowState.Created)
+public class TravelPlanningWorkflow
 {
-    private CheckpointInfo? _checkpointInfo = checkpointInfo;
-    private WorkflowState _state = state;
+    private CheckpointInfo? _checkpointInfo;
+    private WorkflowState _state = WorkflowState.Created;
 
-    public CheckpointInfo? CheckpointInfo => _checkpointInfo;
-
-    public WorkflowState State => _state;
-
-
-    public async IAsyncEnumerable<WorkflowEvent> Run(ChatMessage message)
+    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(Workflow workflow, CheckpointManager checkpointManager, ChatMessage message)
     {
-        var run = await CreateWorkflowRun(message);
+        var run = await CreateWorkflowRun(workflow, checkpointManager, message);
 
         if (_state == WorkflowState.Created)
         {
@@ -64,20 +58,20 @@ public class TravelPlanningWorkflow(Workflow workflow,
         }
     }
 
-    private async Task<Checkpointed<StreamingRun>> CreateWorkflowRun(ChatMessage message)
+    private async Task<Checkpointed<StreamingRun>> CreateWorkflowRun(Workflow workflow, CheckpointManager checkpointManager, ChatMessage message)
     {
         return _state switch
         {
             WorkflowState.Failed => throw new WorkflowException("Workflow cannot be started or resumed while in an Failed state."),
             WorkflowState.Executing => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
-            WorkflowState.Suspended => await ResumeWorkflow(),
+            WorkflowState.Suspended => await ResumeWorkflow(workflow, checkpointManager),
             WorkflowState.Created => await InProcessExecution.StreamAsync(workflow, message, checkpointManager),
             WorkflowState.Completed => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             _ => throw new WorkflowException("Invalid workflow state.")
         };
     }
 
-    private async Task<Checkpointed<StreamingRun>> ResumeWorkflow()
+    private async Task<Checkpointed<StreamingRun>> ResumeWorkflow(Workflow workflow, CheckpointManager checkpointManager)
     {
         if (_checkpointInfo == null)
         {

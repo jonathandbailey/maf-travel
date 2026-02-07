@@ -6,7 +6,7 @@ using Moq;
 using Travel.Workflows.Planning.Dto;
 using Travel.Workflows.Planning.Services;
 
-namespace Travel.Workflows.Tests;
+namespace Travel.Workflows.Tests.Helpers;
 
 public static  class TestHelper
 {

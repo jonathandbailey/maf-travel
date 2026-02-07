@@ -12,7 +12,7 @@ namespace Travel.Workflows.Tests;
 public class PlanningWorkflowTests
 {
     [Fact]
-    public async Task UpdateAndComplete()
+    public async Task ShouldResumeFromCheckpointAndFinalize_WhenInformationRequestIsFulfilled()
     {
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = TestHelper.CreateTravelUpdateRequest();
@@ -32,15 +32,15 @@ public class PlanningWorkflowTests
 
         var workflow = await workflowFactory.Build();
 
-        Assert.NotNull(workflow);
+        var checkpointManager = CheckpointManager.Default;
 
         var inputMessage = new ChatMessage(ChatRole.User, "Update my travel plan to Tokyo");
 
-        var travelPlanningWorkflow = new TravelPlanningWorkflow(workflow, CheckpointManager.Default);
+        var travelPlanningWorkflow = new TravelPlanningWorkflow();
 
         var events = new List<WorkflowEvent>();
 
-        await foreach (var evt in travelPlanningWorkflow.Run(inputMessage))
+        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow, checkpointManager,  inputMessage))
         {
             events.Add(evt);
 
@@ -55,6 +55,8 @@ public class PlanningWorkflowTests
             }
         }
 
+        travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Once);
+
         Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
         Assert.Contains(events, @event => @event is RequestInfoEvent);
 
@@ -62,11 +64,13 @@ public class PlanningWorkflowTests
 
         workflow = await workflowFactory.Build();
 
-        travelPlanningWorkflow = new TravelPlanningWorkflow(workflow, CheckpointManager.Default, travelPlanningWorkflow.CheckpointInfo, travelPlanningWorkflow.State);
+        travelPlanningWorkflow = new TravelPlanningWorkflow();
      
         events.Clear();
 
-        await foreach (var evt in travelPlanningWorkflow.Run(inputMessage))
+        var informationResponse = new ChatMessage(ChatRole.User, "My travel dates are June 1-15, 2024");
+
+        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow, checkpointManager, informationResponse))
         {
             events.Add(evt);
 
@@ -93,8 +97,6 @@ public class PlanningWorkflowTests
      
         var agentFactory = AgentMocks.CreateAgentFactory(agent);
 
-        var workflowTools = new WorkflowTools();
-
         var travelPlanService = new Mock<ITravelPlanService>().Object;
 
         var workflowFactory = new WorkflowFactory(agentFactory, travelPlanService);
@@ -103,9 +105,9 @@ public class PlanningWorkflowTests
      
         var inputMessage = new ChatMessage(ChatRole.User, "Update my travel plan to Tokyo");
 
-        var travelPlanningWorkflow = new TravelPlanningWorkflow(workflow, CheckpointManager.Default);
+        var travelPlanningWorkflow = new TravelPlanningWorkflow();
 
-        await foreach (var evt in travelPlanningWorkflow.Run(inputMessage))
+        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow,CheckpointManager.Default, inputMessage))
         {
             if (evt is RequestInfoEvent requestInfoEvent)
             {
