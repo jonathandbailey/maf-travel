@@ -32,6 +32,7 @@
     <PackageVersion Include="Aspire.Hosting.Azure.CognitiveServices" Version="9.3.1" />
     <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="9.5.2" />
     <PackageVersion Include="Aspire.Hosting.NodeJs" Version="9.5.2" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="9.5.0" />
     <!--- -->
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.6" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
