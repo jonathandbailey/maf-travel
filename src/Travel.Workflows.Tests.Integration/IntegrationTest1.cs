@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
 using Agents.Extensions;
+using FluentAssertions;
 using Travel.Agents.Planning.Dto;
 using Travel.Agents.Planning.Services;
 
@@ -18,7 +19,6 @@ namespace Travel.Workflows.Tests.Integration
         [Fact]
         public async Task TestPlanningAgentAndFactory()
         {
-            // Arrange
             var configuration = new ConfigurationBuilder()
                 .AddUserSecrets<IntegrationTest1>()
                 .Build();
@@ -66,6 +66,21 @@ namespace Travel.Workflows.Tests.Integration
             agentRunOptions.AddThreadId(threadId);
 
             var response = await agent.RunAsync(message, options: agentRunOptions, cancellationToken: CancellationToken.None);
+
+            response.Messages.Should().ContainSingle()
+                .Which.Contents.Should().HaveCount(2)
+                .And.AllBeOfType<FunctionCallContent>();
+
+            var functionCalls = response.Messages.Single().Contents.OfType<FunctionCallContent>().ToList();
+            functionCalls.Should().HaveCount(2);
+
+            functionCalls[0].Name.Should().Be("UpdateTravelPlan");
+            functionCalls[0].Arguments.Should().NotBeNull()
+                .And.ContainKey("travelPlan");
+
+            functionCalls[1].Name.Should().Be("RequestInformation");
+            functionCalls[1].Arguments.Should().NotBeNull();
+        
 
             observation = new Dictionary<string, object>()
             {
