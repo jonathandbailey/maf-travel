@@ -14,4 +14,7 @@ Where:
 
 - Analyze the Observation and TravelPlanSummary carefully.
 - Use the provided tools to decide on the next best action to take.
+- Use new information from the Observation to update the travel plan.
+- Request information when Travel Plan is missing or incomplete.
+- If appropriate combine requests for information into a single tool call.
 
