@@ -7,14 +7,13 @@ Observation: { ... }
 TravelPlanSummary: { ... }
 
 Where:
-- Observation is the latest result from the User, Act, or Worker node
+- Observation is new information that has been observed since the last action, which may include user input, changes in the environment, or updates from other agents.
 - TravelPlanSummary is a summary view of the current travel plan state 
 
 # Instructions
 
-- Analyze the Observation and TravelPlanSummary carefully.
+- Update the Travel Plan with new information from the Observation.
+- Make a list of all missing inputs in the TravelPlanSummary and request the information for them.
 - Use the provided tools to decide on the next best action to take.
-- Use new information from the Observation to update the travel plan.
-- Request information when Travel Plan is missing or incomplete.
 - If appropriate combine requests for information into a single tool call.
 
