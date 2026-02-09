@@ -1,5 +1,4 @@
-﻿using Agents.Repository;
-using Agents.Settings;
+﻿using Agents.Settings;
 using Azure.AI.OpenAI;
 using Azure.Identity;
 using Microsoft.Agents.AI;
@@ -13,14 +12,11 @@ namespace Agents.Services;
 
 public class AgentFactory : IAgentFactory
 {
-    private readonly IAgentTemplateRepository _templateRepository;
     private readonly IAgentMiddlewareFactory _agentMiddlewareFactory;
     private readonly ChatClient _chatClient;
 
-    public AgentFactory(IAgentTemplateRepository templateRepository,
-        IOptions<LanguageModelSettings> settings, IAgentMiddlewareFactory agentMiddlewareFactory)
+    public AgentFactory(IOptions<LanguageModelSettings> settings, IAgentMiddlewareFactory agentMiddlewareFactory)
     {
-        _templateRepository = templateRepository;
         _agentMiddlewareFactory = agentMiddlewareFactory;
 
 
@@ -61,16 +57,6 @@ public class AgentFactory : IAgentFactory
         return agent;
     }
 
-    public async Task<AIAgent> Create(
-        string name, 
-        ChatResponseFormat? chatResponseFormat = null, 
-        List<AITool>? tools = null)
-    {
-        var template = await _templateRepository.Load(name);
-
-        return Create(name, template, chatResponseFormat, tools);
-    }
-
     public AIAgent UseMiddleware(AIAgent agent, string name)
     {
         var middleware = _agentMiddlewareFactory.Get(name);
@@ -85,7 +71,6 @@ public class AgentFactory : IAgentFactory
 
 public interface IAgentFactory
 {
-    Task<AIAgent> Create(string name, ChatResponseFormat? chatResponseFormat = null, List<AITool>? tools = null);
     AIAgent UseMiddleware(AIAgent agent, string name);
 
     AIAgent Create(

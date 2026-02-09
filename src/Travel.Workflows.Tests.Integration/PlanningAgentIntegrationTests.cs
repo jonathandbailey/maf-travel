@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Agents.Repository;
 using Agents.Services;
 using Agents.Settings;
 using Microsoft.Agents.AI;
@@ -9,6 +8,9 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Agents.Extensions;
 using FluentAssertions;
+using Infrastructure.Repository;
+using Infrastructure.Settings;
+using Microsoft.Extensions.Logging;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 
@@ -23,7 +25,17 @@ namespace Travel.Workflows.Tests.Integration
                 .AddUserSecrets<PlanningAgentIntegrationTests>()
                 .Build();
 
-            var templateRepository = new AgentTemplateRepository();
+            var fileStorageSettings = Options.Create(new FileStorageSettings
+            {
+                AgentTemplateFolder = "AgentTemplates"
+            });
+
+             var mockLogger = new Mock<ILogger<AgentTemplateRepository>>();
+
+            var templateRepository = new AgentTemplateRepository(mockLogger.Object, fileStorageSettings);
+
+            var templateName = "planning_agent.md";
+            var agentTemplate = await templateRepository.LoadAsync(templateName);
 
             var languageModelSettings = Options.Create(new LanguageModelSettings
             {
@@ -35,8 +47,7 @@ namespace Travel.Workflows.Tests.Integration
 
             var threadId = Guid.NewGuid().ToString();
 
-            var agentFactory = new AgentFactory(
-                templateRepository,
+            var agentFactory = new AgentFactory(    
                 languageModelSettings,
                 mockMiddlewareFactory.Object);
 
@@ -49,7 +60,7 @@ namespace Travel.Workflows.Tests.Integration
 
             };
 
-            var agent = await agentFactory.Create("planning_agent_ex", tools: PlanningTools.GetDeclarationOnlyTools());
+            var agent = agentFactory.Create("planning_agent", agentTemplate, tools: PlanningTools.GetDeclarationOnlyTools());
          
             var serialized = JsonSerializer.Serialize(new TravelPlanDto(null, null, null, null, null));
 
