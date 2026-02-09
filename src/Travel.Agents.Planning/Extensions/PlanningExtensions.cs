@@ -2,7 +2,6 @@
 using A2A;
 using Microsoft.Extensions.DependencyInjection;
 using Travel.Agents.Planning.Dto;
-using Travel.Agents.Planning.Services;
 
 namespace Travel.Agents.Planning.Extensions;
 
@@ -15,7 +14,6 @@ public static class PlanningExtensions
 
     public static void AddPlanningServices(this IServiceCollection services)
     {
-        services.AddSingleton<IPlanningTaskManager, PlanningTaskManager>();
     }
 
     public static TravelPlanDto? ExtractTravelPlanSnapshot(this AgentTask agentTask)
