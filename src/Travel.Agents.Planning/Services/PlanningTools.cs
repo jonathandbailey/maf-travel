@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Text.Json;
 using Microsoft.Extensions.AI;
+using Travel.Agents.Planning.Dto;
 
 namespace Travel.Agents.Planning.Services;
 
@@ -17,8 +19,8 @@ public static class PlanningTools
 
     [Description("Request More Information")]
     private static string UpdateTravelPlan(
-        [Description("The update for the travel plan")] string message)
-        => $"The travel plan has been updated with the following information: {message}";
+        [Description("The update for the travel plan")] TravelPlanDto travelPlan)
+        => $"The travel plan has been updated successfully.";
 
     static PlanningTools()
     {

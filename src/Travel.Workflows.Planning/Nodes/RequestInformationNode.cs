@@ -6,9 +6,11 @@ using Travel.Workflows.Planning.Dto;
 
 namespace Travel.Workflows.Planning.Nodes;
 
-public class RequestInformationNode() : ReflectingExecutor<RequestInformationNode>("RequestInformation"), IMessageHandler<FunctionCallContent>
+public class RequestInformationNode() : ReflectingExecutor<RequestInformationNode>("RequestInformation"), 
+    IMessageHandler<FunctionCallContent>,
+    IMessageHandler<InformationResponse>
 {
-    private readonly JsonSerializerOptions _serializerOptions = new()
+    private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -17,15 +19,15 @@ public class RequestInformationNode() : ReflectingExecutor<RequestInformationNod
         CancellationToken cancellationToken)
     {
         var argumentsJson = JsonSerializer.Serialize(functionCallContent.Arguments["informationRequest"]);
-        
+
         var details = JsonSerializer.Deserialize<InformationRequestDetails>(argumentsJson, _serializerOptions);
-
-        var jsonBytes = JsonSerializer.SerializeToUtf8Bytes(details);
-
-        var dataContent = new DataContent(jsonBytes, "application/json");
-
-        var message = new ChatMessage(ChatRole.Assistant, [dataContent]);
         
-        await context.SendMessageAsync(new InformationRequest(message), cancellationToken: cancellationToken);
+        await context.SendMessageAsync(new InformationRequest(details.Context, details.Entities), cancellationToken: cancellationToken);
+    }
+
+    public async ValueTask HandleAsync(InformationResponse informationResponse, IWorkflowContext context,
+        CancellationToken cancellationToken)
+    {
+        await context.SendMessageAsync(informationResponse.Message, cancellationToken);
     }
 }

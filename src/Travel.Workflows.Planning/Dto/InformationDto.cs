@@ -2,7 +2,7 @@
 
 namespace Travel.Workflows.Planning.Dto;
 
-public record InformationRequest(ChatMessage Message);
+public record InformationRequest(string Context, List<string> Entities);
 
 public record InformationResponse(ChatMessage Message);
 

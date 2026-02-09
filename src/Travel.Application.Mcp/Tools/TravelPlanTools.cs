@@ -4,6 +4,7 @@ using System.ComponentModel;
 using Travel.Application.Api.Dto;
 using Travel.Application.Application.Commands;
 using Travel.Application.Application.Queries;
+using Travel.Application.Dto;
 using Travel.Application.Mcp.Observability;
 
 namespace Travel.Application.Mcp.Tools;

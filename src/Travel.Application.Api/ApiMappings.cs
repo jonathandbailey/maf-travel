@@ -7,6 +7,7 @@ using Travel.Application.Api.Extensions;
 using Travel.Application.Api.Observability;
 using Travel.Application.Application.Commands;
 using Travel.Application.Application.Queries;
+using Travel.Application.Dto;
 
 namespace Travel.Application.Api;
 

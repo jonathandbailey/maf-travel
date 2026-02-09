@@ -7,19 +7,23 @@ namespace Travel.Workflows.Tests;
 
 public class FakeAgent : AIAgent
 {
-    private readonly List<AgentResponse>? _responses;
-    private int _currentIndex;
+    private readonly Queue<AgentResponse> _responses;
 
     public bool WasInvoked { get; private set; }
 
     public FakeAgent()
     {
+        _responses = new Queue<AgentResponse>();
     }
 
     public FakeAgent(List<AgentResponse> responses)
     {
-        _responses = responses;
-        _currentIndex = 0;
+        _responses = new Queue<AgentResponse>(responses);
+    }
+
+    public void EnqueueResponse(AgentResponse response)
+    {
+        _responses.Enqueue(response);
     }
 
     protected override Task<AgentResponse> RunCoreAsync(
@@ -30,13 +34,9 @@ public class FakeAgent : AIAgent
     {
         WasInvoked = true;
 
-        if (_responses is not null && _responses.Count > 0)
+        if (_responses.Count > 0)
         {
-            var response = _responses[Math.Min(_currentIndex, _responses.Count - 1)];
-            if (_currentIndex < _responses.Count - 1)
-            {
-                _currentIndex++;
-            }
+            var response = _responses.Dequeue();
             return Task.FromResult(response);
         }
 

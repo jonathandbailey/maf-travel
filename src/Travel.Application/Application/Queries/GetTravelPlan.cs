@@ -2,6 +2,7 @@
 using Travel.Application.Api.Dto;
 using Travel.Application.Api.Infrastructure;
 using Travel.Application.Domain.Flights;
+using Travel.Application.Dto;
 
 namespace Travel.Application.Application.Queries;
 

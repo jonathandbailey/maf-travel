@@ -34,24 +34,23 @@ public class AgentFactory : IAgentFactory
             .GetChatClient(settings.Value.DeploymentName);
     }
 
-    public async Task<AIAgent> Create(
-        string name, 
-        ChatResponseFormat? chatResponseFormat = null, 
+    public AIAgent Create(
+        string name,
+        string template,
+        ChatResponseFormat? chatResponseFormat = null,
         List<AITool>? tools = null)
     {
-        var template = await _templateRepository.Load(name);
-    
         ChatOptions chatOptions = new()
         {
             ResponseFormat = chatResponseFormat,
             Instructions = template,
             Tools = tools
         };
-      
+
         var clientChatOptions = new ChatClientAgentOptions
         {
             Name = name,
-            
+
             ChatOptions = chatOptions
         };
 
@@ -60,6 +59,16 @@ public class AgentFactory : IAgentFactory
             .BuildAIAgent(options: clientChatOptions);
 
         return agent;
+    }
+
+    public async Task<AIAgent> Create(
+        string name, 
+        ChatResponseFormat? chatResponseFormat = null, 
+        List<AITool>? tools = null)
+    {
+        var template = await _templateRepository.Load(name);
+
+        return Create(name, template, chatResponseFormat, tools);
     }
 
     public AIAgent UseMiddleware(AIAgent agent, string name)
@@ -78,5 +87,11 @@ public interface IAgentFactory
 {
     Task<AIAgent> Create(string name, ChatResponseFormat? chatResponseFormat = null, List<AITool>? tools = null);
     AIAgent UseMiddleware(AIAgent agent, string name);
+
+    AIAgent Create(
+        string name,
+        string template,
+        ChatResponseFormat? chatResponseFormat = null,
+        List<AITool>? tools = null);
 }
 

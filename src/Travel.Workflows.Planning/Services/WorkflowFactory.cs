@@ -6,7 +6,7 @@ using Travel.Workflows.Planning.Nodes;
 
 namespace Travel.Workflows.Planning.Services;
 
-public class WorkflowFactory(IAgentFactory agentFactory)
+public class WorkflowFactory(IAgentFactory agentFactory,ITravelPlanService travelPlanService)
 {
     public async Task<Workflow> Build()
     {
@@ -15,8 +15,10 @@ public class WorkflowFactory(IAgentFactory agentFactory)
         var planningNode = new PlanningNode(planningAgent);
 
         var executionNode = new ExecutionNode();
-        var travelPlanNode = new TravelPlanNode();
+        var travelPlanNode = new TravelPlanNode(travelPlanService);
         var requestInformationNode = new RequestInformationNode();
+
+        var finalizerNode = new FinalizerNode();
 
         var requestInformationPort = RequestPort.Create<InformationRequest, InformationResponse>("information");
 
@@ -33,11 +35,20 @@ public class WorkflowFactory(IAgentFactory agentFactory)
 
         builder.AddEdge<FunctionCallContent>(
             source: executionNode,
+            target: finalizerNode,
+            condition: result => result is { Name: "finalize_travel_plan" });
+
+        builder.AddEdge<FunctionCallContent>(
+            source: executionNode,
             target: requestInformationNode,
             condition: result => result is { Name: "information_request" });
 
 
         builder.AddEdge(requestInformationNode, requestInformationPort);
+        builder.AddEdge( requestInformationPort, requestInformationNode);
+
+        builder.AddEdge(requestInformationNode, planningNode);
+        builder.AddEdge(travelPlanNode, planningNode);
 
         return builder.Build();
     }
