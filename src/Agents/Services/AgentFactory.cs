@@ -1,11 +1,11 @@
-﻿using Agents.Repository;
-using Agents.Settings;
+﻿using Agents.Settings;
 using Azure.AI.OpenAI;
 using Azure.Identity;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
+using static System.Net.Mime.MediaTypeNames;
 using ChatResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat;
 
 
@@ -13,14 +13,11 @@ namespace Agents.Services;
 
 public class AgentFactory : IAgentFactory
 {
-    private readonly IAgentTemplateRepository _templateRepository;
     private readonly IAgentMiddlewareFactory _agentMiddlewareFactory;
     private readonly ChatClient _chatClient;
 
-    public AgentFactory(IAgentTemplateRepository templateRepository,
-        IOptions<LanguageModelSettings> settings, IAgentMiddlewareFactory agentMiddlewareFactory)
+    public AgentFactory(IOptions<LanguageModelSettings> settings, IAgentMiddlewareFactory agentMiddlewareFactory)
     {
-        _templateRepository = templateRepository;
         _agentMiddlewareFactory = agentMiddlewareFactory;
 
 
@@ -61,14 +58,13 @@ public class AgentFactory : IAgentFactory
         return agent;
     }
 
-    public async Task<AIAgent> Create(
-        string name, 
-        ChatResponseFormat? chatResponseFormat = null, 
-        List<AITool>? tools = null)
+    public async Task<AIAgent> Create(string template, List<AITool>? tools = null)
     {
-        var template = await _templateRepository.Load(name);
 
-        return Create(name, template, chatResponseFormat, tools);
+        var agentFactory = new CustomPromptAgentFactory(_chatClient.AsIChatClient(), tools: tools);
+        var agent = await agentFactory.CreateFromYamlAsync(template);
+
+        return agent;
     }
 
     public AIAgent UseMiddleware(AIAgent agent, string name)
@@ -85,7 +81,6 @@ public class AgentFactory : IAgentFactory
 
 public interface IAgentFactory
 {
-    Task<AIAgent> Create(string name, ChatResponseFormat? chatResponseFormat = null, List<AITool>? tools = null);
     AIAgent UseMiddleware(AIAgent agent, string name);
 
     AIAgent Create(
@@ -93,5 +88,7 @@ public interface IAgentFactory
         string template,
         ChatResponseFormat? chatResponseFormat = null,
         List<AITool>? tools = null);
+
+    Task<AIAgent> Create(string template, List<AITool>? tools = null);
 }
 

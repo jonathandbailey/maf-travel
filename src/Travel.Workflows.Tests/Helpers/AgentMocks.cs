@@ -12,8 +12,8 @@ public static class AgentMocks
         var mockAgentFactory = new Mock<IAgentFactory>();
 
         mockAgentFactory
-            .Setup(x => x.Create(It.IsAny<string>(), It.IsAny<ChatResponseFormat>(), It.IsAny<List<AITool>>()))
-            .ReturnsAsync(fakeAgent);
+            .Setup(x => x.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ChatResponseFormat>(), It.IsAny<List<AITool>>()))
+            .Returns(fakeAgent);
 
         return mockAgentFactory.Object;
     }

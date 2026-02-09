@@ -1,7 +1,7 @@
 ﻿using Agents.Middleware;
-using Agents.Repository;
 using Agents.Services;
 using Agents.Settings;
+using Infrastructure.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

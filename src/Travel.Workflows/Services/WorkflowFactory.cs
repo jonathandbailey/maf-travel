@@ -6,11 +6,11 @@ using Travel.Workflows.Nodes;
 
 namespace Travel.Workflows.Services;
 
-public class WorkflowFactory(IAgentFactory agentFactory,ITravelPlanService travelPlanService)
+public class WorkflowFactory(IAgentFactory agentFactory, ITravelPlanService travelPlanService)
 {
     public async Task<Workflow> Build()
     {
-        var planningAgent = await agentFactory.Create("planning_agent");
+        var planningAgent = agentFactory.Create("planning_agent","");
 
         var planningNode = new PlanningNode(planningAgent);
 
