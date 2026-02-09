@@ -37,6 +37,11 @@ public static class PlanningTools
         return Tools.Select(toolMeta => toolMeta.Value.AsDeclarationOnly()).Cast<AITool>().ToList();
     }
 
+    public static List<AIFunction> GetDeclarationOnlyFunctions()
+    {
+        return Tools.Select(toolMeta => toolMeta.Value.AsDeclarationOnly()).Cast<AIFunction>().ToList();
+    }
+
     public static List<AITool> GetTools()
     {
         return Tools.Select(toolMeta => toolMeta.Value).Cast<AITool>().ToList();

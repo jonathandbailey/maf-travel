@@ -5,6 +5,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
+using static System.Net.Mime.MediaTypeNames;
 using ChatResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat;
 
 
@@ -57,6 +58,15 @@ public class AgentFactory : IAgentFactory
         return agent;
     }
 
+    public async Task<AIAgent> Create(string template, List<AITool>? tools = null)
+    {
+
+        var agentFactory = new CustomPromptAgentFactory(_chatClient.AsIChatClient(), tools: tools);
+        var agent = await agentFactory.CreateFromYamlAsync(template);
+
+        return agent;
+    }
+
     public AIAgent UseMiddleware(AIAgent agent, string name)
     {
         var middleware = _agentMiddlewareFactory.Get(name);
@@ -78,5 +88,7 @@ public interface IAgentFactory
         string template,
         ChatResponseFormat? chatResponseFormat = null,
         List<AITool>? tools = null);
+
+    Task<AIAgent> Create(string template, List<AITool>? tools = null);
 }
 

@@ -34,7 +34,7 @@ namespace Travel.Workflows.Tests.Integration
 
             var templateRepository = new AgentTemplateRepository(mockLogger.Object, fileStorageSettings);
 
-            var templateName = "planning_agent.md";
+            var templateName = "planning.yaml";
             var agentTemplate = await templateRepository.LoadAsync(templateName);
 
             var languageModelSettings = Options.Create(new LanguageModelSettings
@@ -60,7 +60,7 @@ namespace Travel.Workflows.Tests.Integration
 
             };
 
-            var agent = agentFactory.Create("planning_agent", agentTemplate, tools: PlanningTools.GetDeclarationOnlyTools());
+            var agent = await agentFactory.Create(agentTemplate, PlanningTools.GetDeclarationOnlyTools());
          
             var serialized = JsonSerializer.Serialize(new TravelPlanDto(null, null, null, null, null));
 
