@@ -17,9 +17,4 @@
     <PackageReference Include="Aspire.Hosting.NodeJs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Travel.Application.Api\Travel.Application.Api.csproj" />
-    <ProjectReference Include="..\Travel.Application.Mcp\Travel.Application.Mcp.csproj" />
-  </ItemGroup>
-
 </Project>
