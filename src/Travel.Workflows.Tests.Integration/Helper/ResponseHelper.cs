@@ -69,14 +69,19 @@ public class FunctionCallAssertion
         var travelPlanJson = _functionCall.Arguments!["travelPlan"];
         TravelPlanDto? travelPlan;
 
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         if (travelPlanJson is JsonElement jsonElement)
         {
-            travelPlan = JsonSerializer.Deserialize<TravelPlanDto>(jsonElement.GetRawText());
+            travelPlan = JsonSerializer.Deserialize<TravelPlanDto>(jsonElement.GetRawText(), options);
         }
         else
         {
             var json = JsonSerializer.Serialize(travelPlanJson);
-            travelPlan = JsonSerializer.Deserialize<TravelPlanDto>(json);
+            travelPlan = JsonSerializer.Deserialize<TravelPlanDto>(json, options);
         }
 
         travelPlan.Should().NotBeNull($"travelPlan argument should be deserializable");

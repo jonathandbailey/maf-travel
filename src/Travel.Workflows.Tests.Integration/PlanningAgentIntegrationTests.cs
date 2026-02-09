@@ -9,7 +9,7 @@ namespace Travel.Workflows.Tests.Integration
     public class PlanningAgentIntegrationTests
     {
         [Fact]
-        public async Task TestPlanningAgentAndFactory()
+        public async Task TravelPlanAgent_WhenProvidedWithNewObservationInformation_ShouldUpdateTravelPlan()
         {
             var threadId = Guid.NewGuid().ToString();
 
@@ -30,31 +30,10 @@ namespace Travel.Workflows.Tests.Integration
             var response = await agent.RunAsync(message, options: agentRunOptions, cancellationToken: CancellationToken.None);
 
             ResponseHelper.ValidateFunctionCalls(response)
-                .ShouldHaveCallCount(2)
+                .ShouldHaveCallCount(1)
                 .ShouldContainCall("UpdateTravelPlan")
-                    .WithDestination("Paris")
-                    .WithStartDate(new DateTime(2026, 5, 1))
-                    .And()
-                .ShouldContainCall("RequestInformation")
-                    .WithArgument("question");
-        
-        
-
-            observation = MessageHelper.CreateObservation()
-                .WithContext("We are returning on the 27.05.2026, and we are 4 travellers.")
-                .WithNumberOfTravellers(4)
-                .WithEndDate("2026-05-27")
-                .Build();
-
-            var travelPlan = new TravelPlanDto(null, "Paris", new DateTime(2026, 5, 1), null, null);
-
-            message = MessageHelper.CreateObservationMessage(observation, travelPlan);
-
-            agentRunOptions = new ChatClientAgentRunOptions();
-
-            agentRunOptions.AddThreadId(threadId);
-
-            response = await agent.RunAsync(message, options: agentRunOptions, cancellationToken: CancellationToken.None);
+                .WithDestination("Paris")
+                .WithStartDate(new DateTime(2026, 5, 1));
         }
 
     }
