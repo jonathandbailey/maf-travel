@@ -1,10 +1,10 @@
 ﻿using Agents.Services;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using Travel.Workflows.Planning.Dto;
-using Travel.Workflows.Planning.Nodes;
+using Travel.Workflows.Dto;
+using Travel.Workflows.Nodes;
 
-namespace Travel.Workflows.Planning.Services;
+namespace Travel.Workflows.Services;
 
 public class WorkflowFactory(IAgentFactory agentFactory,ITravelPlanService travelPlanService)
 {

@@ -3,7 +3,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 
-namespace Travel.Workflows.Planning.Nodes;
+namespace Travel.Workflows.Nodes;
 
 public class PlanningNode(AIAgent agent) : ReflectingExecutor<PlanningNode>("Planning"), IMessageHandler<ChatMessage, AgentResponse>
 {

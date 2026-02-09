@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.AI;
 
-namespace Travel.Workflows.Planning.Services;
+namespace Travel.Workflows.Services;
 
 public class WorkflowTools : IWorkflowTools
 {

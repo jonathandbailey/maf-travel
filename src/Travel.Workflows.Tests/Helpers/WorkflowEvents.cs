@@ -1,7 +1,6 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-
-using Travel.Workflows.Planning.Dto;
-using Travel.Workflows.Planning.Events;
+using Travel.Workflows.Dto;
+using Travel.Workflows.Events;
 
 namespace Travel.Workflows.Tests.Helpers;
 

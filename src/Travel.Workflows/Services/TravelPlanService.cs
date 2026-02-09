@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using Travel.Workflows.Planning.Dto;
+using Travel.Workflows.Dto;
 
-namespace Travel.Workflows.Planning.Services;
+namespace Travel.Workflows.Services;
 
 public class TravelPlanService : ITravelPlanService
 {

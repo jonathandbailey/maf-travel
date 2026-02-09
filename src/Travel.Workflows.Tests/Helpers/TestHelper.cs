@@ -3,8 +3,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
-using Travel.Workflows.Planning.Dto;
-using Travel.Workflows.Planning.Services;
+using Travel.Workflows.Dto;
 
 namespace Travel.Workflows.Tests.Helpers;
 

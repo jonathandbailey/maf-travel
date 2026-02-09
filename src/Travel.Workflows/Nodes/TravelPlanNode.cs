@@ -1,12 +1,12 @@
-﻿using Microsoft.Agents.AI.Workflows;
+﻿using System.Text.Json;
+using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
-using System.Text.Json;
-using Travel.Workflows.Planning.Dto;
-using Travel.Workflows.Planning.Events;
-using Travel.Workflows.Planning.Services;
+using Travel.Workflows.Dto;
+using Travel.Workflows.Events;
+using Travel.Workflows.Services;
 
-namespace Travel.Workflows.Planning.Nodes;
+namespace Travel.Workflows.Nodes;
 
 public class TravelPlanNode(ITravelPlanService travelPlanService) : ReflectingExecutor<TravelPlanNode>("TravelPlan"), IMessageHandler<FunctionCallContent, ChatMessage>
 {

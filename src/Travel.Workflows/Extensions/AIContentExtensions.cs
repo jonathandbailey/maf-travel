@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.AI;
-using System.Text.Json;
+﻿using System.Text.Json;
+using Microsoft.Extensions.AI;
 
-namespace Travel.Workflows.Planning.Extensions;
+namespace Travel.Workflows.Extensions;
 
 public static class AIContentExtensions
 {

@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
-using System.Text.Json;
 using Microsoft.Extensions.AI;
-using Travel.Agents.Planning.Dto;
+using Travel.Agents.Dto;
 
-namespace Travel.Agents.Planning.Services;
+namespace Travel.Agents.Services;
 
 public static class PlanningTools
 {

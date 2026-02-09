@@ -1,10 +1,10 @@
-﻿using Microsoft.Agents.AI.Workflows;
+﻿using System.Text.Json;
+using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
-using System.Text.Json;
-using Travel.Workflows.Planning.Dto;
+using Travel.Workflows.Dto;
 
-namespace Travel.Workflows.Planning.Nodes;
+namespace Travel.Workflows.Nodes;
 
 public class RequestInformationNode() : ReflectingExecutor<RequestInformationNode>("RequestInformation"), 
     IMessageHandler<FunctionCallContent>,

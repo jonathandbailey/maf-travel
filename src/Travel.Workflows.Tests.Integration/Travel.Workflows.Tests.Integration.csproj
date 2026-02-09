@@ -22,7 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Agents\Agents.csproj" />
     <ProjectReference Include="..\AppHost\AppHost.csproj" />
-    <ProjectReference Include="..\Travel.Agents.Planning\Travel.Agents.Planning.csproj" />
+    <ProjectReference Include="..\Travel.Agents\Travel.Agents.csproj" />
   </ItemGroup>
 
   <ItemGroup>

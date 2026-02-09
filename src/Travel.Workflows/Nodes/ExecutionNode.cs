@@ -3,7 +3,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 
-namespace Travel.Workflows.Planning.Nodes;
+namespace Travel.Workflows.Nodes;
 
 public class ExecutionNode() : ReflectingExecutor<ExecutionNode>("Execution"), IMessageHandler<AgentResponse>
 {

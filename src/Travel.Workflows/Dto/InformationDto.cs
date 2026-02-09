@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.AI;
 
-namespace Travel.Workflows.Planning.Dto;
+namespace Travel.Workflows.Dto;
 
 public record InformationRequest(string Context, List<string> Entities);
 

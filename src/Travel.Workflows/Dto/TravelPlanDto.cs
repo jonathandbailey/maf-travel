@@ -1,4 +1,4 @@
-﻿namespace Travel.Workflows.Planning.Dto;
+﻿namespace Travel.Workflows.Dto;
 
 public class TravelPlanDto
 {

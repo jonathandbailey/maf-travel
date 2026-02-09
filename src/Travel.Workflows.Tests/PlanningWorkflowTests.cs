@@ -1,10 +1,9 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
-using Travel.Workflows.Planning;
-using Travel.Workflows.Planning.Dto;
-using Travel.Workflows.Planning.Events;
-using Travel.Workflows.Planning.Services;
+using Travel.Workflows.Dto;
+using Travel.Workflows.Events;
+using Travel.Workflows.Services;
 using Travel.Workflows.Tests.Helpers;
 
 namespace Travel.Workflows.Tests;

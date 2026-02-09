@@ -1,8 +1,8 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using Travel.Workflows.Planning.Dto;
+using Travel.Workflows.Dto;
 
-namespace Travel.Workflows.Planning;
+namespace Travel.Workflows;
 
 public class TravelPlanningWorkflow
 {

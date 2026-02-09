@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using A2A;
 using Microsoft.Extensions.DependencyInjection;
-using Travel.Agents.Planning.Dto;
+using Travel.Agents.Dto;
 
-namespace Travel.Agents.Planning.Extensions;
+namespace Travel.Agents.Extensions;
 
 public static class PlanningExtensions
 {

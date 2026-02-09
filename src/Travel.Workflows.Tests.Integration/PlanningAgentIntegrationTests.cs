@@ -9,8 +9,8 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Agents.Extensions;
 using FluentAssertions;
-using Travel.Agents.Planning.Dto;
-using Travel.Agents.Planning.Services;
+using Travel.Agents.Dto;
+using Travel.Agents.Services;
 
 namespace Travel.Workflows.Tests.Integration
 {

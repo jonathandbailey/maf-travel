@@ -3,10 +3,10 @@ using Agents.Extensions;
 using Agents.Services;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using Travel.Agents.Planning.Dto;
-using Travel.Agents.Planning.Services;
+using Travel.Agents.Dto;
+using Travel.Agents.Services;
 
-namespace Travel.Agents.Planning.Extensions;
+namespace Travel.Agents.Extensions;
 
 
 public class PlanningService(IAgentFactory agentFactory) : IPlanningService
