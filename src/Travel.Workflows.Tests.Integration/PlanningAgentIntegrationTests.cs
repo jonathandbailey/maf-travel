@@ -1,18 +1,8 @@
-using System.Text.Json;
-using Agents.Services;
-using Agents.Settings;
 using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Moq;
 using Agents.Extensions;
-using FluentAssertions;
-using Infrastructure.Repository;
-using Infrastructure.Settings;
-using Microsoft.Extensions.Logging;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
+using Travel.Workflows.Tests.Integration.Helper;
 
 namespace Travel.Workflows.Tests.Integration
 {
@@ -21,54 +11,17 @@ namespace Travel.Workflows.Tests.Integration
         [Fact]
         public async Task TestPlanningAgentAndFactory()
         {
-            var configuration = new ConfigurationBuilder()
-                .AddUserSecrets<PlanningAgentIntegrationTests>()
-                .Build();
-
-            var fileStorageSettings = Options.Create(new FileStorageSettings
-            {
-                AgentTemplateFolder = "AgentTemplates"
-            });
-
-             var mockLogger = new Mock<ILogger<AgentTemplateRepository>>();
-
-            var templateRepository = new AgentTemplateRepository(mockLogger.Object, fileStorageSettings);
-
-            var templateName = "planning.yaml";
-            var agentTemplate = await templateRepository.LoadAsync(templateName);
-
-            var languageModelSettings = Options.Create(new LanguageModelSettings
-            {
-                DeploymentName = configuration["LanguageModelSettings:DeploymentName"] ?? string.Empty,
-                EndPoint = configuration["LanguageModelSettings:EndPoint"] ?? string.Empty,
-            });
-
-            var mockMiddlewareFactory = new Mock<IAgentMiddlewareFactory>();
-
             var threadId = Guid.NewGuid().ToString();
 
-            var agentFactory = new AgentFactory(    
-                languageModelSettings,
-                mockMiddlewareFactory.Object);
+            var observation = MessageHelper.CreateObservation()
+                .WithContext("I want to plan a trip to Paris on the 1st of May, 2026")
+                .WithDestination("Paris")
+                .WithStartDate("2026-05-01")
+                .Build();
 
+            var agent = await AgentHelper.Create("planning.yaml", PlanningTools.GetDeclarationOnlyTools());
 
-            var observation = new Dictionary<string, object>()
-            {
-                {"context", "I want to plan a trip to Paris on the 1st of May, 2026"},
-                {"destination", "Paris"},
-                {"startDate", "2026-05-01"}
-
-            };
-
-            var agent = await agentFactory.Create(agentTemplate, PlanningTools.GetDeclarationOnlyTools());
-         
-            var serialized = JsonSerializer.Serialize(new TravelPlanDto(null, null, null, null, null));
-
-            var serializedObservation = JsonSerializer.Serialize(observation);
-
-            var template = $"Observation: {serializedObservation} \nTravelPlanSummary : {serialized}";
-
-            var message = new ChatMessage(ChatRole.User, template);
+            var message = MessageHelper.CreateObservationMessage(observation, new TravelPlanDto());
 
             var agentRunOptions = new ChatClientAgentRunOptions();
 
@@ -76,36 +29,26 @@ namespace Travel.Workflows.Tests.Integration
 
             var response = await agent.RunAsync(message, options: agentRunOptions, cancellationToken: CancellationToken.None);
 
-            response.Messages.Should().ContainSingle()
-                .Which.Contents.Should().HaveCount(2)
-                .And.AllBeOfType<FunctionCallContent>();
-
-            var functionCalls = response.Messages.Single().Contents.OfType<FunctionCallContent>().ToList();
-            functionCalls.Should().HaveCount(2);
-
-            functionCalls[0].Name.Should().Be("UpdateTravelPlan");
-            functionCalls[0].Arguments.Should().NotBeNull()
-                .And.ContainKey("travelPlan");
-
-            functionCalls[1].Name.Should().Be("RequestInformation");
-            functionCalls[1].Arguments.Should().NotBeNull();
+            ResponseHelper.ValidateFunctionCalls(response)
+                .ShouldHaveCallCount(2)
+                .ShouldContainCall("UpdateTravelPlan")
+                    .WithDestination("Paris")
+                    .WithStartDate(new DateTime(2026, 5, 1))
+                    .And()
+                .ShouldContainCall("RequestInformation")
+                    .WithArgument("question");
+        
         
 
-            observation = new Dictionary<string, object>()
-            {
-                {"context", "We are returning on the 27.05.2026, and we are 4 travellers."},
-                {"numberOfTravellers", 4},
-                {"endDate", "2026-05-27"}
+            observation = MessageHelper.CreateObservation()
+                .WithContext("We are returning on the 27.05.2026, and we are 4 travellers.")
+                .WithNumberOfTravellers(4)
+                .WithEndDate("2026-05-27")
+                .Build();
 
-            };
+            var travelPlan = new TravelPlanDto(null, "Paris", new DateTime(2026, 5, 1), null, null);
 
-            serializedObservation = JsonSerializer.Serialize(observation);
-
-            serialized = JsonSerializer.Serialize(new TravelPlanDto(null, "Paris", new DateTime(2026, 5, 1), null, null));
-
-            template = $"Observation: {serializedObservation} \nTravelPlanSummary : {serialized}";
-
-            message = new ChatMessage(ChatRole.User, template);
+            message = MessageHelper.CreateObservationMessage(observation, travelPlan);
 
             agentRunOptions = new ChatClientAgentRunOptions();
 
