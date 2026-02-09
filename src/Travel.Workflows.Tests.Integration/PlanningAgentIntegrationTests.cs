@@ -14,13 +14,13 @@ using Travel.Agents.Planning.Services;
 
 namespace Travel.Workflows.Tests.Integration
 {
-    public class IntegrationTest1
+    public class PlanningAgentIntegrationTests
     {
         [Fact]
         public async Task TestPlanningAgentAndFactory()
         {
             var configuration = new ConfigurationBuilder()
-                .AddUserSecrets<IntegrationTest1>()
+                .AddUserSecrets<PlanningAgentIntegrationTests>()
                 .Build();
 
             var templateRepository = new AgentTemplateRepository();
@@ -50,9 +50,7 @@ namespace Travel.Workflows.Tests.Integration
             };
 
             var agent = await agentFactory.Create("planning_agent_ex", tools: PlanningTools.GetDeclarationOnlyTools());
-
-            //agentFactory.UseMiddleware(agent, "agent-thread");
-
+         
             var serialized = JsonSerializer.Serialize(new TravelPlanDto(null, null, null, null, null));
 
             var serializedObservation = JsonSerializer.Serialize(observation);
