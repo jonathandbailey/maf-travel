@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Travel.Workflows.Tests.Integration.Agents;
 
 namespace Travel.Workflows.Tests.Integration.Helper;
 

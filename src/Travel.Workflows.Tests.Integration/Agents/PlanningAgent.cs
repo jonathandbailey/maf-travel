@@ -4,7 +4,7 @@ using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Tests.Integration.Helper;
 
-namespace Travel.Workflows.Tests.Integration
+namespace Travel.Workflows.Tests.Integration.Agents
 {
     public class PlanningAgent
     {
