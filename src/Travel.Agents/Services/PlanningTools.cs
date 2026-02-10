@@ -26,23 +26,6 @@ public static class PlanningTools
     {
         return Tools.Select(toolMeta => toolMeta.Value.AsDeclarationOnly()).Cast<AITool>().ToList();
     }
-
-    public static List<AIFunction> GetDeclarationOnlyFunctions()
-    {
-        return Tools.Select(toolMeta => toolMeta.Value.AsDeclarationOnly()).Cast<AIFunction>().ToList();
-    }
-
-    public static List<AITool> GetTools()
-    {
-        return Tools.Select(toolMeta => toolMeta.Value).Cast<AITool>().ToList();
-    }
-
-
-
-    public static AIFunction Get(string name)
-    {
-        return Tools[name];
-    }
 }
 
 public static class ExtractingTools
@@ -64,20 +47,6 @@ public static class ExtractingTools
     public static List<AITool> GetDeclarationOnlyTools()
     {
         return Tools.Select(toolMeta => toolMeta.Value.AsDeclarationOnly()).Cast<AITool>().ToList();
-    }
-
-   
-
-    public static List<AITool> GetTools()
-    {
-        return Tools.Select(toolMeta => toolMeta.Value).Cast<AITool>().ToList();
-    }
-
-
-
-    public static AIFunction Get(string name)
-    {
-        return Tools[name];
     }
 }
 
@@ -106,17 +75,4 @@ public static class ConversationTools
         return Tools.Select(toolMeta => toolMeta.Value.AsDeclarationOnly()).Cast<AITool>().ToList();
     }
 
-
-
-    public static List<AITool> GetTools()
-    {
-        return Tools.Select(toolMeta => toolMeta.Value).Cast<AITool>().ToList();
-    }
-
-
-
-    public static AIFunction Get(string name)
-    {
-        return Tools[name];
-    }
 }

@@ -22,7 +22,8 @@ public static class AgentHelper
 
         var fileStorageSettings = Options.Create(new FileStorageSettings
         {
-            AgentTemplateFolder = "AgentTemplates"
+            AgentTemplateFolder = "Templates",
+            AgentThreadFolder = "Threads"
         });
 
         var mockLogger = new Mock<ILogger<AgentTemplateRepository>>();

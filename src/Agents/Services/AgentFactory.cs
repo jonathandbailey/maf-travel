@@ -5,7 +5,6 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
-using static System.Net.Mime.MediaTypeNames;
 using ChatResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat;
 
 
