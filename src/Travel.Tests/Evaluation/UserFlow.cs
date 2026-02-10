@@ -62,9 +62,7 @@ namespace Travel.Tests.Evaluation
             ResponseHelper.ValidateFunctionCalls(response)
                 .ShouldHaveCallCount(1)
                 .ShouldContainCall("RequestInformation")
-                .WithArgument("message")
-                .WithArgument("thought")
-                .WithRequiredInputs("EndDate");
+                .WithArgument("request");
         }
     }
 }

@@ -14,8 +14,8 @@ public class PlanningWorkflowTests
     private const string Origin = "Zurich";
     private const string Destination = "Paris";
     private const int NumberOfTravelers = 2;
-    private readonly DateTime _departureDate = new DateTime(2026, 5, 1);
-    private readonly DateTime _returnDate = new DateTime(2026, 6, 15);
+    private readonly DateTime _departureDate = new(2026, 5, 1);
+    private readonly DateTime _returnDate = new(2026, 6, 15);
 
     [Fact]
     public async Task ShouldResumeFromCheckpointAndFinalize_WhenInformationRequestIsFulfilled()

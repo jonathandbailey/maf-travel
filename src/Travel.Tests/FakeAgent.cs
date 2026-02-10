@@ -57,18 +57,21 @@ public class FakeAgent : AIAgent
         throw new NotImplementedException();
     }
 
-    public override ValueTask<AgentSession> GetNewSessionAsync(CancellationToken cancellationToken = default)
+    protected override async ValueTask<AgentSession> CreateSessionCoreAsync(CancellationToken cancellationToken = new CancellationToken())
     {
         var mockSession = new Mock<AgentSession>();
-        return new ValueTask<AgentSession>(mockSession.Object);
+        return mockSession.Object;
     }
 
-        public override ValueTask<AgentSession> DeserializeSessionAsync(
-            JsonElement json,
-            JsonSerializerOptions? jsonOptions = null,
-            CancellationToken cancellationToken = default)
-        {
-            var mockSession = new Mock<AgentSession>();
-            return new ValueTask<AgentSession>(mockSession.Object);
-        }
+    protected override JsonElement SerializeSessionCore(AgentSession session, JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override async ValueTask<AgentSession> DeserializeSessionCoreAsync(JsonElement serializedState, JsonSerializerOptions? jsonSerializerOptions = null,
+        CancellationToken cancellationToken = new CancellationToken())
+    {
+        var mockSession = new Mock<AgentSession>();
+        return mockSession.Object;
+    }
 }
