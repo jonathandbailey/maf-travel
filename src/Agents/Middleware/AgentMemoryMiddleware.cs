@@ -28,7 +28,7 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
 
         var response = await innerAgent.RunAsync(messages, memoryThread, options, cancellationToken);
 
-        var threadState = memoryThread.Serialize();
+        var threadState = innerAgent.SerializeSession(memoryThread);
 
         await memory.SaveAsync(new AgentState(threadState), GetResourceName(innerAgent.Name!, threadId));
 
@@ -60,7 +60,7 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
             yield return update;
         }
 
-        var threadState = memoryThread.Serialize();
+        var threadState = innerAgent.SerializeSession(memoryThread);
 
         await memory.SaveAsync(new AgentState(threadState), GetResourceName(innerAgent.Name!, threadId));
     }
@@ -71,7 +71,7 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
 
         if (!await memory.ExistsAsync(GetResourceName(agent.Name!, threadId)))
         {
-            thread = await agent.GetNewSessionAsync();
+            thread = await agent.CreateSessionAsync();
         }
         else
         {
