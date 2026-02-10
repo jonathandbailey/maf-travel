@@ -10,10 +10,8 @@ public static class PlanningTools
     private static readonly Dictionary<string, AIFunction> Tools = new();
     [Description("Request all missing pieces of information from the user in a single batch.")]
     private static string RequestInformation(
-        [Description("A consolidated message asking for all missing details")] string message,
-        [Description("The collective reasoning for these requests")] string thought,
-        [Description("A list of all keys that need to be populated")] List<string> requiredInputs)
-        => $"The information requested is: {message}";
+        [Description("The information request containing the message, reasoning, and required inputs")] RequestInformationDto request)
+        => $"The information requested is: {request.Message}";
 
     static PlanningTools()
     {

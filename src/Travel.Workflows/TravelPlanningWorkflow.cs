@@ -79,6 +79,6 @@ public class TravelPlanningWorkflow
         }
         
         return await InProcessExecution.ResumeStreamAsync(workflow, _checkpointInfo,
-            checkpointManager, _checkpointInfo.RunId);
+            checkpointManager);
     }
 }

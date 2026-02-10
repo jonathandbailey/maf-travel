@@ -25,6 +25,7 @@
     <ProjectReference Include="..\AppHost\AppHost.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Travel.Agents\Travel.Agents.csproj" />
+    <ProjectReference Include="..\Travel.Workflows\Travel.Workflows.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,7 +19,7 @@ public class ExecutionNode() : ReflectingExecutor<ExecutionNode>("Execution"), I
                 {
                     toolCalls.Add(functionCall);
 
-                    await context.SendMessageAsync(content, cancellationToken: cancellationToken);
+                    await context.SendMessageAsync(functionCall, cancellationToken: cancellationToken);
                 }
             }
         }

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Agents\Agents.csproj" />
+    <ProjectReference Include="..\Travel.Agents\Travel.Agents.csproj" />
   </ItemGroup>
 
 </Project>

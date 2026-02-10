@@ -8,17 +8,17 @@ using Travel.Workflows.Services;
 
 namespace Travel.Workflows.Nodes;
 
-public class TravelPlanNode(ITravelPlanService travelPlanService) : ReflectingExecutor<TravelPlanNode>("TravelPlan"), IMessageHandler<FunctionCallContent, ChatMessage>
+public class TravelPlanNode(ITravelPlanService travelPlanService) : ReflectingExecutor<TravelPlanNode>("TravelPlan"), IMessageHandler<FunctionCallContent, TravelPlanDto>
 {
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public async ValueTask<ChatMessage> HandleAsync(FunctionCallContent functionCallContent, IWorkflowContext context,
+    public async ValueTask<TravelPlanDto> HandleAsync(FunctionCallContent functionCallContent, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        var argumentsJson = JsonSerializer.Serialize(functionCallContent.Arguments["travelPlanUpdate"]);
+        var argumentsJson = JsonSerializer.Serialize(functionCallContent.Arguments["travelPlan"]);
 
         var details = JsonSerializer.Deserialize<TravelPlanDto>(argumentsJson, _serializerOptions);
 
@@ -26,6 +26,6 @@ public class TravelPlanNode(ITravelPlanService travelPlanService) : ReflectingEx
 
         await context.AddEventAsync(new TravelPlanUpdateEvent(details), cancellationToken);
 
-        return new ChatMessage(ChatRole.User, "Travel plan updated successfully.");
+        return details;
     }
 }

@@ -46,8 +46,8 @@ public static  class TestHelper
         {
             Origin = "Seattle",
             Destination = "Tokyo",
-            StartDate = DateTimeOffset.UtcNow.AddDays(60),
-            EndDate = DateTimeOffset.UtcNow.AddDays(67)
+            StartDate = DateTime.UtcNow.AddDays(60),
+            EndDate = DateTime.UtcNow.AddDays(67)
         };
 
         return updateDto;

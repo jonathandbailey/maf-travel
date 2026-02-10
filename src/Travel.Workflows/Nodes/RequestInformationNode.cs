@@ -2,6 +2,7 @@
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
+using Travel.Agents.Dto;
 using Travel.Workflows.Dto;
 
 namespace Travel.Workflows.Nodes;
@@ -18,11 +19,11 @@ public class RequestInformationNode() : ReflectingExecutor<RequestInformationNod
     public async ValueTask HandleAsync(FunctionCallContent functionCallContent, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        var argumentsJson = JsonSerializer.Serialize(functionCallContent.Arguments["informationRequest"]);
+        var argumentsJson = JsonSerializer.Serialize(functionCallContent.Arguments["request"]);
 
-        var details = JsonSerializer.Deserialize<InformationRequestDetails>(argumentsJson, _serializerOptions);
+        var details = JsonSerializer.Deserialize<RequestInformationDto>(argumentsJson, _serializerOptions);
         
-        await context.SendMessageAsync(new InformationRequest(details.Context, details.Entities), cancellationToken: cancellationToken);
+        await context.SendMessageAsync(new InformationRequest(details.Message, details.RequiredInputs), cancellationToken: cancellationToken);
     }
 
     public async ValueTask HandleAsync(InformationResponse informationResponse, IWorkflowContext context,

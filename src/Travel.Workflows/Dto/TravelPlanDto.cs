@@ -1,12 +1,5 @@
 ﻿namespace Travel.Workflows.Dto;
 
-public class TravelPlanDto
-{
-    public string? Origin { get; set; }
 
-    public string? Destination { get; set; }
 
-    public DateTimeOffset? StartDate { get; set; }
-
-    public DateTimeOffset? EndDate { get; set; }
-}
+public record TravelPlanDto(string? Origin = null, string? Destination = null, DateTime? StartDate = null, DateTime? EndDate = null, int? NumberOfTravelers = null);
