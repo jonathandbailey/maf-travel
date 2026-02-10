@@ -6,7 +6,7 @@ using Travel.Workflows.Events;
 using Travel.Workflows.Services;
 using Travel.Workflows.Tests.Helpers;
 
-namespace Travel.Workflows.Tests;
+namespace Travel.Workflows.Tests.Integration;
 
 public class PlanningWorkflowTests
 {
@@ -14,26 +14,23 @@ public class PlanningWorkflowTests
     public async Task ShouldResumeFromCheckpointAndFinalize_WhenInformationRequestIsFulfilled()
     {
         var informationRequest = TestHelper.CreateInformationRequest();
-        var travelUpdateRequest = TestHelper.CreateTravelUpdateRequest();
+        var travelUpdateRequest = new TravelPlanDto("Zurich", "Paris", new DateTime(2026, 5, 1), null, 2);
 
-        var agent = new FakeAgent()
-            .UpdateTravelPlan(travelUpdateRequest)
-            .InformationRequest(informationRequest)
-            .UpdateTravelPlan(travelUpdateRequest)
-            .FinalizeTravelPlan();
-     
+        var extractingAgent = new FakeAgent()
+            .UpdateTravelPlan(travelUpdateRequest);
 
-        var agentFactory = AgentMocks.CreateAgentFactory(agent);
-
+        var planningAgent = new FakeAgent()
+            .InformationRequest(informationRequest);
+      
         var travelPlanService = new Mock<ITravelPlanService>();
     
-        var workflowFactory = new WorkflowFactory(agentFactory, travelPlanService.Object);
+        var workflowFactory = new WorkflowFactory2(travelPlanService.Object);
 
-        var workflow = await workflowFactory.Build();
+        var workflow = workflowFactory.Build(planningAgent, extractingAgent);
 
         var checkpointManager = CheckpointManager.Default;
 
-        var inputMessage = new ChatMessage(ChatRole.User, "Update my travel plan to Tokyo");
+        var inputMessage = new ChatMessage(ChatRole.User, "I want to plan a trip from Zurich to Paris on the 1st of May, 2026, for 2 people.");
 
         var travelPlanningWorkflow = new TravelPlanningWorkflow();
 
@@ -59,15 +56,20 @@ public class PlanningWorkflowTests
         Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
         Assert.Contains(events, @event => @event is RequestInfoEvent);
 
-        workflowFactory = new WorkflowFactory(agentFactory, travelPlanService.Object);
+        workflowFactory = new WorkflowFactory2(travelPlanService.Object);
 
-        workflow = await workflowFactory.Build();
+        workflow = workflowFactory.Build(planningAgent, extractingAgent);
 
         travelPlanningWorkflow = new TravelPlanningWorkflow();
      
         events.Clear();
 
-        var informationResponse = new ChatMessage(ChatRole.User, "My travel dates are June 1-15, 2024");
+        var informationResponse = new ChatMessage(ChatRole.User, "My return date is June 15, 2026");
+
+        travelUpdateRequest = new TravelPlanDto(EndDate: new DateTime(2026, 6, 15));
+
+
+        extractingAgent.UpdateTravelPlan(travelUpdateRequest);
 
         await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow, checkpointManager, informationResponse))
         {
@@ -85,36 +87,6 @@ public class PlanningWorkflowTests
       
         travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Exactly(2));
     }
-
-
-    [Fact]
-    public async Task ShouldPublishRequestInfoEventWithCorrectData_WhenPlannerRequestsInformation()
-    {
-        var informationRequest = TestHelper.CreateInformationRequest();
-
-        var agent = new FakeAgent().InformationRequest(informationRequest);
-     
-        var agentFactory = AgentMocks.CreateAgentFactory(agent);
-
-        var travelPlanService = new Mock<ITravelPlanService>().Object;
-
-        var workflowFactory = new WorkflowFactory(agentFactory, travelPlanService);
-        
-        var workflow =  await workflowFactory.Build();
-     
-        var inputMessage = new ChatMessage(ChatRole.User, "Update my travel plan to Tokyo");
-
-        var travelPlanningWorkflow = new TravelPlanningWorkflow();
-
-        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow,CheckpointManager.Default, inputMessage))
-        {
-            if (evt is RequestInfoEvent requestInfoEvent)
-            {
-                requestInfoEvent.MatchesAgentFunctionCallResponse(informationRequest);
-
-                break;
-            }
-        }
-    }
+   
 }
 

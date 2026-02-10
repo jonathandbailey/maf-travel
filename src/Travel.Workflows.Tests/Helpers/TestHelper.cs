@@ -3,7 +3,9 @@ using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
+using Travel.Agents.Dto;
 using Travel.Workflows.Dto;
+using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
 namespace Travel.Workflows.Tests.Helpers;
 
@@ -27,12 +29,12 @@ public static  class TestHelper
      
         var arguments = new Dictionary<string, object?>
         {
-            ["travelPlanUpdate"] = travelPlanDto
+            ["travelPlan"] = travelPlanDto
         };
 
         var toolCallContent = new FunctionCallContent(
             callId: "call_456",
-            name: "update_travel_plan",
+            name: "UpdateTravelPlan",
             arguments: arguments);
 
         var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
@@ -44,26 +46,27 @@ public static  class TestHelper
     {
         var updateDto = new TravelPlanDto
         {
-            Origin = "Seattle",
-            Destination = "Tokyo",
+            Origin = "Zurich",
+            Destination = "Paris",
             StartDate = DateTime.UtcNow.AddDays(60),
-            EndDate = DateTime.UtcNow.AddDays(67)
+            EndDate = null,
+            NumberOfTravelers = 2
         };
 
         return updateDto;
     }
 
 
-    public static AIAgent InformationRequest(this AIAgent agent, InformationRequestDetails informationRequest)
+    public static AIAgent InformationRequest(this AIAgent agent, RequestInformationDto informationRequest)
     {
         var arguments = new Dictionary<string, object?>
         {
-            ["informationRequest"] = informationRequest
+            ["request"] = informationRequest
         };
 
         var toolCallContent = new FunctionCallContent(
             callId: "call_123",
-            name: "information_request",
+            name: "RequestInformation",
             arguments: arguments);
 
         var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
@@ -75,12 +78,12 @@ public static  class TestHelper
         return agent;
     }
 
-    public static InformationRequestDetails CreateInformationRequest()
+    public static RequestInformationDto CreateInformationRequest()
     {
         var informationRequest =
-            new InformationRequestDetails(
-                "Travel Plan Information is missing.",
-                ["Origin", "Destination", "StartDate", "EndDate"]);
+            new RequestInformationDto(
+                "Travel Plan Information is missing.","End Date is requird to to complete the travel planning.",
+                [ "EndDate"]);
 
         return informationRequest;
     }
