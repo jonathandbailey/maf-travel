@@ -9,14 +9,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace Travel.Workflows.Tests.Integration;
+namespace Travel.Workflows.Tests.Integration.Helper;
 
 public static class AgentHelper
 {
     public static async Task<AIAgent> Create(string templateName, List<AITool>? tools = null)
     {
         var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<PlanningAgentIntegrationTests>()
+            .AddUserSecrets<PlanningAgent>()
             .Build();
 
         var fileStorageSettings = Options.Create(new FileStorageSettings

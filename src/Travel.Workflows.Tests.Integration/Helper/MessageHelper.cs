@@ -2,7 +2,7 @@
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 
-namespace Travel.Workflows.Tests.Integration;
+namespace Travel.Workflows.Tests.Integration.Helper;
 
 public static class MessageHelper
 {
@@ -62,6 +62,13 @@ public static class MessageHelper
         var serializedObservation = JsonSerializer.Serialize(observation);
         var serializedPlan = JsonSerializer.Serialize(travelPlan ?? new TravelPlanDto());
         var template = $"Observation: {serializedObservation} \nTravelPlanSummary : {serializedPlan}";
+        return new ChatMessage(ChatRole.User, template);
+    }
+
+    public static ChatMessage CreateTravelPlanMessage(TravelPlanDto travelPlan)
+    {
+        var serializedPlan = JsonSerializer.Serialize(travelPlan);
+        var template = $"TravelPlanSummary : {serializedPlan}";
         return new ChatMessage(ChatRole.User, template);
     }
 }

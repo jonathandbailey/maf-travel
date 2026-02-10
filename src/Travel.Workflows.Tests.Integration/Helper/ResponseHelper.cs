@@ -120,6 +120,79 @@ public class FunctionCallAssertion
             plan.NumberOfTravelers.Should().Be(numberOfTravelers, $"travel plan should have {numberOfTravelers} travelers"));
     }
 
+    public FunctionCallAssertion WithMessage(string message)
+    {
+        _functionCall.Arguments.Should().NotBeNull()
+            .And.ContainKey("message", $"function {_functionCall.Name} should have argument 'message'");
+
+        var actualMessage = _functionCall.Arguments!["message"]?.ToString();
+        actualMessage.Should().Be(message, $"function {_functionCall.Name} message should be '{message}'");
+
+        return this;
+    }
+
+    public FunctionCallAssertion WithThought(string thought)
+    {
+        _functionCall.Arguments.Should().NotBeNull()
+            .And.ContainKey("thought", $"function {_functionCall.Name} should have argument 'thought'");
+
+        var actualThought = _functionCall.Arguments!["thought"]?.ToString();
+        actualThought.Should().Be(thought, $"function {_functionCall.Name} thought should be '{thought}'");
+
+        return this;
+    }
+
+    public FunctionCallAssertion WithRequiredInputs(params string[] requiredInputs)
+    {
+        _functionCall.Arguments.Should().NotBeNull()
+            .And.ContainKey("requiredInputs", $"function {_functionCall.Name} should have argument 'requiredInputs'");
+
+        var requiredInputsArg = _functionCall.Arguments!["requiredInputs"];
+        List<string>? actualRequiredInputs;
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        if (requiredInputsArg is JsonElement jsonElement)
+        {
+            actualRequiredInputs = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText(), options);
+        }
+        else
+        {
+            var json = JsonSerializer.Serialize(requiredInputsArg);
+            actualRequiredInputs = JsonSerializer.Deserialize<List<string>>(json, options);
+        }
+
+        actualRequiredInputs.Should().NotBeNull($"requiredInputs argument should be deserializable");
+        actualRequiredInputs.Should().BeEquivalentTo(requiredInputs, $"function {_functionCall.Name} should have requiredInputs matching expected values");
+
+        return this;
+    }
+
+    public FunctionCallAssertion WithMessageContaining(string substring)
+    {
+        _functionCall.Arguments.Should().NotBeNull()
+            .And.ContainKey("message", $"function {_functionCall.Name} should have argument 'message'");
+
+        var actualMessage = _functionCall.Arguments!["message"]?.ToString();
+        actualMessage.Should().Contain(substring, $"function {_functionCall.Name} message should contain '{substring}'");
+
+        return this;
+    }
+
+    public FunctionCallAssertion WithThoughtContaining(string substring)
+    {
+        _functionCall.Arguments.Should().NotBeNull()
+            .And.ContainKey("thought", $"function {_functionCall.Name} should have argument 'thought'");
+
+        var actualThought = _functionCall.Arguments!["thought"]?.ToString();
+        actualThought.Should().Contain(substring, $"function {_functionCall.Name} thought should contain '{substring}'");
+
+        return this;
+    }
+
     public FunctionCallValidator And()
     {
         return _validator;
