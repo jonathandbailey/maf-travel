@@ -1,4 +1,3 @@
-using AppHost.Extensions;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
