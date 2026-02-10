@@ -3,7 +3,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Moq;
 
-namespace Travel.Workflows.Tests;
+namespace Travel.Tests;
 
 public class FakeAgent : AIAgent
 {

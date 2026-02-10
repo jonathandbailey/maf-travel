@@ -2,12 +2,13 @@
 using Microsoft.Extensions.AI;
 using Moq;
 using Travel.Agents.Services;
+using Travel.Tests.Helpers;
+using Travel.Workflows;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Services;
-using Travel.Workflows.Tests.Integration.Helper;
 
-namespace Travel.Workflows.Tests.Integration.Workflows;
+namespace Travel.Tests.Evaluation;
 
 public class TravelPlanning
 {

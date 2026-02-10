@@ -1,19 +1,19 @@
-using Microsoft.Agents.AI;
 using Agents.Extensions;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Services;
-using Travel.Workflows.Tests.Integration.Helper;
+using Travel.Tests.Helpers;
 
-namespace Travel.Workflows.Tests.Integration.Agents
+namespace Travel.Tests.Evaluation
 {
-    public class ConversationAgent
+    public class ExtractingAgent
     {
         [Fact]
         public async Task TravelExtractAgent_WhenProvidedWithNewObservationInformation_ShouldUpdateTravelPlan()
         {
             var threadId = Guid.NewGuid().ToString();
 
-            var agent = await AgentHelper.Create("conversation.yaml", ConversationTools.GetDeclarationOnlyTools());
+            var agent = await AgentHelper.Create("extracting.yaml", ExtractingTools.GetDeclarationOnlyTools());
 
             var message = new ChatMessage(ChatRole.User, "I want to plan a trip from Zurich to Paris on the 1st of May, 2026, for 2 people.");
 
@@ -25,7 +25,11 @@ namespace Travel.Workflows.Tests.Integration.Agents
 
             ResponseHelper.ValidateFunctionCalls(response)
                 .ShouldHaveCallCount(1)
-                .ShouldContainCall("PlanTravel");
+                .ShouldContainCall("UpdateTravelPlan")
+                .WithDestination("Paris")
+                .WithOrigin("Zurich")
+                .WithNumberOfTravelers(2)
+                .WithStartDate(new DateTime(2026, 5, 1));
         }
     }
 }

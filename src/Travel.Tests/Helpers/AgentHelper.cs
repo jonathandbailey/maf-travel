@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Travel.Workflows.Tests.Integration.Agents;
+using Travel.Tests.Evaluation;
 
-namespace Travel.Workflows.Tests.Integration.Helper;
+namespace Travel.Tests.Helpers;
 
 public static class AgentHelper
 {

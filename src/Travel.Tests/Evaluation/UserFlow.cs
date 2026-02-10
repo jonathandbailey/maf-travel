@@ -2,9 +2,9 @@ using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Services;
-using Travel.Workflows.Tests.Integration.Helper;
+using Travel.Tests.Helpers;
 
-namespace Travel.Workflows.Tests.Evaluation
+namespace Travel.Tests.Evaluation
 {
     public class UserFlow
     {

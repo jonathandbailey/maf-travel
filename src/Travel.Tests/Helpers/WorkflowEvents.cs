@@ -4,7 +4,7 @@ using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
-namespace Travel.Workflows.Tests.Helpers;
+namespace Travel.Tests.Helpers;
 
 public static class WorkflowEvents
 {
