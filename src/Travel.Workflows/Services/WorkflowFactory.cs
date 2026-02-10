@@ -1,4 +1,4 @@
-﻿using Agents.Services;
+﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Travel.Workflows.Dto;
@@ -6,49 +6,39 @@ using Travel.Workflows.Nodes;
 
 namespace Travel.Workflows.Services;
 
-public class WorkflowFactory(IAgentFactory agentFactory, ITravelPlanService travelPlanService)
+public class WorkflowFactory(ITravelPlanService travelPlanService)
 {
-    public async Task<Workflow> Build()
+    public Workflow Build(AIAgent planningAgent, AIAgent extractingAgent)
     {
-        var planningAgent = agentFactory.Create("planning_agent","");
-
         var planningNode = new PlanningNode(planningAgent);
 
-        var executionNode = new ExecutionNode();
         var travelPlanNode = new TravelPlanNode(travelPlanService);
-        var requestInformationNode = new RequestInformationNode();
+      
+        var extractingNode = new ExtractingNode(extractingAgent);
 
-        var finalizerNode = new FinalizerNode();
+        var builder = new WorkflowBuilder(extractingNode);
 
         var requestInformationPort = RequestPort.Create<InformationRequest, InformationResponse>("information");
 
-        var builder = new WorkflowBuilder(planningNode);
+        var requestInformationNode = new RequestInformationNode();
+
+        var executionNode = new ExecutionNode();
+
+        builder.AddEdge<FunctionCallContent>(
+            source: extractingNode,
+            target: travelPlanNode,
+            condition: result => result is { Name: "UpdateTravelPlan" });
+
+        builder.AddEdge(travelPlanNode, planningNode);
 
         builder.AddEdge(planningNode, executionNode);
-        builder.AddEdge(executionNode, planningNode);
-        
-
-        builder.AddEdge<FunctionCallContent>(
-            source: executionNode, 
-            target:travelPlanNode,
-            condition: result => result is { Name: "update_travel_plan" });
-
-        builder.AddEdge<FunctionCallContent>(
-            source: executionNode,
-            target: finalizerNode,
-            condition: result => result is { Name: "finalize_travel_plan" });
 
         builder.AddEdge<FunctionCallContent>(
             source: executionNode,
             target: requestInformationNode,
-            condition: result => result is { Name: "information_request" });
-
+            condition: result => result is { Name: "RequestInformation" });
 
         builder.AddEdge(requestInformationNode, requestInformationPort);
-        builder.AddEdge( requestInformationPort, requestInformationNode);
-
-        builder.AddEdge(requestInformationNode, planningNode);
-        builder.AddEdge(travelPlanNode, planningNode);
 
         return builder.Build();
     }
