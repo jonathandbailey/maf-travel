@@ -12,6 +12,11 @@ namespace Travel.Tests.Evaluation;
 
 public class TravelPlanning
 {
+    private const string Origin = "Zurich";
+    private const string Destination = "Paris";
+    private const int NumberOfTravelers = 2;
+    private readonly DateTime _departureDate = new DateTime(2026, 5, 1);
+
     [Fact]
     public async Task Test()
     {
@@ -20,7 +25,7 @@ public class TravelPlanning
 
         var travelPlanService = new Mock<ITravelPlanService>();
 
-        var workflowFactory = new WorkflowFactory2(travelPlanService.Object);
+        var workflowFactory = new WorkflowFactory(travelPlanService.Object);
 
         var workflow = workflowFactory.Build(planningAgent, extractingAgent);
 
@@ -28,7 +33,7 @@ public class TravelPlanning
 
         var travelPlanningWorkflow = new TravelPlanningWorkflow();
 
-        var message = new ChatMessage(ChatRole.User, "I want to plan a trip from Zurich to Paris on the 1st of May, 2026, for 2 people.");
+        var message = new ChatMessage(ChatRole.User, $"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
 
         var events = new List<WorkflowEvent>();
 

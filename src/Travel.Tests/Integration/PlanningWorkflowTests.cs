@@ -11,11 +11,17 @@ namespace Travel.Tests.Integration;
 
 public class PlanningWorkflowTests
 {
+    private const string Origin = "Zurich";
+    private const string Destination = "Paris";
+    private const int NumberOfTravelers = 2;
+    private readonly DateTime _departureDate = new DateTime(2026, 5, 1);
+    private readonly DateTime _returnDate = new DateTime(2026, 6, 15);
+
     [Fact]
     public async Task ShouldResumeFromCheckpointAndFinalize_WhenInformationRequestIsFulfilled()
     {
         var informationRequest = TestHelper.CreateInformationRequest();
-        var travelUpdateRequest = new TravelPlanDto("Zurich", "Paris", new DateTime(2026, 5, 1), null, 2);
+        var travelUpdateRequest = new TravelPlanDto(Origin, Destination, _departureDate, null, NumberOfTravelers);
 
         var extractingAgent = new FakeAgent()
             .UpdateTravelPlan(travelUpdateRequest);
@@ -25,13 +31,13 @@ public class PlanningWorkflowTests
       
         var travelPlanService = new Mock<ITravelPlanService>();
     
-        var workflowFactory = new WorkflowFactory2(travelPlanService.Object);
+        var workflowFactory = new WorkflowFactory(travelPlanService.Object);
 
         var workflow = workflowFactory.Build(planningAgent, extractingAgent);
 
         var checkpointManager = CheckpointManager.Default;
 
-        var inputMessage = new ChatMessage(ChatRole.User, "I want to plan a trip from Zurich to Paris on the 1st of May, 2026, for 2 people.");
+        var inputMessage = new ChatMessage(ChatRole.User, $"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
 
         var travelPlanningWorkflow = new TravelPlanningWorkflow();
 
@@ -57,7 +63,7 @@ public class PlanningWorkflowTests
         Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
         Assert.Contains(events, @event => @event is RequestInfoEvent);
 
-        workflowFactory = new WorkflowFactory2(travelPlanService.Object);
+        workflowFactory = new WorkflowFactory(travelPlanService.Object);
 
         workflow = workflowFactory.Build(planningAgent, extractingAgent);
 
@@ -65,10 +71,9 @@ public class PlanningWorkflowTests
      
         events.Clear();
 
-        var informationResponse = new ChatMessage(ChatRole.User, "My return date is June 15, 2026");
+        var informationResponse = new ChatMessage(ChatRole.User, $"My return date is {_returnDate:dd.MM.yyyy}");
 
-        travelUpdateRequest = new TravelPlanDto(EndDate: new DateTime(2026, 6, 15));
-
+        travelUpdateRequest = new TravelPlanDto(EndDate: _returnDate);
 
         extractingAgent.UpdateTravelPlan(travelUpdateRequest);
 
