@@ -4,7 +4,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 
-namespace Travel.Tests.Helpers;
+namespace Travel.Tests.Common;
 
 public static class ResponseHelper
 {

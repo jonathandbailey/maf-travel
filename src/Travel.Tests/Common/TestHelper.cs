@@ -3,7 +3,7 @@ using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
-namespace Travel.Tests.Helpers;
+namespace Travel.Tests.Common;
 
 public static  class TestHelper
 {

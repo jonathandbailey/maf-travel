@@ -2,7 +2,7 @@ using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Services;
-using Travel.Tests.Helpers;
+using Travel.Tests.Common;
 
 namespace Travel.Tests.Evaluation
 {

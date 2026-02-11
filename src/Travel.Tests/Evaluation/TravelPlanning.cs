@@ -1,9 +1,6 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
 using Moq;
-using Travel.Agents.Services;
-using Travel.Tests.Helpers;
-using Travel.Workflows;
+using Travel.Tests.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Services;
@@ -15,29 +12,24 @@ public class TravelPlanning
     private const string Origin = "Zurich";
     private const string Destination = "Paris";
     private const int NumberOfTravelers = 2;
-    private readonly DateTime _departureDate = new DateTime(2026, 5, 1);
+    private readonly DateTime _departureDate = new(2026, 5, 1);
 
     [Fact]
     public async Task Test()
     {
-        var extractingAgent = await AgentHelper.Create("extracting.yaml", ExtractingTools.GetDeclarationOnlyTools());
-        var planningAgent = await AgentHelper.Create("planning.yaml", PlanningTools.GetDeclarationOnlyTools());
-
         var travelPlanService = new Mock<ITravelPlanService>();
-
-        var workflowFactory = new WorkflowFactory(travelPlanService.Object);
-
-        var workflow = workflowFactory.Build(planningAgent, extractingAgent);
-
-        var checkpointManager = CheckpointManager.Default;
-
-        var travelPlanningWorkflow = new TravelPlanningWorkflow();
-
-        var message = new ChatMessage(ChatRole.User, $"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
 
         var events = new List<WorkflowEvent>();
 
-        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow, checkpointManager, message))
+        var agentTemplateRepository = AgentHelper.CreateAgentTemplateRepository();
+
+        var agentFactory = AgentHelper.CreateAgentFactory();
+
+        var workflowService = new TravelWorkflowService(agentFactory, travelPlanService.Object, agentTemplateRepository);
+
+        var request = new TravelWorkflowRequest($"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
+
+        await foreach (var evt in workflowService.WatchStreamAsync(request))
         {
             events.Add(evt);
 

@@ -3,7 +3,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Moq;
 
-namespace Travel.Tests.Helpers;
+namespace Travel.Tests.Common;
 
 public static class AgentMocks
 {

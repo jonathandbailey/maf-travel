@@ -8,18 +8,26 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Travel.Tests.Evaluation;
 
-namespace Travel.Tests.Helpers;
+namespace Travel.Tests.Common;
 
 public static class AgentHelper
 {
     public static async Task<AIAgent> Create(string templateName, List<AITool>? tools = null)
     {
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<PlanningAgent>()
-            .Build();
+        var templateRepository = CreateAgentTemplateRepository();
+    
+        var agentTemplate = await templateRepository.LoadAsync(templateName);
 
+        var agentFactory = CreateAgentFactory();
+
+        var agent = await agentFactory.Create(agentTemplate, tools);
+
+        return agent;
+    }
+
+    public static IAgentTemplateRepository CreateAgentTemplateRepository()
+    {
         var fileStorageSettings = Options.Create(new FileStorageSettings
         {
             AgentTemplateFolder = "Templates",
@@ -29,8 +37,15 @@ public static class AgentHelper
         var mockLogger = new Mock<ILogger<AgentTemplateRepository>>();
 
         var templateRepository = new AgentTemplateRepository(mockLogger.Object, fileStorageSettings);
-    
-        var agentTemplate = await templateRepository.LoadAsync(templateName);
+
+        return templateRepository;
+    }
+
+    public static IAgentFactory CreateAgentFactory()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddUserSecrets<Evaluation.Agents>()
+            .Build();
 
         var languageModelSettings = Options.Create(new LanguageModelSettings
         {
@@ -39,13 +54,11 @@ public static class AgentHelper
         });
 
         var mockMiddlewareFactory = new Mock<IAgentMiddlewareFactory>();
-  
+
         var agentFactory = new AgentFactory(
             languageModelSettings,
             mockMiddlewareFactory.Object);
 
-        var agent = await agentFactory.Create(agentTemplate, tools);
-
-        return agent;
+        return agentFactory;
     }
 }
