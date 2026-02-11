@@ -1,3 +1,5 @@
-﻿namespace Travel.Workflows.Dto;
+﻿using Microsoft.Agents.AI.Workflows;
 
-public record TravelWorkflowRequest(string Message);
+namespace Travel.Workflows.Dto;
+
+public record TravelWorkflowRequest(string Message, CheckpointInfo? CheckpointInfo = null);

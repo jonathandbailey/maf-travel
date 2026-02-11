@@ -1,5 +1,6 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Moq;
+using Travel.Agents.Services;
 using Travel.Tests.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
@@ -25,7 +26,9 @@ public class TravelPlanning
 
         var agentFactory = AgentHelper.CreateAgentFactory();
 
-        var workflowService = new TravelWorkflowService(agentFactory, travelPlanService.Object, agentTemplateRepository);
+        var agentProvider = new AgentProvider(agentFactory, agentTemplateRepository);
+
+        var workflowService = new TravelWorkflowService(agentProvider, travelPlanService.Object);
 
         var request = new TravelWorkflowRequest($"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
 

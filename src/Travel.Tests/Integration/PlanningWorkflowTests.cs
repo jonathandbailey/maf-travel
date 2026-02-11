@@ -1,8 +1,7 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
 using Moq;
+using Travel.Agents.Services;
 using Travel.Tests.Common;
-using Travel.Workflows;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Services;
@@ -23,29 +22,43 @@ public class PlanningWorkflowTests
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, _departureDate, null, NumberOfTravelers);
 
-        var extractingAgent = new FakeAgent()
-            .UpdateTravelPlan(travelUpdateRequest);
-
-        var planningAgent = new FakeAgent()
-            .InformationRequest(informationRequest);
-      
         var travelPlanService = new Mock<ITravelPlanService>();
-    
-        var workflowFactory = new WorkflowFactory(travelPlanService.Object);
 
-        var workflow = workflowFactory.Build(planningAgent, extractingAgent);
+        var agentProvider = new Mock<IAgentProvider>();
 
-        var checkpointManager = CheckpointManager.Default;
+        var extractingAgent = new FakeAgent().UpdateTravelPlan(travelUpdateRequest);
 
-        var inputMessage = new ChatMessage(ChatRole.User, $"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
+        var planningAgent = new FakeAgent().InformationRequest(informationRequest);
 
-        var travelPlanningWorkflow = new TravelPlanningWorkflow();
+
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Extracting))
+            .ReturnsAsync(extractingAgent);
+
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Planning))
+            .ReturnsAsync(planningAgent);  
+
+
+        var workflowService = new TravelWorkflowService(agentProvider.Object, travelPlanService.Object);
+   
+        var request = new TravelWorkflowRequest($"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
 
         var events = new List<WorkflowEvent>();
 
-        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow, checkpointManager,  inputMessage))
+        var _checkpointInfo = default(CheckpointInfo);
+
+        await foreach (var evt in workflowService.WatchStreamAsync(request))
         {
             events.Add(evt);
+
+            if (evt is SuperStepCompletedEvent superStepCompletedEvt)
+            {
+                var checkpoint = superStepCompletedEvt.CompletionInfo!.Checkpoint;
+
+                if (checkpoint != null)
+                {
+                    _checkpointInfo = checkpoint;
+                }
+            }
 
             switch (evt)
             {
@@ -63,21 +76,17 @@ public class PlanningWorkflowTests
         Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
         Assert.Contains(events, @event => @event is RequestInfoEvent);
 
-        workflowFactory = new WorkflowFactory(travelPlanService.Object);
-
-        workflow = workflowFactory.Build(planningAgent, extractingAgent);
-
-        travelPlanningWorkflow = new TravelPlanningWorkflow();
+        workflowService = new TravelWorkflowService(agentProvider.Object, travelPlanService.Object);
      
         events.Clear();
-
-        var informationResponse = new ChatMessage(ChatRole.User, $"My return date is {_returnDate:dd.MM.yyyy}");
+    
+        request = new TravelWorkflowRequest($"My return date is {_returnDate:dd.MM.yyyy}", _checkpointInfo);
 
         travelUpdateRequest = new TravelPlanDto(EndDate: _returnDate);
 
         extractingAgent.UpdateTravelPlan(travelUpdateRequest);
-
-        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow, checkpointManager, informationResponse))
+    
+        await foreach (var evt in workflowService.WatchStreamAsync(request))
         {
             events.Add(evt);
 

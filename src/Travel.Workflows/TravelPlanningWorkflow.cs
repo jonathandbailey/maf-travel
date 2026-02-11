@@ -9,8 +9,9 @@ public class TravelPlanningWorkflow
     private CheckpointInfo? _checkpointInfo;
     private WorkflowState _state = WorkflowState.Created;
 
-    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(Workflow workflow, CheckpointManager checkpointManager, ChatMessage message)
+    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(Workflow workflow, CheckpointInfo? checkpointInfo, CheckpointManager checkpointManager, ChatMessage message)
     {
+        _checkpointInfo = checkpointInfo;
         var run = await CreateWorkflowRun(workflow, checkpointManager, message);
 
         if (_state == WorkflowState.Created)
