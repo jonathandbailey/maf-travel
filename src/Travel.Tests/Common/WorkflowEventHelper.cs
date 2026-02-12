@@ -1,11 +1,8 @@
 using FluentAssertions;
-using FluentAssertions.Collections;
-using FluentAssertions.Primitives;
 using Microsoft.Agents.AI.Workflows;
 using Travel.Agents.Dto;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
-using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
 namespace Travel.Tests.Common;
 
@@ -14,6 +11,29 @@ public static class WorkflowEventHelper
     public static WorkflowEventCollectionAssertions Should(this IEnumerable<WorkflowEvent> events)
     {
         return new WorkflowEventCollectionAssertions(events);
+    }
+
+    public static CheckpointInfo GetCheckpointInfo(this List<WorkflowEvent> events)
+    {
+        var superStepEvents = events.OfType<SuperStepCompletedEvent>().ToList();
+
+        if (superStepEvents.Count == 0)
+        {
+            throw new InvalidOperationException("No SuperStepCompletedEvent found in the workflow events.");
+        }
+
+        var latestSuperStep = superStepEvents
+            .OrderByDescending(e => e.StepNumber)
+            .First();
+
+        var checkpointInfo = latestSuperStep.CompletionInfo?.Checkpoint;
+
+        if (checkpointInfo == null)
+        {
+            throw new InvalidOperationException("No checkpoint information found in the latest SuperStepCompletedEvent.");
+        }
+
+        return checkpointInfo;
     }
 }
 

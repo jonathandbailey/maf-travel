@@ -1,6 +1,4 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-using Moq;
-using Travel.Agents.Services;
 using Travel.Tests.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
@@ -16,8 +14,10 @@ public class PlanningWorkflowTests
     private static readonly DateTime DepartureDate = new(2026, 5, 1);
     private static readonly DateTime ReturnDate = new(2026, 6, 15);
 
-    private readonly string _message =
+    private readonly string _firstMessage =
         $"I want to plan a trip from {Origin} to {Destination} on the {DepartureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.";
+
+    private readonly string _secondMessage = $"My return date is {ReturnDate:dd.MM.yyyy}";
 
     [Fact]
     public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenIncompletePlanProvided()
@@ -32,7 +32,7 @@ public class PlanningWorkflowTests
 
         var workflowService = new TravelWorkflowService(agentProvider);
 
-        var request = new TravelWorkflowRequest(_message);
+        var request = new TravelWorkflowRequest(_firstMessage);
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
@@ -49,91 +49,46 @@ public class PlanningWorkflowTests
     {
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
+      
+        var agentProvider = new AgentScenarioBuilder()
+            .WithExtractor(travelUpdateRequest)
+            .WithPlanner(informationRequest)
+            .BuildProvider();
 
-        var travelPlanService = new Mock<ITravelPlanService>();
-
-        var agentProvider = new Mock<IAgentProvider>();
-
-        var extractingAgent = new FakeAgent().UpdateTravelPlan(travelUpdateRequest);
-
-        var planningAgent = new FakeAgent().InformationRequest(informationRequest);
-
-
-        agentProvider.Setup(x => x.CreateAsync(AgentType.Extracting))
-            .ReturnsAsync(extractingAgent);
-
-        agentProvider.Setup(x => x.CreateAsync(AgentType.Planning))
-            .ReturnsAsync(planningAgent);  
-
-
-        var workflowService = new TravelWorkflowService(agentProvider.Object);
+        var workflowService = new TravelWorkflowService(agentProvider);
    
-        var request = new TravelWorkflowRequest($"I want to plan a trip from {Origin} to {Destination} on the {DepartureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
-
-        var events = new List<WorkflowEvent>();
-
-        var _checkpointInfo = default(CheckpointInfo);
-
-        await foreach (var evt in workflowService.WatchStreamAsync(request))
-        {
-            events.Add(evt);
-
-            if (evt is SuperStepCompletedEvent superStepCompletedEvt)
-            {
-                var checkpoint = superStepCompletedEvt.CompletionInfo!.Checkpoint;
-
-                if (checkpoint != null)
-                {
-                    _checkpointInfo = checkpoint;
-                }
-            }
-
-            switch (evt)
-            {
-                case TravelPlanUpdateEvent travelPlanUpdateEvent:
-                    travelPlanUpdateEvent.MatchesAgentFunctionCallResponse(travelUpdateRequest);
-                    break;
-                case RequestInfoEvent requestInfoEvent:
-                    requestInfoEvent.MatchesAgentFunctionCallResponse(informationRequest);
-                    break;
-            }
-        }
-
-        travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Once);
-
+        var request = new TravelWorkflowRequest(_firstMessage);
+     
+        var events = await workflowService.WatchStreamAsync(request).ToListAsync();
+   
         events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
             .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
 
         events.Should().ShouldHaveType<RequestInfoEvent>()
             .And.ShouldMatchFunctionCallResponse(informationRequest);
 
-        workflowService = new TravelWorkflowService(agentProvider.Object);
-     
-        events.Clear();
-    
-        request = new TravelWorkflowRequest($"My return date is {ReturnDate:dd.MM.yyyy}", _checkpointInfo);
+        var checkpointInfo = events.GetCheckpointInfo();
 
         travelUpdateRequest = new TravelPlanDto(EndDate: ReturnDate);
 
-        extractingAgent.UpdateTravelPlan(travelUpdateRequest);
-    
-        await foreach (var evt in workflowService.WatchStreamAsync(request))
-        {
-            events.Add(evt);
+        agentProvider = new AgentScenarioBuilder()
+            .WithExtractor(travelUpdateRequest)
+            .WithPlanner(informationRequest)
+            .BuildProvider();
 
-            switch (evt)
-            {
-                case TravelPlanUpdateEvent travelPlanUpdateEvent:
-                    travelPlanUpdateEvent.MatchesAgentFunctionCallResponse(travelUpdateRequest);
-                    break;
-            }
-        }
+        workflowService = new TravelWorkflowService(agentProvider);
+     
+        events.Clear();
+    
+        request = new TravelWorkflowRequest(_secondMessage, checkpointInfo);
+
+        travelUpdateRequest = new TravelPlanDto(EndDate: ReturnDate);
+
+        events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
         events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
             .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
 
-        travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Exactly(2));
     }
-   
 }
 
