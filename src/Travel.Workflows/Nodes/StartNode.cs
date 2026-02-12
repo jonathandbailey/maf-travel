@@ -4,10 +4,10 @@ using Microsoft.Extensions.AI;
 
 namespace Travel.Workflows.Nodes;
 
-public class FinalizerNode() : ReflectingExecutor<FinalizerNode>("Finalizer"), IMessageHandler<FunctionCallContent>
+public class StartNode() : ReflectingExecutor<StartNode>("Start"), IMessageHandler<FunctionCallContent>
 {
     public ValueTask HandleAsync(FunctionCallContent message, IWorkflowContext context,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken)
     {
         return new ValueTask();
     }

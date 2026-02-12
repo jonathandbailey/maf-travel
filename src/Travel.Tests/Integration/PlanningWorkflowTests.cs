@@ -1,4 +1,6 @@
 ﻿using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.AI;
+using Moq;
 using Travel.Tests.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
@@ -25,14 +27,18 @@ public class PlanningWorkflowTests
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
 
+        var travelPlanService = new Mock<ITravelPlanService>();
+
+        travelPlanService.Setup(x=> x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
+
         var agentProvider = new AgentScenarioBuilder()
             .WithExtractor(travelUpdateRequest)
             .WithPlanner(informationRequest)
             .BuildProvider();
 
-        var workflowService = new TravelWorkflowService(agentProvider);
+        var workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
 
-        var request = new TravelWorkflowRequest(_firstMessage);
+        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage));
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
@@ -49,15 +55,17 @@ public class PlanningWorkflowTests
     {
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
-      
+        var travelPlanService = new Mock<ITravelPlanService>();
+        travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
+
         var agentProvider = new AgentScenarioBuilder()
             .WithExtractor(travelUpdateRequest)
             .WithPlanner(informationRequest)
             .BuildProvider();
 
-        var workflowService = new TravelWorkflowService(agentProvider);
+        var workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
    
-        var request = new TravelWorkflowRequest(_firstMessage);
+        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage));
      
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
    
@@ -76,11 +84,11 @@ public class PlanningWorkflowTests
             .WithPlanner(informationRequest)
             .BuildProvider();
 
-        workflowService = new TravelWorkflowService(agentProvider);
+        workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
      
         events.Clear();
     
-        request = new TravelWorkflowRequest(_secondMessage, checkpointInfo);
+        request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _secondMessage), checkpointInfo);
 
         travelUpdateRequest = new TravelPlanDto(EndDate: ReturnDate);
 

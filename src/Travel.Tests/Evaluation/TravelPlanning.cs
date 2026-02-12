@@ -1,4 +1,5 @@
 ﻿using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.AI;
 using Moq;
 using Travel.Agents.Services;
 using Travel.Tests.Common;
@@ -19,6 +20,7 @@ public class TravelPlanning
     public async Task Test()
     {
         var travelPlanService = new Mock<ITravelPlanService>();
+        travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
 
         var events = new List<WorkflowEvent>();
 
@@ -28,9 +30,11 @@ public class TravelPlanning
 
         var agentProvider = new AgentProvider(agentFactory, agentTemplateRepository);
 
-        var workflowService = new TravelWorkflowService(agentProvider);
+        var workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
 
-        var request = new TravelWorkflowRequest($"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
+        var request = new TravelWorkflowRequest(
+            new ChatMessage(ChatRole.User,
+            $"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people."));
 
         await foreach (var evt in workflowService.WatchStreamAsync(request))
         {

@@ -9,6 +9,11 @@ public class TravelPlanService : ITravelPlanService
     {
         throw new NotImplementedException();
     }
+
+    public Task<TravelPlanDto> GetTravelPlanAsync()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public interface ITravelPlanService
@@ -16,4 +21,6 @@ public interface ITravelPlanService
     [Description("Updates a Travel Plan")]
     Task Update(
        [Description("The Travel Plan Dto containing the update.")] TravelPlanDto updateDto);
+
+    Task<TravelPlanDto> GetTravelPlanAsync();
 }

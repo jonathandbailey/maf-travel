@@ -1,11 +1,11 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
 using Travel.Agents.Services;
 using Travel.Workflows.Dto;
 
 namespace Travel.Workflows.Services;
 
 public class TravelWorkflowService(
+    ITravelPlanService travelPlanService,
     IAgentProvider agentProvider)
 {
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
@@ -20,11 +20,11 @@ public class TravelWorkflowService(
 
         var checkpointManager = CheckpointManager.Default;
 
-        var travelPlanningWorkflow = new TravelPlanningWorkflow();
+        var travelPlanningWorkflow = new TravelPlanningWorkflow(workflow, checkpointManager);
 
-        var message = new ChatMessage(ChatRole.User, request.Message);
+        var travelPlan = await travelPlanService.GetTravelPlanAsync();
 
-        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(workflow, request.CheckpointInfo, checkpointManager, message))
+        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(request with{ TravelPlan = travelPlan }))
         {
             yield return evt;
         }
