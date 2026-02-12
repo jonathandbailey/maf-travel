@@ -193,11 +193,10 @@ public class FunctionCallAssertion
 
     public FunctionCallAssertion WithRequiredInputs(params string[] requiredInputs)
     {
-        _functionCall.Arguments.Should().NotBeNull()
-            .And.ContainKey("requiredInputs", $"function {_functionCall.Name} should have argument 'requiredInputs'");
-
-        var requiredInputsArg = _functionCall.Arguments!["requiredInputs"];
-        List<string>? actualRequiredInputs;
+        _functionCall.Arguments.Should().NotBeNull();
+   
+        var requiredInputsArg = _functionCall.Arguments["request"];
+        RequestInformationDto? actualRequiredInputs = null;
 
         var options = new JsonSerializerOptions
         {
@@ -206,16 +205,16 @@ public class FunctionCallAssertion
 
         if (requiredInputsArg is JsonElement jsonElement)
         {
-            actualRequiredInputs = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText(), options);
-        }
-        else
-        {
-            var json = JsonSerializer.Serialize(requiredInputsArg);
-            actualRequiredInputs = JsonSerializer.Deserialize<List<string>>(json, options);
+            actualRequiredInputs = JsonSerializer.Deserialize<RequestInformationDto>(jsonElement.GetRawText(), options);
         }
 
-        actualRequiredInputs.Should().NotBeNull($"requiredInputs argument should be deserializable");
-        actualRequiredInputs.Should().BeEquivalentTo(requiredInputs, $"function {_functionCall.Name} should have requiredInputs matching expected values");
+        if(actualRequiredInputs == null)
+        {
+            throw new ArgumentNullException(nameof(requiredInputs), "requiredInputs argument should not be null");
+        }
+
+        actualRequiredInputs.RequiredInputs.Should().NotBeNull($"requiredInputs argument should be deserializable");
+        actualRequiredInputs.RequiredInputs.Should().BeEquivalentTo(requiredInputs, $"function {_functionCall.Name} should have requiredInputs matching expected values");
 
         return this;
     }

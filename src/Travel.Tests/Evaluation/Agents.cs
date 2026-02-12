@@ -7,8 +7,38 @@ using Travel.Tests.Common;
 
 namespace Travel.Tests.Evaluation
 {
+    
+    
     public class Agents
     {
+        private const string Origin = "Zurich";
+        private const string Destination = "Paris";
+        private const int NumberOfTravelers = 2;
+        private static readonly DateTime DepartureDate = new(2026, 5, 1);
+
+        private static readonly DateTime ReturnDate = new(2026, 6, 15);
+
+        [Fact]
+        public async Task TravelPlanAgent_WhenProvidedWithCompletePlan_ShouldCompleteTheWorkflow()
+        {
+            var threadId = Guid.NewGuid().ToString();
+
+            var agent = await AgentHelper.Create("planning.yaml", PlanningTools.GetDeclarationOnlyTools());
+
+            var message = MessageHelper.CreateTravelPlanMessage(new TravelPlanDto(Origin, Destination, DepartureDate, ReturnDate, NumberOfTravelers));
+
+            var agentRunOptions = new ChatClientAgentRunOptions();
+
+            agentRunOptions.AddThreadId(threadId);
+
+            var response = await agent.RunAsync(message, options: agentRunOptions, cancellationToken: CancellationToken.None);
+
+            ResponseHelper.ValidateFunctionCalls(response)
+                .ShouldHaveCallCount(1)
+                .ShouldContainCall("PlanningComplete");
+        }
+
+
         [Fact]
         public async Task TravelPlanAgent_WhenProvidedWithNewObservationInformation_ShouldUpdateTravelPlan()
         {
@@ -27,8 +57,7 @@ namespace Travel.Tests.Evaluation
             ResponseHelper.ValidateFunctionCalls(response)
                 .ShouldHaveCallCount(1)
                 .ShouldContainCall("RequestInformation")
-                .WithArgument("message")
-                .WithArgument("thought")
+                .WithArgument("request")
                 .WithRequiredInputs("Origin", "EndDate", "NumberOfTravelers");
         }
 

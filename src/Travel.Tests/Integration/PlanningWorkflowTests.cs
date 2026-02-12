@@ -24,6 +24,11 @@ public class PlanningWorkflowTests
     [Fact]
     public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenIncompletePlanProvided()
     {
+        var threadId = Guid.NewGuid();
+
+        var checkpointRepository = new InMemoryCheckpointRepository();
+
+
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
 
@@ -36,9 +41,9 @@ public class PlanningWorkflowTests
             .WithPlanner(informationRequest)
             .BuildProvider();
 
-        var workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
+        var workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider);
 
-        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage));
+        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage), threadId);
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
@@ -53,8 +58,13 @@ public class PlanningWorkflowTests
     [Fact]
     public async Task PlanningWorkflow_ShouldResumeFromCheckpointAndFinalize_WhenInformationRequestIsFulfilled()
     {
+        var threadId = Guid.NewGuid();
+        var checkpointRepository = new InMemoryCheckpointRepository();
+
+
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
+        var travelcompleteRequest = new TravelPlanDto(Origin, Destination, DepartureDate, ReturnDate, NumberOfTravelers);
         var travelPlanService = new Mock<ITravelPlanService>();
         
         travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
@@ -64,9 +74,9 @@ public class PlanningWorkflowTests
             .WithPlanner(informationRequest)
             .BuildProvider();
 
-        var workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
+        var workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider);
    
-        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage));
+        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage), threadId);
      
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
    
@@ -85,18 +95,16 @@ public class PlanningWorkflowTests
             .WithPlanningComplete()
             .BuildProvider();
 
-        workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
+        workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider);
      
         events.Clear();
     
-        request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _secondMessage), checkpointInfo);
-
-        travelUpdateRequest = new TravelPlanDto(EndDate: ReturnDate);
-
+        request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _secondMessage), threadId, checkpointInfo);
+      
         events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
         events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
-            .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
+            .And.ShouldMatchFunctionCallResponse(travelcompleteRequest);
 
         events.Should().ShouldHaveType<TravelPlanningCompleteEvent>();
 

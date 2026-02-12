@@ -14,5 +14,7 @@ instructions: |
   - Perform a key-by-key audit of the **entire** `TravelPlanSummary`.
   - Identify all keys where the value is currently `null`.
   - Combine all requests for information into a single tool call.
+  - If there are no `null` values, you have completed the travel plan. 
+  - Do Not request information for anything that is not in the `TravelPlanSummary`.
 
   

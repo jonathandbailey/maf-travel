@@ -43,6 +43,9 @@ public class WorkflowFactory
             condition: result => result is { Name: "PlanningComplete" });
 
         builder.AddEdge(requestInformationNode, requestInformationPort);
+        builder.AddEdge(requestInformationPort, requestInformationNode);
+
+        builder.AddEdge(requestInformationNode, extractingNode);
 
         return builder.Build();
     }

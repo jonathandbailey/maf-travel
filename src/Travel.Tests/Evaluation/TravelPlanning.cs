@@ -27,6 +27,10 @@ public class TravelPlanning
     [Fact]
     public async Task Test()
     {
+        var threadId = Guid.NewGuid();
+
+        var checkpointRepository = new InMemoryCheckpointRepository();
+
         var travelPlanService = new Mock<ITravelPlanService>();
         
         travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
@@ -37,9 +41,9 @@ public class TravelPlanning
 
         var agentProvider = new AgentProvider(agentFactory, agentTemplateRepository);
 
-        var workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
+        var workflowService = new TravelWorkflowService(travelPlanService.Object,checkpointRepository, agentProvider);
 
-        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage));
+        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage), threadId);
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
@@ -51,9 +55,9 @@ public class TravelPlanning
 
         checkPoint.Should().NotBeNull();
 
-        workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
+        workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider);
 
-        request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _secondMessage));
+        request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _secondMessage), threadId, checkPoint);
 
         events = await workflowService.WatchStreamAsync(request).ToListAsync();
 

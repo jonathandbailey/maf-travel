@@ -1,11 +1,14 @@
-﻿using Microsoft.Agents.AI.Workflows;
+﻿using Infrastructure.Repository;
+using Microsoft.Agents.AI.Workflows;
 using Travel.Agents.Services;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Infrastructure;
 
 namespace Travel.Workflows.Services;
 
 public class TravelWorkflowService(
     ITravelPlanService travelPlanService,
+    ICheckpointRepository checkpointRepository,
     IAgentProvider agentProvider)
 {
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
@@ -18,7 +21,7 @@ public class TravelWorkflowService(
 
         var workflow = workflowFactory.Build(planningAgent, extractingAgent);
 
-        var checkpointManager = CheckpointManager.Default;
+        var checkpointManager = CheckpointManager.CreateJson(new CheckpointStore(checkpointRepository, request.ThreadId));
 
         var travelPlanningWorkflow = new TravelPlanningWorkflow(workflow, checkpointManager);
 

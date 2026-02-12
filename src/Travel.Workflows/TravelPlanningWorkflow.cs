@@ -15,11 +15,6 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
         _checkpointInfo = request.CheckpointInfo;
         var run = await CreateWorkflowRun(request.Message);
 
-        if (_state == WorkflowState.Created)
-        {
-            _state = WorkflowState.Executing;
-        }
-
         await foreach (var evt in run.Run.WatchStreamAsync())
         {
             if (evt is SuperStepCompletedEvent superStepCompletedEvt)
@@ -62,6 +57,20 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
 
     private async Task<Checkpointed<StreamingRun>> CreateWorkflowRun(ChatMessage message)
     {
+        if (_checkpointInfo != null)
+        {
+            _state = WorkflowState.Suspended;
+
+            return await ResumeWorkflow();
+        }
+
+        if (_state == WorkflowState.Created)
+        {
+            _state = WorkflowState.Executing;
+        }
+
+        return await InProcessExecution.StreamAsync(workflow, message, checkpointManager);
+
         return _state switch
         {
             WorkflowState.Failed => throw new WorkflowException("Workflow cannot be started or resumed while in an Failed state."),

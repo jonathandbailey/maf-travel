@@ -13,10 +13,10 @@ public class PlanningNode(AIAgent agent) : ReflectingExecutor<PlanningNode>("Pla
     public async ValueTask<AgentResponse> HandleAsync(TravelPlanContextUpdated message, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        var fileContent = await context.ReadStateAsync<TravelPlanDto>("TravelPlan", scopeName: "TravelPlanScope", cancellationToken: cancellationToken)
+        var travelPlan = await context.ReadStateAsync<TravelPlanDto>("TravelPlan", scopeName: "TravelPlanScope", cancellationToken: cancellationToken)
                           ?? throw new InvalidOperationException("File content state not found");
 
-        var serializedPlan = JsonSerializer.Serialize(fileContent);
+        var serializedPlan = JsonSerializer.Serialize(travelPlan);
         var template = $"TravelPlanSummary : {serializedPlan}";
 
         var response = await agent.RunAsync(template, cancellationToken: cancellationToken);
