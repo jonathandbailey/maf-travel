@@ -27,7 +27,9 @@ public class TravelPlanning
             await harness.WatchStreamAsync(message);
         }
 
-        var planningCompleteEvent = harness.Events.OfType<TravelPlanningCompleteEvent>().FirstOrDefault();
+        harness.Events.Should().ShouldHaveType<TravelPlanningCompleteEvent>();
+
+        var planningCompleteEvent = harness.Events.OfType<TravelPlanningCompleteEvent>().First();
 
         planningCompleteEvent.
             Should().NotBeNull("Expected a TravelPlanningCompleteEvent to be emitted.");

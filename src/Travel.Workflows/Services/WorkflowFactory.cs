@@ -12,11 +12,13 @@ public class WorkflowFactory
     {
         var planningNode = new PlanningNode(planningAgent);
 
-        var travelPlanNode = new TravelPlanNode();
-      
+        var travelPlanNode = new TravelUpdatePlanNode();
+
+        var startNode = new StartNode();
+
         var extractingNode = new ExtractingNode(extractingAgent);
 
-        var builder = new WorkflowBuilder(extractingNode);
+        var builder = new WorkflowBuilder(startNode);
 
         var requestInformationPort = RequestPort.Create<InformationRequest, InformationResponse>("information");
 
@@ -26,27 +28,33 @@ public class WorkflowFactory
 
         var endNode = new EndNode();
 
+        builder.AddEdge(startNode, extractingNode);
+
         builder.AddEdge(extractingNode, travelPlanNode);
 
         builder.AddEdge(travelPlanNode, planningNode);
 
         builder.AddEdge(planningNode, executionNode);
 
+        builder.AddEdge(executionNode, endNode);
+
         builder.AddEdge<FunctionCallContent>(
             source: executionNode,
             target: requestInformationNode,
             condition: result => result is { Name: "RequestInformation" });
 
-        builder.AddEdge<FunctionCallContent>(
-            source: executionNode,
-            target: endNode,
-            condition: result => result is { Name: "PlanningComplete" });
+      
+            
 
         builder.AddEdge(requestInformationNode, requestInformationPort);
         builder.AddEdge(requestInformationPort, requestInformationNode);
 
         builder.AddEdge(requestInformationNode, extractingNode);
 
-        return builder.Build();
+        var workflow = builder.Build();
+
+    
+
+        return workflow;
     }
 }

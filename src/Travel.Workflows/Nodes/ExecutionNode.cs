@@ -1,7 +1,9 @@
-﻿using Microsoft.Agents.AI;
+﻿using System.Text.Json;
+using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
+using Travel.Workflows.Dto;
 
 namespace Travel.Workflows.Nodes;
 
@@ -20,7 +22,14 @@ public class ExecutionNode() : ReflectingExecutor<ExecutionNode>("Execution"), I
                     toolCalls.Add(functionCall);
 
                     await context.SendMessageAsync(functionCall, cancellationToken: cancellationToken);
+
+                    if (functionCall.Name == "PlanningComplete")
+                    {
+                        
+                        await context.SendMessageAsync(new TravelPlanCompletedCommand(), cancellationToken);
+                    }
                 }
+                
             }
         }
 

@@ -2,10 +2,11 @@
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
+using Travel.Workflows.Extensions;
 
 namespace Travel.Workflows.Nodes;
 
-public class TravelPlanNode() : ReflectingExecutor<TravelPlanNode>("TravelPlan"),
+public class TravelUpdatePlanNode() : ReflectingExecutor<TravelUpdatePlanNode>("TravelPlanUpdate"),
     IMessageHandler<TravelPlanUpdateCommand, TravelPlanContextUpdated>
 
 {
@@ -13,8 +14,7 @@ public class TravelPlanNode() : ReflectingExecutor<TravelPlanNode>("TravelPlan")
         CancellationToken cancellationToken)
     {
 
-        var travelPlan = await context.ReadStateAsync<TravelPlanDto>("TravelPlan", scopeName: "TravelPlanScope",
-            cancellationToken: cancellationToken);
+        var travelPlan = await context.GetTravelPlan(cancellationToken);
 
         if (travelPlan == null)
         {
@@ -30,7 +30,7 @@ public class TravelPlanNode() : ReflectingExecutor<TravelPlanNode>("TravelPlan")
             NumberOfTravelers: command.TravelPlan.NumberOfTravelers ?? travelPlan.NumberOfTravelers
         );
 
-        await context.QueueStateUpdateAsync("TravelPlan", mergedTravelPlan, scopeName: "TravelPlanScope", cancellationToken);
+        await context.SetTravelPlan(mergedTravelPlan, cancellationToken);
 
         await context.AddEventAsync(new TravelPlanUpdateEvent(mergedTravelPlan), cancellationToken);
 

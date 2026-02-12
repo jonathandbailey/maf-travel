@@ -107,7 +107,7 @@ public class PlanningWorkflowTests
         events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
             .And.ShouldMatchFunctionCallResponse(travelcompleteRequest);
 
-        events.Should().ShouldHaveType<TravelPlanningCompleteEvent>();
+        events.Should().ShouldHaveType<TravelPlanningCompleteEvent>("Events should contain type : TravelPlanningCompleteEvent");
 
     }
 }
