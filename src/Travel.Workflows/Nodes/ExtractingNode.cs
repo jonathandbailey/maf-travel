@@ -25,8 +25,6 @@ public class ExtractingNode(AIAgent agent) : ReflectingExecutor<ExtractingNode>(
             {
                 if (content is FunctionCallContent functionCall)
                 {
-                    await context.SendMessageAsync(functionCall, cancellationToken: cancellationToken);
-
                     if (functionCall.Arguments != null && functionCall.Arguments.ContainsKey("travelPlan"))
                     {
                         var argumentsJson = JsonSerializer.Serialize(functionCall.Arguments["travelPlan"]);

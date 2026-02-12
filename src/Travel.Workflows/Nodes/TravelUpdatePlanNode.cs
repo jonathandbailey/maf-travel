@@ -13,14 +13,7 @@ public class TravelUpdatePlanNode() : ReflectingExecutor<TravelUpdatePlanNode>("
     public async ValueTask<TravelPlanContextUpdated> HandleAsync(TravelPlanUpdateCommand command, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-
         var travelPlan = await context.GetTravelPlan(cancellationToken);
-
-        if (travelPlan == null)
-        {
-            travelPlan = new TravelPlanDto();
-        }
-                         
 
         var mergedTravelPlan = new TravelPlanDto(
             Origin: command.TravelPlan.Origin ?? travelPlan.Origin,
