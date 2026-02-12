@@ -1,31 +1,24 @@
-﻿using System.Text.Json;
-using Microsoft.Agents.AI.Workflows;
+﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
-using Microsoft.Extensions.AI;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Services;
 
 namespace Travel.Workflows.Nodes;
 
-public class TravelPlanNode(ITravelPlanService travelPlanService) : ReflectingExecutor<TravelPlanNode>("TravelPlan"), IMessageHandler<FunctionCallContent, TravelPlanDto>
-{
-    private static readonly JsonSerializerOptions _serializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
+public class TravelPlanNode(ITravelPlanService travelPlanService) : ReflectingExecutor<TravelPlanNode>("TravelPlan"),
+    IMessageHandler<TravelPlanUpdateCommand, TravelPlanContextUpdated>
 
-    public async ValueTask<TravelPlanDto> HandleAsync(FunctionCallContent functionCallContent, IWorkflowContext context,
+{
+    public async ValueTask<TravelPlanContextUpdated> HandleAsync(TravelPlanUpdateCommand command, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        var argumentsJson = JsonSerializer.Serialize(functionCallContent.Arguments["travelPlan"]);
+        await travelPlanService.Update(command.TravelPlan);
 
-        var details = JsonSerializer.Deserialize<TravelPlanDto>(argumentsJson, _serializerOptions);
+        await context.QueueStateUpdateAsync("TravelPlan", command.TravelPlan, scopeName: "TravelPlanScope", cancellationToken);
 
-        await travelPlanService.Update(details);
+        await context.AddEventAsync(new TravelPlanUpdateEvent(command.TravelPlan), cancellationToken);
 
-        await context.AddEventAsync(new TravelPlanUpdateEvent(details), cancellationToken);
-
-        return details;
+        return new TravelPlanContextUpdated();
     }
 }

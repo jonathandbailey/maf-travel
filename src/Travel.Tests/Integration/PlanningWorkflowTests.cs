@@ -13,14 +13,94 @@ public class PlanningWorkflowTests
     private const string Origin = "Zurich";
     private const string Destination = "Paris";
     private const int NumberOfTravelers = 2;
-    private readonly DateTime _departureDate = new(2026, 5, 1);
-    private readonly DateTime _returnDate = new(2026, 6, 15);
+    private static readonly DateTime DepartureDate = new(2026, 5, 1);
+    private static readonly DateTime ReturnDate = new(2026, 6, 15);
+
+    private readonly string _message =
+        $"I want to plan a trip from {Origin} to {Destination} on the {DepartureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.";
 
     [Fact]
-    public async Task ShouldResumeFromCheckpointAndFinalize_WhenInformationRequestIsFulfilled()
+    public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenIncompletePlanProvided()
     {
         var informationRequest = TestHelper.CreateInformationRequest();
-        var travelUpdateRequest = new TravelPlanDto(Origin, Destination, _departureDate, null, NumberOfTravelers);
+        var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
+
+        var travelPlanService = new Mock<ITravelPlanService>();
+
+        var agentProvider = new AgentScenarioBuilder()
+            .WithExtractor(travelUpdateRequest)
+            .WithPlanner(informationRequest)
+            .BuildProvider();
+
+        var workflowService = new TravelWorkflowService(agentProvider, travelPlanService.Object);
+
+        var request = new TravelWorkflowRequest(_message);
+
+        var events = await workflowService.WatchStreamAsync(request).ToListAsync();
+
+        travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Once);
+
+        Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
+        Assert.Contains(events, @event => @event is RequestInfoEvent);
+    }
+
+
+
+    [Fact]
+    public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenPartialPlanProvided()
+    {
+        var informationRequest = TestHelper.CreateInformationRequest();
+        var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
+
+        var travelPlanService = new Mock<ITravelPlanService>();
+
+        var agentProvider = new Mock<IAgentProvider>();
+
+        var extractingAgent = new FakeAgent().UpdateTravelPlan(travelUpdateRequest);
+
+        var planningAgent = new FakeAgent().InformationRequest(informationRequest);
+
+
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Extracting))
+            .ReturnsAsync(extractingAgent);
+
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Planning))
+            .ReturnsAsync(planningAgent);
+
+
+        var workflowService = new TravelWorkflowService(agentProvider.Object, travelPlanService.Object);
+
+        var request = new TravelWorkflowRequest(_message);
+
+        var events = new List<WorkflowEvent>();
+ 
+        await foreach (var evt in workflowService.WatchStreamAsync(request))
+        {
+            events.Add(evt);
+
+            switch (evt)
+            {
+                case TravelPlanUpdateEvent travelPlanUpdateEvent:
+                    travelPlanUpdateEvent.MatchesAgentFunctionCallResponse(travelUpdateRequest);
+                    break;
+                case RequestInfoEvent requestInfoEvent:
+                    requestInfoEvent.MatchesAgentFunctionCallResponse(informationRequest);
+                    break;
+            }
+        }
+
+        travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Once);
+
+        Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
+        Assert.Contains(events, @event => @event is RequestInfoEvent);
+    }
+
+
+    [Fact]
+    public async Task PlanningWorkflow_ShouldResumeFromCheckpointAndFinalize_WhenInformationRequestIsFulfilled()
+    {
+        var informationRequest = TestHelper.CreateInformationRequest();
+        var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
 
         var travelPlanService = new Mock<ITravelPlanService>();
 
@@ -40,7 +120,7 @@ public class PlanningWorkflowTests
 
         var workflowService = new TravelWorkflowService(agentProvider.Object, travelPlanService.Object);
    
-        var request = new TravelWorkflowRequest($"I want to plan a trip from {Origin} to {Destination} on the {_departureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
+        var request = new TravelWorkflowRequest($"I want to plan a trip from {Origin} to {Destination} on the {DepartureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
 
         var events = new List<WorkflowEvent>();
 
@@ -80,9 +160,9 @@ public class PlanningWorkflowTests
      
         events.Clear();
     
-        request = new TravelWorkflowRequest($"My return date is {_returnDate:dd.MM.yyyy}", _checkpointInfo);
+        request = new TravelWorkflowRequest($"My return date is {ReturnDate:dd.MM.yyyy}", _checkpointInfo);
 
-        travelUpdateRequest = new TravelPlanDto(EndDate: _returnDate);
+        travelUpdateRequest = new TravelPlanDto(EndDate: ReturnDate);
 
         extractingAgent.UpdateTravelPlan(travelUpdateRequest);
     

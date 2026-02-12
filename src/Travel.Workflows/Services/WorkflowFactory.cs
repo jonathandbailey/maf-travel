@@ -24,10 +24,7 @@ public class WorkflowFactory(ITravelPlanService travelPlanService)
 
         var executionNode = new ExecutionNode();
 
-        builder.AddEdge<FunctionCallContent>(
-            source: extractingNode,
-            target: travelPlanNode,
-            condition: result => result is { Name: "UpdateTravelPlan" });
+        builder.AddEdge(extractingNode, travelPlanNode);
 
         builder.AddEdge(travelPlanNode, planningNode);
 
