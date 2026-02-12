@@ -6,12 +6,11 @@ using Travel.Workflows.Dto;
 namespace Travel.Workflows.Services;
 
 public class TravelWorkflowService(
-    IAgentProvider agentProvider, 
-    ITravelPlanService travelPlanService)
+    IAgentProvider agentProvider)
 {
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
     {
-        var workflowFactory = new WorkflowFactory(travelPlanService);
+        var workflowFactory = new WorkflowFactory();
 
         var planningAgent = await agentProvider.CreateAsync(AgentType.Planning);
 

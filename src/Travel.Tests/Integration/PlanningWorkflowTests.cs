@@ -25,74 +25,31 @@ public class PlanningWorkflowTests
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
 
-        var travelPlanService = new Mock<ITravelPlanService>();
-
         var agentProvider = new AgentScenarioBuilder()
             .WithExtractor(travelUpdateRequest)
             .WithPlanner(informationRequest)
             .BuildProvider();
 
-        var workflowService = new TravelWorkflowService(agentProvider, travelPlanService.Object);
+        var workflowService = new TravelWorkflowService(agentProvider);
 
         var request = new TravelWorkflowRequest(_message);
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
-
-        travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Once);
-
+  
         Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
         Assert.Contains(events, @event => @event is RequestInfoEvent);
-    }
 
+        var travelPlanUpdateEvent = events.OfType<TravelPlanUpdateEvent>().FirstOrDefault();
 
+        Assert.NotNull(travelPlanUpdateEvent);
 
-    [Fact]
-    public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenPartialPlanProvided()
-    {
-        var informationRequest = TestHelper.CreateInformationRequest();
-        var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
+        travelPlanUpdateEvent.MatchesAgentFunctionCallResponse(travelUpdateRequest);
 
-        var travelPlanService = new Mock<ITravelPlanService>();
+        var requestInfoEvent = events.OfType<RequestInfoEvent>().FirstOrDefault();
 
-        var agentProvider = new Mock<IAgentProvider>();
+        Assert.NotNull(requestInfoEvent);
 
-        var extractingAgent = new FakeAgent().UpdateTravelPlan(travelUpdateRequest);
-
-        var planningAgent = new FakeAgent().InformationRequest(informationRequest);
-
-
-        agentProvider.Setup(x => x.CreateAsync(AgentType.Extracting))
-            .ReturnsAsync(extractingAgent);
-
-        agentProvider.Setup(x => x.CreateAsync(AgentType.Planning))
-            .ReturnsAsync(planningAgent);
-
-
-        var workflowService = new TravelWorkflowService(agentProvider.Object, travelPlanService.Object);
-
-        var request = new TravelWorkflowRequest(_message);
-
-        var events = new List<WorkflowEvent>();
- 
-        await foreach (var evt in workflowService.WatchStreamAsync(request))
-        {
-            events.Add(evt);
-
-            switch (evt)
-            {
-                case TravelPlanUpdateEvent travelPlanUpdateEvent:
-                    travelPlanUpdateEvent.MatchesAgentFunctionCallResponse(travelUpdateRequest);
-                    break;
-                case RequestInfoEvent requestInfoEvent:
-                    requestInfoEvent.MatchesAgentFunctionCallResponse(informationRequest);
-                    break;
-            }
-        }
-
-        travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Once);
-
-        Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
-        Assert.Contains(events, @event => @event is RequestInfoEvent);
+        requestInfoEvent.MatchesAgentFunctionCallResponse(informationRequest);
     }
 
 
@@ -118,7 +75,7 @@ public class PlanningWorkflowTests
             .ReturnsAsync(planningAgent);  
 
 
-        var workflowService = new TravelWorkflowService(agentProvider.Object, travelPlanService.Object);
+        var workflowService = new TravelWorkflowService(agentProvider.Object);
    
         var request = new TravelWorkflowRequest($"I want to plan a trip from {Origin} to {Destination} on the {DepartureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.");
 
@@ -156,7 +113,7 @@ public class PlanningWorkflowTests
         Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
         Assert.Contains(events, @event => @event is RequestInfoEvent);
 
-        workflowService = new TravelWorkflowService(agentProvider.Object, travelPlanService.Object);
+        workflowService = new TravelWorkflowService(agentProvider.Object);
      
         events.Clear();
     

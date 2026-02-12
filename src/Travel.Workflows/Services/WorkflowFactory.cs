@@ -6,13 +6,13 @@ using Travel.Workflows.Nodes;
 
 namespace Travel.Workflows.Services;
 
-public class WorkflowFactory(ITravelPlanService travelPlanService)
+public class WorkflowFactory
 {
     public Workflow Build(AIAgent planningAgent, AIAgent extractingAgent)
     {
         var planningNode = new PlanningNode(planningAgent);
 
-        var travelPlanNode = new TravelPlanNode(travelPlanService);
+        var travelPlanNode = new TravelPlanNode();
       
         var extractingNode = new ExtractingNode(extractingAgent);
 
