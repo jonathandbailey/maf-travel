@@ -7,3 +7,7 @@ public class TravelPlanUpdateEvent(TravelPlanDto travelPlanDto) : WorkflowEvent
 {
     public TravelPlanDto TravelPlanDto { get; } = travelPlanDto;
 }
+
+public class TravelPlanningCompleteEvent() : WorkflowEvent
+{
+}

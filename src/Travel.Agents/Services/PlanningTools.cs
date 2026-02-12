@@ -8,16 +8,25 @@ public static class PlanningTools
 {
 
     private static readonly Dictionary<string, AIFunction> Tools = new();
+
     [Description("Request all missing pieces of information from the user in a single batch.")]
     private static string RequestInformation(
         [Description("The information request containing the message, reasoning, and required inputs")] RequestInformationDto request)
         => $"The information requested is: {request.Message}";
+
+    [Description("Called when planning is complete")]
+    private static void PlanningComplete(){}
+        
+        
 
     static PlanningTools()
     {
         var function = AIFunctionFactory.Create(RequestInformation);
 
         Tools[function.Name] = function;
+
+        var planningCompleteFunction = AIFunctionFactory.Create(PlanningComplete);
+        Tools[planningCompleteFunction.Name] = planningCompleteFunction;
     }
 
     public static List<AITool> GetDeclarationOnlyTools()

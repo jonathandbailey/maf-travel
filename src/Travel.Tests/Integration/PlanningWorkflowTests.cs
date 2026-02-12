@@ -56,6 +56,7 @@ public class PlanningWorkflowTests
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
         var travelPlanService = new Mock<ITravelPlanService>();
+        
         travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
 
         var agentProvider = new AgentScenarioBuilder()
@@ -81,7 +82,7 @@ public class PlanningWorkflowTests
 
         agentProvider = new AgentScenarioBuilder()
             .WithExtractor(travelUpdateRequest)
-            .WithPlanner(informationRequest)
+            .WithPlanningComplete()
             .BuildProvider();
 
         workflowService = new TravelWorkflowService(travelPlanService.Object, agentProvider);
@@ -96,6 +97,8 @@ public class PlanningWorkflowTests
 
         events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
             .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
+
+        events.Should().ShouldHaveType<TravelPlanningCompleteEvent>();
 
     }
 }

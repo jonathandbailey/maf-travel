@@ -24,6 +24,8 @@ public class WorkflowFactory
 
         var executionNode = new ExecutionNode();
 
+        var endNode = new EndNode();
+
         builder.AddEdge(extractingNode, travelPlanNode);
 
         builder.AddEdge(travelPlanNode, planningNode);
@@ -34,6 +36,11 @@ public class WorkflowFactory
             source: executionNode,
             target: requestInformationNode,
             condition: result => result is { Name: "RequestInformation" });
+
+        builder.AddEdge<FunctionCallContent>(
+            source: executionNode,
+            target: endNode,
+            condition: result => result is { Name: "PlanningComplete" });
 
         builder.AddEdge(requestInformationNode, requestInformationPort);
 

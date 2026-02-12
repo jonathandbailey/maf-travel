@@ -74,6 +74,23 @@ public static  class TestHelper
         return agent;
     }
 
+    public static AIAgent PlanningComplete(this AIAgent agent)
+    {
+        
+
+        var toolCallContent = new FunctionCallContent(
+            callId: "call_126",
+            name: "PlanningComplete");
+
+        var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
+
+
+
+        ((FakeAgent)agent).EnqueueResponse(new AgentResponse([responseMessage]));
+
+        return agent;
+    }
+
     public static RequestInformationDto CreateInformationRequest()
     {
         var informationRequest =

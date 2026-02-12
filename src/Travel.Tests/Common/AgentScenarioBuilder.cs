@@ -25,6 +25,13 @@ public class AgentScenarioBuilder
         return this;
     }
 
+    public AgentScenarioBuilder WithPlanningComplete()
+    {
+        var agent = new FakeAgent();
+        _planningAgent = (FakeAgent)agent.PlanningComplete();
+        return this;
+    }
+
     public AgentScenarioBuilder WithPlannerFinalize()
     {
         if (_planningAgent == null)
