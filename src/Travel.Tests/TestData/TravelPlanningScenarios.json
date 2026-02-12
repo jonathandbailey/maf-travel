@@ -11,5 +11,18 @@
       "EndDate": "2026-06-15T00:00:00",
       "NumberOfTravelers": 2
     }
+  },
+  {
+    "Messages": [
+      "I want to plan a trip from Zurich to Paris on the 01.05.2026",
+      "We are 2 people traveling and we will return on the 15.06.2026"
+    ],
+    "ExpectedTravelPlan": {
+      "Origin": "Zurich",
+      "Destination": "Paris",
+      "StartDate": "2026-05-01T00:00:00",
+      "EndDate": "2026-06-15T00:00:00",
+      "NumberOfTravelers": 2
+    }
   }
 ]
