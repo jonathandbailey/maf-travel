@@ -3,7 +3,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Tests.Common;
+using Travel.Tests.Helper;
 
 namespace Travel.Tests.Evaluation
 {

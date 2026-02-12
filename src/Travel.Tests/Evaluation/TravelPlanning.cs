@@ -1,68 +1,39 @@
 ﻿using FluentAssertions;
-using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
-using Moq;
-using Travel.Agents.Services;
 using Travel.Tests.Common;
-using Travel.Workflows.Dto;
+using Travel.Tests.Helper;
 using Travel.Workflows.Events;
-using Travel.Workflows.Services;
 
 namespace Travel.Tests.Evaluation;
 
 public class TravelPlanning
 {
-    private const string Origin = "Zurich";
-    private const string Destination = "Paris";
-    private const int NumberOfTravelers = 2;
-    private static readonly DateTime DepartureDate = new(2026, 5, 1);
-
-    private static readonly DateTime ReturnDate = new(2026, 6, 15);
-
-    private readonly string _firstMessage =
-        $"I want to plan a trip from {Origin} to {Destination} on the {DepartureDate:dd.MM.yyyy}, for {NumberOfTravelers} people.";
-
-    private readonly string _secondMessage = $"My return date is {ReturnDate:dd.MM.yyyy}";
-
-    [Fact]
-    public async Task Test()
+    public static IEnumerable<object[]> TravelPlanningScenarios()
     {
-        var threadId = Guid.NewGuid();
+        var scenarios = ScenarioLoader.LoadTravelPlanningScenarios();
+        foreach (var scenario in scenarios)
+        {
+            yield return [scenario];
+        }
+    }
 
-        var checkpointRepository = new InMemoryCheckpointRepository();
+    [Theory]
+    [MemberData(nameof(TravelPlanningScenarios))]
+    public async Task Test1(TravelPlanningScenario scenario)
+    {
+        var harness = new TravelWorkflowTestHarness();
 
-        var travelPlanService = new Mock<ITravelPlanService>();
-        
-        travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
-     
-        var agentTemplateRepository = AgentHelper.CreateAgentTemplateRepository();
+        foreach (var message in scenario.Messages)
+        {
+            await harness.WatchStreamAsync(message);
+        }
 
-        var agentFactory = AgentHelper.CreateAgentFactory();
+        var planningCompleteEvent = harness.Events.OfType<TravelPlanningCompleteEvent>().FirstOrDefault();
 
-        var agentProvider = new AgentProvider(agentFactory, agentTemplateRepository);
+        planningCompleteEvent.
+            Should().NotBeNull("Expected a TravelPlanningCompleteEvent to be emitted.");
 
-        var workflowService = new TravelWorkflowService(travelPlanService.Object,checkpointRepository, agentProvider);
-
-        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage), threadId);
-
-        var events = await workflowService.WatchStreamAsync(request).ToListAsync();
-
-        events.Should().ShouldHaveType<TravelPlanUpdateEvent>();
-
-        events.Should().ShouldHaveType<RequestInfoEvent>();
-
-        var checkPoint = events.GetCheckpointInfo();
-
-        checkPoint.Should().NotBeNull();
-
-        workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider);
-
-        request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _secondMessage), threadId, checkPoint);
-
-        events = await workflowService.WatchStreamAsync(request).ToListAsync();
-
-        events.Should().ShouldHaveType<TravelPlanUpdateEvent>();
-      
-        events.Should().ShouldHaveType<TravelPlanningCompleteEvent>();
+        planningCompleteEvent.
+            TravelPlan.Should().
+            BeEquivalentTo(scenario.ExpectedTravelPlan, "The emitted travel plan should match the expected travel plan.");
     }
 }

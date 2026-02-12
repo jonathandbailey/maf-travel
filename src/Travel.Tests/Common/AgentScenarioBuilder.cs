@@ -2,6 +2,7 @@ using Microsoft.Agents.AI;
 using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
+using Travel.Tests.Helper;
 using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
 namespace Travel.Tests.Common;

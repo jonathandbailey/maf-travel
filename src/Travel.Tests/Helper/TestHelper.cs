@@ -1,9 +1,10 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
+using Travel.Tests.Common;
 using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
-namespace Travel.Tests.Common;
+namespace Travel.Tests.Helper;
 
 public static  class TestHelper
 {
