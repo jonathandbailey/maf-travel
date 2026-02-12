@@ -35,21 +35,12 @@ public class PlanningWorkflowTests
         var request = new TravelWorkflowRequest(_message);
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
-  
-        Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
-        Assert.Contains(events, @event => @event is RequestInfoEvent);
 
-        var travelPlanUpdateEvent = events.OfType<TravelPlanUpdateEvent>().FirstOrDefault();
+        events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
+            .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
 
-        Assert.NotNull(travelPlanUpdateEvent);
-
-        travelPlanUpdateEvent.MatchesAgentFunctionCallResponse(travelUpdateRequest);
-
-        var requestInfoEvent = events.OfType<RequestInfoEvent>().FirstOrDefault();
-
-        Assert.NotNull(requestInfoEvent);
-
-        requestInfoEvent.MatchesAgentFunctionCallResponse(informationRequest);
+        events.Should().ShouldHaveType<RequestInfoEvent>()
+            .And.ShouldMatchFunctionCallResponse(informationRequest);
     }
 
 
@@ -110,8 +101,11 @@ public class PlanningWorkflowTests
 
         travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Once);
 
-        Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
-        Assert.Contains(events, @event => @event is RequestInfoEvent);
+        events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
+            .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
+
+        events.Should().ShouldHaveType<RequestInfoEvent>()
+            .And.ShouldMatchFunctionCallResponse(informationRequest);
 
         workflowService = new TravelWorkflowService(agentProvider.Object);
      
@@ -135,8 +129,9 @@ public class PlanningWorkflowTests
             }
         }
 
-        Assert.Contains(events, @event => @event is TravelPlanUpdateEvent);
-      
+        events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
+            .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
+
         travelPlanService.Verify(x => x.Update(It.IsAny<TravelPlanDto>()), Times.Exactly(2));
     }
    
