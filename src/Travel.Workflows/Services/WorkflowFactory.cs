@@ -11,13 +11,13 @@ public class WorkflowFactory
 {
     public Workflow Build(AIAgent planningAgent, AIAgent extractingAgent)
     {
-        var planningNode = new PlanningNode(planningAgent);
+        var planningNode = new PlannerNode(planningAgent);
 
-        var travelPlanNode = new TravelUpdatePlanNode();
+        var travelPlanNode = new TravelPlanUpdateNode();
 
         var startNode = new StartNode();
 
-        var extractingNode = new ExtractingNode(extractingAgent);
+        var extractingNode = new TravelPlanExtractionNode(extractingAgent);
 
         var builder = new WorkflowBuilder(startNode);
 

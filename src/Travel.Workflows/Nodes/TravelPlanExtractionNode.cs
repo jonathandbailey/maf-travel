@@ -8,7 +8,7 @@ using Travel.Workflows.Extensions;
 
 namespace Travel.Workflows.Nodes;
 
-public class ExtractingNode(AIAgent agent) : ReflectingExecutor<ExtractingNode>("Extracting"), IMessageHandler<ChatMessage>
+public class TravelPlanExtractionNode(AIAgent agent) : ReflectingExecutor<TravelPlanExtractionNode>("TravelPlanExtractionNode"), IMessageHandler<ChatMessage>
 {
     public async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
         CancellationToken cancellationToken)

@@ -7,7 +7,7 @@ using Travel.Workflows.Extensions;
 
 namespace Travel.Workflows.Nodes;
 
-public class PlanningNode(AIAgent agent) : ReflectingExecutor<PlanningNode>("Planning"), 
+public class PlannerNode(AIAgent agent) : ReflectingExecutor<PlannerNode>("PlannerNode"), 
     IMessageHandler<TravelPlanContextUpdated, AgentResponse>
 {
 

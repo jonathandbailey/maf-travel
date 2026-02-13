@@ -90,7 +90,7 @@ public class PlanningWorkflowTests
 
         var checkpointInfo = events.GetCheckpointInfo();
 
-        travelUpdateRequest = new TravelPlanDto(EndDate: ReturnDate);
+        travelUpdateRequest = new TravelPlanDto(endDate: ReturnDate);
 
         agentProvider = new AgentScenarioBuilder()
             .WithExtractor(travelUpdateRequest)

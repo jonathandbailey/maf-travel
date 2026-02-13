@@ -1,6 +1,7 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
+using Travel.Agents.Services;
 using Travel.Tests.Common;
 using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
@@ -31,7 +32,7 @@ public static  class TestHelper
 
         var toolCallContent = new FunctionCallContent(
             callId: "call_456",
-            name: "UpdateTravelPlan",
+            name: ExtractingTools.UpdateTravelPlanToolName,
             arguments: arguments);
 
         var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
@@ -63,7 +64,7 @@ public static  class TestHelper
 
         var toolCallContent = new FunctionCallContent(
             callId: "call_123",
-            name: "RequestInformation",
+            name: PlanningTools.RequestInformationToolName,
             arguments: arguments);
 
         var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
