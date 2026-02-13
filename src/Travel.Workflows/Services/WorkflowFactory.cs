@@ -1,6 +1,7 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Travel.Agents.Services;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Nodes;
 
@@ -41,7 +42,7 @@ public class WorkflowFactory
         builder.AddEdge<FunctionCallContent>(
             source: executionNode,
             target: requestInformationNode,
-            condition: result => result is { Name: "RequestInformation" });
+            condition: result => result is { Name: PlanningTools.RequestInformationToolName });
 
       
             

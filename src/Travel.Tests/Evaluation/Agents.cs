@@ -99,7 +99,7 @@ namespace Travel.Tests.Evaluation
 
             ResponseHelper.ValidateFunctionCalls(response)
                 .ShouldHaveCallCount(1)
-                .ShouldContainCall("UpdateTravelPlan")
+                .ShouldContainCall(ExtractingTools.UpdateTravelPlanToolName)
                 .WithDestination("Paris")
                 .WithOrigin("Zurich")
                 .WithNumberOfTravelers(2)

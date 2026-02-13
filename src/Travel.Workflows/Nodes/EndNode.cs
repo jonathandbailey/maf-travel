@@ -9,7 +9,7 @@ namespace Travel.Workflows.Nodes;
 public class EndNode() : ReflectingExecutor<EndNode>("End"), IMessageHandler<TravelPlanCompletedCommand>
 {
     public async ValueTask HandleAsync(TravelPlanCompletedCommand message, IWorkflowContext context,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken)
     {
         var travelPlan = await context.GetTravelPlan(cancellationToken);
 

@@ -7,6 +7,9 @@ namespace Travel.Agents.Services;
 public static class PlanningTools
 {
 
+    public const string RequestInformationToolName = "request_information";
+   
+    
     private static readonly Dictionary<string, AIFunction> Tools = new();
 
     [Description("Request all missing pieces of information from the user in a single batch.")]
@@ -21,11 +24,12 @@ public static class PlanningTools
 
     static PlanningTools()
     {
-        var function = AIFunctionFactory.Create(RequestInformation);
+        var function = AIFunctionFactory.Create(RequestInformation, RequestInformationToolName);
 
         Tools[function.Name] = function;
 
         var planningCompleteFunction = AIFunctionFactory.Create(PlanningComplete);
+        
         Tools[planningCompleteFunction.Name] = planningCompleteFunction;
     }
 
@@ -37,6 +41,8 @@ public static class PlanningTools
 
 public static class ExtractingTools
 {
+    public const string UpdateTravelPlanToolName = "update_travel_plan";    
+
     private static readonly Dictionary<string, AIFunction> Tools = new();
     
     [Description("Request More Information")]
@@ -46,7 +52,7 @@ public static class ExtractingTools
 
     static ExtractingTools()
     {
-        var function = AIFunctionFactory.Create(UpdateTravelPlan);
+        var function = AIFunctionFactory.Create(UpdateTravelPlan, UpdateTravelPlanToolName);
 
         Tools[function.Name] = function;
     }
