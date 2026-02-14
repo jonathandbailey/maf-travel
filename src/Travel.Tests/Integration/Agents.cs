@@ -23,7 +23,13 @@ public class Agents
     [Fact]
     public async Task PlanningAgent_ShouldRequestMissingInformationToolCall_WhenTravelPlanIsIncomplete()
     {
-        var agent = await AgentFactoryHelper.CreateMockPlanningAgent();
+        var requestInfoDto = new RequestInformationDto(
+            Message: "Please provide the missing information",
+            Thought: "Need to request missing travel information",
+            RequiredInputs: ["Origin", "ReturnDate"]
+        );
+
+        var agent = await AgentFactoryHelper.CreateMockPlanningAgent(requestInfoDto);
 
         var chatMessage = CreateTravelPlanMessage(_travePlanState);
 

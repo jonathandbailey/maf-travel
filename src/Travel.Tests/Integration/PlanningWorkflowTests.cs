@@ -2,6 +2,7 @@
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
+using Travel.Agents.Services;
 using Travel.Tests.Common;
 using Travel.Tests.Helper;
 using Travel.Workflows.Dto;
@@ -38,12 +39,15 @@ public class PlanningWorkflowTests
 
         travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
 
-        var agentProvider = new AgentScenarioBuilder()
-            .WithExtractor(travelUpdateRequest)
-            .WithPlanner(informationRequest)
-            .BuildProvider();
+        var agentProvider = new Mock<IAgentProvider>();
 
-        var workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider);
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Planning))
+            .ReturnsAsync(await AgentFactoryHelper.CreateMockPlanningAgent(informationRequest));
+
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Extracting))
+            .ReturnsAsync(await AgentFactoryHelper.CreateMockExtractorAgent(travelUpdateRequest));
+
+        var workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider.Object);
 
         var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage), threadId);
 
@@ -71,12 +75,15 @@ public class PlanningWorkflowTests
         
         travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
 
-        var agentProvider = new AgentScenarioBuilder()
-            .WithExtractor(travelUpdateRequest)
-            .WithPlanner(informationRequest)
-            .BuildProvider();
+        var agentProvider = new Mock<IAgentProvider>();
 
-        var workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider);
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Planning))
+            .ReturnsAsync(await AgentFactoryHelper.CreateMockPlanningAgent(informationRequest));
+
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Extracting))
+            .ReturnsAsync(await AgentFactoryHelper.CreateMockExtractorAgent(travelUpdateRequest));
+
+        var workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider.Object);
    
         var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage), threadId);
      
@@ -92,12 +99,15 @@ public class PlanningWorkflowTests
 
         travelUpdateRequest = new TravelPlanDto(endDate: ReturnDate);
 
-        agentProvider = new AgentScenarioBuilder()
-            .WithExtractor(travelUpdateRequest)
-            .WithPlanningComplete()
-            .BuildProvider();
+        agentProvider = new Mock<IAgentProvider>();
 
-        workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider);
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Planning))
+            .ReturnsAsync(await AgentFactoryHelper.CreateMockPlanningAgent());
+
+        agentProvider.Setup(x => x.CreateAsync(AgentType.Extracting))
+            .ReturnsAsync(await AgentFactoryHelper.CreateMockExtractorAgent(travelUpdateRequest));
+
+        workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider.Object);
      
         events.Clear();
     
