@@ -149,13 +149,13 @@ public class FunctionCallAssertion
     public FunctionCallAssertion WithStartDate(DateTime startDate)
     {
         return WithTravelPlan(plan =>
-            plan.StartDate.Should().Be(startDate, $"travel plan start date should be {startDate:yyyy-MM-dd}"));
+            plan.DepartureDate.Should().Be(startDate, $"travel plan start date should be {startDate:yyyy-MM-dd}"));
     }
 
     public FunctionCallAssertion WithEndDate(DateTime endDate)
     {
         return WithTravelPlan(plan =>
-            plan.EndDate.Should().Be(endDate, $"travel plan end date should be {endDate:yyyy-MM-dd}"));
+            plan.ReturnDate.Should().Be(endDate, $"travel plan end date should be {endDate:yyyy-MM-dd}"));
     }
 
     public FunctionCallAssertion WithOrigin(string origin)

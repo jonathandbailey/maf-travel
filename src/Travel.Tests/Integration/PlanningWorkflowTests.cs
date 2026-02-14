@@ -36,7 +36,7 @@ public class PlanningWorkflowTests
 
         var travelPlanService = new Mock<ITravelPlanService>();
 
-        travelPlanService.Setup(x=> x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
+        travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
 
         var agentProvider = new AgentScenarioBuilder()
             .WithExtractor(travelUpdateRequest)
@@ -49,10 +49,10 @@ public class PlanningWorkflowTests
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
-        events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
+        events.ShouldHaveEvent().ShouldHaveType<TravelPlanUpdateEvent>()
             .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
 
-        events.Should().ShouldHaveType<RequestInfoEvent>()
+        events.ShouldHaveEvent().ShouldHaveType<RequestInfoEvent>()
             .And.ShouldMatchFunctionCallResponse(informationRequest);
     }
 
@@ -82,10 +82,10 @@ public class PlanningWorkflowTests
      
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
    
-        events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
+        events.ShouldHaveEvent().ShouldHaveType<TravelPlanUpdateEvent>()
             .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
 
-        events.Should().ShouldHaveType<RequestInfoEvent>()
+        events.ShouldHaveEvent().ShouldHaveType<RequestInfoEvent>()
             .And.ShouldMatchFunctionCallResponse(informationRequest);
 
         var checkpointInfo = events.GetCheckpointInfo();
@@ -105,10 +105,10 @@ public class PlanningWorkflowTests
       
         events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
-        events.Should().ShouldHaveType<TravelPlanUpdateEvent>()
+        events.ShouldHaveEvent().ShouldHaveType<TravelPlanUpdateEvent>()
             .And.ShouldMatchFunctionCallResponse(travelcompleteRequest);
 
-        events.Should().ShouldHaveType<TravelPlanningCompleteEvent>("Events should contain type : TravelPlanningCompleteEvent");
+        events.ShouldHaveEvent().ShouldHaveType<TravelPlanningCompleteEvent>("Events should contain type : TravelPlanningCompleteEvent");
 
     }
 }

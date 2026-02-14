@@ -8,7 +8,7 @@ namespace Travel.Tests.Common;
 
 public static class WorkflowEventHelper
 {
-    public static WorkflowEventCollectionAssertions Should(this IEnumerable<WorkflowEvent> events)
+    public static WorkflowEventCollectionAssertions ShouldHaveEvent(this IEnumerable<WorkflowEvent> events)
     {
         return new WorkflowEventCollectionAssertions(events);
     }
