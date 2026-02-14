@@ -3,6 +3,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
+using Travel.Agents.Services;
 using Travel.Workflows.Dto;
 
 namespace Travel.Workflows.Nodes;
@@ -23,9 +24,8 @@ public class ExecutionNode() : ReflectingExecutor<ExecutionNode>("Execution"), I
 
                     await context.SendMessageAsync(functionCall, cancellationToken: cancellationToken);
 
-                    if (functionCall.Name == "PlanningComplete")
+                    if (functionCall.Name == PlanningTools.PlanningCompleteToolName)
                     {
-                        
                         await context.SendMessageAsync(new TravelPlanCompletedCommand(), cancellationToken);
                     }
                 }

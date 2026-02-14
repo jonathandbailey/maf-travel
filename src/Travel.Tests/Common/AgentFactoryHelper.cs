@@ -96,15 +96,19 @@ public static  class AgentFactoryHelper
     {
         var mockChatClient = new Mock<IChatClient>();
 
-        var requestInfoElement = System.Text.Json.JsonSerializer.SerializeToElement(agentCreateMeta.Arguments);
+        var arguments = new Dictionary<string, object?>();
+
+        if (!string.IsNullOrEmpty(agentCreateMeta.ArgumentsKey) && agentCreateMeta.Arguments != null)
+        {
+            var requestInfoElement = System.Text.Json.JsonSerializer.SerializeToElement(agentCreateMeta.Arguments);
+
+            arguments.Add(agentCreateMeta.ArgumentsKey, requestInfoElement);
+        }
 
         var functionCallContent = new FunctionCallContent(
             callId: $"call_{Guid.NewGuid()}",
             name: agentCreateMeta.Name,
-            arguments: new Dictionary<string, object?>
-            {
-                [agentCreateMeta.ArgumentsKey] = requestInfoElement
-            }
+            arguments: arguments
         );
 
         var responseMessage = new ChatMessage(ChatRole.Assistant, [functionCallContent]);
@@ -183,14 +187,14 @@ public static  class AgentFactoryHelper
         return agent;
     }
 
-    public class AgentCreateMeta(AgentType agentType, string name, string argumentsKey, object arguments)
+    public class AgentCreateMeta(AgentType agentType, string name, string? argumentsKey = null, object? arguments = null)
     {
         public AgentType AgentType { get; } = agentType;
         public string Name { get; } = name;
 
-        public string ArgumentsKey { get; } = argumentsKey;
+        public string? ArgumentsKey { get; } = argumentsKey;
 
-        public object Arguments { get; } = arguments;
+        public object? Arguments { get; } = arguments;
     }
 
     public static async Task<AIAgent> CreateMockPlanningAgent()

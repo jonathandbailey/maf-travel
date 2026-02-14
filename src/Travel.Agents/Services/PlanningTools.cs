@@ -8,8 +8,9 @@ public static class PlanningTools
 {
 
     public const string RequestInformationToolName = "request_information";
-   
-    
+    public const string PlanningCompleteToolName = "planning_complete";
+
+
     private static readonly Dictionary<string, AIFunction> Tools = new();
 
     [Description("Request all missing pieces of information from the user in a single batch.")]
@@ -28,7 +29,7 @@ public static class PlanningTools
 
         Tools[function.Name] = function;
 
-        var planningCompleteFunction = AIFunctionFactory.Create(PlanningComplete);
+        var planningCompleteFunction = AIFunctionFactory.Create(PlanningComplete, PlanningCompleteToolName);
         
         Tools[planningCompleteFunction.Name] = planningCompleteFunction;
     }
