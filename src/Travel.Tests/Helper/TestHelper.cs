@@ -1,97 +1,10 @@
-﻿using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
-using Travel.Agents.Dto;
-using Travel.Agents.Services;
-using Travel.Tests.Common;
-using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
+﻿using Travel.Agents.Dto;
 
 namespace Travel.Tests.Helper;
 
 public static  class TestHelper
 {
-    public static AIAgent FinalizeTravelPlan(this AIAgent agent)
-    {
-        var toolCallContent = new FunctionCallContent(
-            callId: "call_451",
-            name: "finalize_travel_plan");
-
-        var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
-        
-        ((FakeAgent)agent).EnqueueResponse(new AgentResponse([responseMessage]));
-        
-        return agent;
-    }
-
-    public static AIAgent UpdateTravelPlan(this AIAgent agent,  TravelPlanDto travelPlanDto)
-    {
-     
-        var arguments = new Dictionary<string, object?>
-        {
-            ["travelPlan"] = travelPlanDto
-        };
-
-        var toolCallContent = new FunctionCallContent(
-            callId: "call_456",
-            name: ExtractingTools.UpdateTravelPlanToolName,
-            arguments: arguments);
-
-        var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
-        ((FakeAgent)agent).EnqueueResponse(new AgentResponse([responseMessage]));
-        return agent;
-    }
-
-    public static TravelPlanDto CreateTravelUpdateRequest()
-    {
-        var updateDto = new TravelPlanDto
-        {
-            Origin = "Zurich",
-            Destination = "Paris",
-            StartDate = DateTime.UtcNow.AddDays(60),
-            EndDate = null,
-            NumberOfTravelers = 2
-        };
-
-        return updateDto;
-    }
-
-
-    public static AIAgent InformationRequest(this AIAgent agent, RequestInformationDto informationRequest)
-    {
-        var arguments = new Dictionary<string, object?>
-        {
-            ["request"] = informationRequest
-        };
-
-        var toolCallContent = new FunctionCallContent(
-            callId: "call_123",
-            name: PlanningTools.RequestInformationToolName,
-            arguments: arguments);
-
-        var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
-        
-        
-        
-        ((FakeAgent)agent).EnqueueResponse(new AgentResponse([responseMessage]));
-
-        return agent;
-    }
-
-    public static AIAgent PlanningComplete(this AIAgent agent)
-    {
-        
-
-        var toolCallContent = new FunctionCallContent(
-            callId: "call_126",
-            name: "PlanningComplete");
-
-        var responseMessage = new ChatMessage(ChatRole.Assistant, [toolCallContent]);
-
-
-
-        ((FakeAgent)agent).EnqueueResponse(new AgentResponse([responseMessage]));
-
-        return agent;
-    }
+   
 
     public static RequestInformationDto CreateInformationRequest()
     {
