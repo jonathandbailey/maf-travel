@@ -1,0 +1,77 @@
+[
+  {
+    "ScenarioName": "IncompletePlanProvided",
+    "ExpectedTravelPlan": {
+      "Origin": "Zurich",
+      "Destination": "Paris",
+      "StartDate": "2026-05-01T00:00:00",
+      "EndDate": "2026-06-15T00:00:00",
+      "NumberOfTravelers": 2
+    },
+    "Runs": [
+      {
+        "Message": "I want to plan a trip from Zurich to Paris on the 01.05.2026, for 2 people.",
+        "AgentMetas": [
+          {
+            "AgentType": "Planning",
+            "Name": "request_information",
+            "ArgumentsKey": "request",
+            "Arguments": {
+              "Message": "What is the return date for your trip?",
+              "Thought": "The return date is required to complete the travel plan.",
+              "RequiredInputs": [ "EndDate" ]
+            }
+          },
+          {
+            "AgentType": "Extracting",
+            "Name": "update_travel_plan",
+            "ArgumentsKey": "travelPlan",
+            "Arguments": {
+              "Origin": "Zurich",
+              "Destination": "Paris",
+              "StartDate": "2026-05-01T00:00:00",
+              "EndDate": null,
+              "NumberOfTravelers": 2
+            }
+          }
+        ]
+      },
+      {
+        "Message": "We will return on the 15.06.2026",
+        "AgentMetas": [
+          {
+            "AgentType": "Planning",
+            "Name": "planning_complete"
+          },
+          {
+            "AgentType": "Extracting",
+            "Name": "update_travel_plan",
+            "ArgumentsKey": "travelPlan",
+            "Arguments": {
+              "EndDate": "2026-06-15T00:00:00"
+            }
+          }
+        ]
+      }
+    ],
+    "ExpectedEvents": [
+      {
+        "EventType": "TravelPlanUpdateEvent",
+        "ExpectedData": {
+          "Origin": "Zurich",
+          "Destination": "Paris",
+          "StartDate": "2026-05-01T00:00:00",
+          "EndDate": null,
+          "NumberOfTravelers": 2
+        }
+      },
+      {
+        "EventType": "RequestInfoEvent",
+        "ExpectedData": {
+          "query": "What is the return date for your trip?",
+          "reason": "The return date is required to complete the travel plan."
+        }
+      }
+    ]
+  }
+]

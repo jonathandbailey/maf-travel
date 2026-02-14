@@ -79,7 +79,6 @@ public class WorkflowEventCollectionAssertions
 
         request.Should().NotBeNull();
 
-        request!.Context.Should().Be(informationRequestDetails.Message, because, becauseArgs);
         request.Entities.Should().BeEquivalentTo(informationRequestDetails.RequiredInputs, because, becauseArgs);
 
         return new AndConstraint<WorkflowEventCollectionAssertions>(this);

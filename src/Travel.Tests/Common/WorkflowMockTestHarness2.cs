@@ -15,6 +15,9 @@ public class WorkflowMockTestHarness2
     private readonly Guid _threadId = Guid.NewGuid();
     private CheckpointInfo? _checkpointInfo;
 
+    private List<WorkflowEvent> _lastEvents = [];
+    public List<WorkflowEvent> Events => _lastEvents;
+
 
     public WorkflowMockTestHarness2()
     {
@@ -44,6 +47,8 @@ public class WorkflowMockTestHarness2
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
         _checkpointInfo = events.GetCheckpointInfo();
+
+        Events.AddRange(events);
 
         return events;
     }
