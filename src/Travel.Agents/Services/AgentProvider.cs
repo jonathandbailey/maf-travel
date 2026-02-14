@@ -8,6 +8,7 @@ namespace Travel.Agents.Services;
 public interface IAgentProvider
 {
     Task<AIAgent> CreateAsync(AgentType agentType);
+    Task<AIAgent> CreateAsync(AgentType agentType, IChatClient chatClient);
 }
 
 public class AgentProvider(
@@ -31,6 +32,21 @@ public class AgentProvider(
         var tools = GetToolsForAgentType(agentType);
 
         var agent = await agentFactory.Create(agentTemplate, tools);
+
+        return agent;
+    }
+
+    public async Task<AIAgent> CreateAsync(AgentType agentType, IChatClient chatClient)
+    {
+        var templateName = _agentTemplates.TryGetValue(agentType, out var template)
+            ? template
+            : throw new ArgumentException($"Unknown agent type: {agentType}", nameof(agentType));
+
+        var agentTemplate = await agentTemplateRepository.LoadAsync(templateName);
+
+        var tools = GetToolsForAgentType(agentType);
+
+        var agent = await agentFactory.Create(chatClient, agentTemplate, tools);
 
         return agent;
     }

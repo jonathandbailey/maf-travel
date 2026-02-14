@@ -27,31 +27,19 @@ public class PlanningWorkflowTests
     [Fact]
     public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenIncompletePlanProvided()
     {
-        var threadId = Guid.NewGuid();
-
-        var checkpointRepository = new InMemoryCheckpointRepository();
-
-
         var informationRequest = TestHelper.CreateInformationRequest();
         var travelUpdateRequest = new TravelPlanDto(Origin, Destination, DepartureDate, null, NumberOfTravelers);
 
-        var travelPlanService = new Mock<ITravelPlanService>();
+        var harness = new WorkflowMockTestHarness2();
 
-        travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
+        var meta = new List<AgentFactoryHelper.AgentCreateMeta>
+        {
+            new(AgentType.Planning, PlanningTools.RequestInformationToolName, "request", informationRequest ),
+            new(AgentType.Extracting, ExtractingTools.UpdateTravelPlanToolName, "travelPlan", travelUpdateRequest)
+        };
 
-        var agentProvider = new Mock<IAgentProvider>();
 
-        agentProvider.Setup(x => x.CreateAsync(AgentType.Planning))
-            .ReturnsAsync(await AgentFactoryHelper.CreateMockPlanningAgent(informationRequest));
-
-        agentProvider.Setup(x => x.CreateAsync(AgentType.Extracting))
-            .ReturnsAsync(await AgentFactoryHelper.CreateMockExtractorAgent(travelUpdateRequest));
-
-        var workflowService = new TravelWorkflowService(travelPlanService.Object, checkpointRepository, agentProvider.Object);
-
-        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, _firstMessage), threadId);
-
-        var events = await workflowService.WatchStreamAsync(request).ToListAsync();
+        var events = await harness.WatchStreamAsync(_firstMessage, meta);
 
         events.ShouldHaveEvent().ShouldHaveType<TravelPlanUpdateEvent>()
             .And.ShouldMatchFunctionCallResponse(travelUpdateRequest);
