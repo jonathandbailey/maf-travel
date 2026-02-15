@@ -1,12 +1,15 @@
 ﻿using FluentAssertions;
+using System.Diagnostics;
 using Travel.Tests.Common;
 using Travel.Tests.Helper;
 using Travel.Workflows.Events;
 
 namespace Travel.Tests.Evaluation;
 
-public class TravelPlanning
+public class TravelPlanning : IDisposable
 {
+    private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
+
     public static IEnumerable<object[]> TravelPlanningScenarios()
     {
         var scenarios = ScenarioLoader.LoadTravelPlanningScenarios();
@@ -16,14 +19,28 @@ public class TravelPlanning
         }
     }
 
+    public TravelPlanning()
+    {
+        TelemetryHelper.Initialize(SettingsHelper.GetAspireDashboardSettings());
+    }
+
+    public void Dispose()
+    {
+        TelemetryHelper.Dispose();
+    }
+
     [Theory]
     [MemberData(nameof(TravelPlanningScenarios))]
     public async Task Test1(TravelPlanningScenario scenario)
     {
-        var harness = new TravelWorkflowTestHarness();
+        using var testActivity = TestActivitySource.StartActivity("Test: PlanningWorkflow");
 
+
+        var harness = new TravelWorkflowTestHarness();
+        var runIndex = 0;
         foreach (var message in scenario.Messages)
         {
+            using var runActivity = TestActivitySource.StartActivity($"Run {++runIndex}");
             await harness.WatchStreamAsync(message);
         }
 

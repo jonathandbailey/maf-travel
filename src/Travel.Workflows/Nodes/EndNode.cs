@@ -3,6 +3,7 @@ using Microsoft.Agents.AI.Workflows.Reflection;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Extensions;
+using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
@@ -11,6 +12,9 @@ public class EndNode() : ReflectingExecutor<EndNode>("End"), IMessageHandler<Tra
     public async ValueTask HandleAsync(TravelPlanCompletedCommand message, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
+        using var activity = TravelWorkflowTelemetry.InvokeNode("End", Guid.NewGuid());
+
+
         var travelPlan = await context.GetTravelPlan(cancellationToken);
 
         await context.AddEventAsync(new TravelPlanningCompleteEvent(travelPlan), cancellationToken);

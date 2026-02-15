@@ -23,7 +23,7 @@ public class WorkflowFactory
 
         var requestInformationPort = RequestPort.Create<InformationRequest, InformationResponse>("information");
 
-        var requestInformationNode = new RequestInformationNode();
+        var requestInformationNode = new InformationNode();
 
         var executionNode = new ExecutionNode();
 

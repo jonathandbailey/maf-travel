@@ -12,7 +12,7 @@ public class StartNode() : ReflectingExecutor<StartNode>("Start"), IMessageHandl
     public async ValueTask<ChatMessage> HandleAsync(ChatMessage message, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode("StartNode", Guid.NewGuid());
+        using var activity = TravelWorkflowTelemetry.InvokeNode("Start", Guid.NewGuid());
         
         await context.SetTravelPlan(new TravelPlanDto(), cancellationToken);
 

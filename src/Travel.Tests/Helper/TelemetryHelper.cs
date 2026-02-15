@@ -18,6 +18,7 @@ public static class TelemetryHelper
             .SetResourceBuilder(ResourceBuilder.CreateDefault()
                 .AddService("Travel.Tests"))
             .AddSource("Travel.Workflows*")
+            .AddSource("Travel.Tests*")
             .AddOtlpExporter(options =>
             {
                 options.Endpoint = new Uri(dashboardSettings.OtlpEndpoint);

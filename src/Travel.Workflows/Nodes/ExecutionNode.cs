@@ -1,10 +1,11 @@
-﻿using System.Text.Json;
-using Microsoft.Agents.AI;
+﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
+using System.Text.Json;
 using Travel.Agents.Services;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
@@ -12,6 +13,9 @@ public class ExecutionNode() : ReflectingExecutor<ExecutionNode>("Execution"), I
 {
     public async ValueTask HandleAsync(AgentResponse agentResponse, IWorkflowContext context, CancellationToken cancellationToken)
     {
+        using var activity = TravelWorkflowTelemetry.InvokeNode("Execution", Guid.NewGuid());
+
+
         var toolCalls = new List<FunctionCallContent>();
 
         foreach (var msg in agentResponse.Messages)

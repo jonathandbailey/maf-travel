@@ -9,12 +9,12 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class TravelPlanExtractionNode(AIAgent agent) : ReflectingExecutor<TravelPlanExtractionNode>("TravelPlanExtractionNode"), IMessageHandler<ChatMessage>
+public class TravelPlanExtractionNode(AIAgent agent) : ReflectingExecutor<TravelPlanExtractionNode>("TravelPlanExtraction"), IMessageHandler<ChatMessage>
 {
     public async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode("TravelPlanExtractionNode", Guid.NewGuid());
+        using var activity = TravelWorkflowTelemetry.InvokeNode("TravelPlanExtraction", Guid.NewGuid());
 
         activity?.AddNodeAgentInput(message.Text);
 

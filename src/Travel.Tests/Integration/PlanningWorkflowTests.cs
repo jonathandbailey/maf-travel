@@ -1,4 +1,5 @@
 ﻿
+using System.Diagnostics;
 using FluentAssertions;
 using Travel.Tests.Common;
 using Travel.Tests.Helper;
@@ -8,6 +9,8 @@ namespace Travel.Tests.Integration;
 
 public class PlanningWorkflowTests : IDisposable
 {
+    private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
+
     public static IEnumerable<object[]> TravelPlanningScenarios()
     {
         var scenarios = ScenarioLoader.LoadPlanningWorkflowScenarios();
@@ -27,10 +30,14 @@ public class PlanningWorkflowTests : IDisposable
     [MemberData(nameof(TravelPlanningScenarios))]
     public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenIncompletePlanProvided(PlanningWorkflowScenario scenario)
     {
+        using var testActivity = TestActivitySource.StartActivity($"Test: {scenario.ScenarioName ?? "PlanningWorkflow"}");
+
         var harness = new WorkflowMockTestHarness2();
 
+        var runIndex = 0;
         foreach (var run in scenario.Runs)
         {
+            using var runActivity = TestActivitySource.StartActivity($"Run {++runIndex}");
             await harness.WatchStreamAsync(run.Message, run.AgentMetas);
         }
 
