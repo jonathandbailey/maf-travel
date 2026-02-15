@@ -17,7 +17,7 @@ public class Agents
 
     private readonly List<string> _expectedKeys = ["Origin", "ReturnDate"];
 
-    private readonly TravelPlanDto _travePlanState = new(Destination: Destination, DepartureDate: DepartureDate, NumberOfTravelers: NumberOfTravelers);
+    private readonly TravelPlanDto _travePlanState = new(destination: Destination, startDate: DepartureDate, numberOfTravelers: NumberOfTravelers);
 
 
     [Fact]

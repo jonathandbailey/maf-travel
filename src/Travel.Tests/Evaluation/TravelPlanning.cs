@@ -33,7 +33,7 @@ public class TravelPlanning : IDisposable
     [MemberData(nameof(TravelPlanningScenarios))]
     public async Task Test1(TravelPlanningScenario scenario)
     {
-        using var testActivity = TestActivitySource.StartActivity("Test: PlanningWorkflow");
+        using var testActivity = TestActivitySource.StartActivity("Test:PlanningWorkflow");
 
 
         var harness = new TravelWorkflowTestHarness();

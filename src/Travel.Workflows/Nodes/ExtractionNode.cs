@@ -9,12 +9,12 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class TravelPlanExtractionNode(AIAgent agent) : ReflectingExecutor<TravelPlanExtractionNode>("TravelPlanExtraction"), IMessageHandler<ChatMessage>
+public class ExtractionNode(AIAgent agent) : ReflectingExecutor<ExtractionNode>("Extraction"), IMessageHandler<ChatMessage>
 {
     public async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode("TravelPlanExtraction", Guid.NewGuid());
+        using var activity = TravelWorkflowTelemetry.InvokeNode("Extraction", Guid.NewGuid());
 
         activity?.AddNodeAgentInput(message.Text);
 
@@ -22,6 +22,17 @@ public class TravelPlanExtractionNode(AIAgent agent) : ReflectingExecutor<Travel
 
         activity?.AddNodeAgentOutput(response.Text);
         activity?.AddNodeAgentUsage(response);
+
+        foreach (var responseMessage in response.Messages)
+        {
+            foreach (var content in responseMessage.Contents)
+            {
+                if (content is FunctionCallContent functionCallContent)
+                {
+                    using var toolCallActivity = TravelWorkflowTelemetry.ToolCall(functionCallContent.Name, functionCallContent.Arguments, activity);
+                }
+            }
+        }
 
         if (response.TryGetFunctionArgument<TravelPlanDto>(WorkflowConstants.ExtractingNodeUpdatePlanFunctionName, out var details, Json.FunctionCallSerializerOptions))
         {

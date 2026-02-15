@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
-using Microsoft.Agents.AI;
+﻿using Microsoft.Agents.AI;
+using Microsoft.Agents.ObjectModel;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace Travel.Workflows.Telemetry;
 
@@ -18,10 +20,19 @@ public static class TravelWorkflowTelemetry
         var tags = new ActivityTagsCollection
         {
             { "gen_ai.tool.name", key },
-            { "gen_ai.tool.parameters", arguments }
         };
 
+        var jsonArgs = JsonSerializer.Serialize(arguments);
+
+        var inputEvent = new ActivityEvent("ToolInput", tags: new ActivityTagsCollection
+        {
+            { "arguments", jsonArgs }
+        });
+        
+
         var source = Source.StartActivity($"execute_tool {key}", ActivityKind.Internal, parent?.Id, tags);
+
+        source?.AddEvent(inputEvent);
 
         return source;
     }

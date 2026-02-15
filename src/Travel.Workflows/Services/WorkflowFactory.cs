@@ -17,7 +17,7 @@ public class WorkflowFactory
 
         var startNode = new StartNode();
 
-        var extractingNode = new TravelPlanExtractionNode(extractingAgent);
+        var extractingNode = new ExtractionNode(extractingAgent);
 
         var builder = new WorkflowBuilder(startNode);
 
