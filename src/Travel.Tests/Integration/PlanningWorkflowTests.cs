@@ -6,7 +6,7 @@ using Travel.Workflows.Events;
 
 namespace Travel.Tests.Integration;
 
-public class PlanningWorkflowTests
+public class PlanningWorkflowTests : IDisposable
 {
     public static IEnumerable<object[]> TravelPlanningScenarios()
     {
@@ -15,6 +15,11 @@ public class PlanningWorkflowTests
         {
             yield return [scenario];
         }
+    }
+
+    public PlanningWorkflowTests()
+    {
+        TelemetryHelper.Initialize(SettingsHelper.GetAspireDashboardSettings());
     }
 
 
@@ -41,6 +46,11 @@ public class PlanningWorkflowTests
             BeEquivalentTo(scenario.ExpectedTravelPlan, "The emitted travel plan should match the expected travel plan.");
 
     }
-   
+
+    public void Dispose()
+    {
+        TelemetryHelper.Dispose();
+    }
+
 }
 

@@ -5,6 +5,7 @@ using Microsoft.Extensions.AI;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Extensions;
+using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
@@ -13,7 +14,14 @@ public class TravelPlanExtractionNode(AIAgent agent) : ReflectingExecutor<Travel
     public async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
+        using var activity = TravelWorkflowTelemetry.InvokeNode("TravelPlanExtractionNode", Guid.NewGuid());
+
+        activity?.AddNodeAgentInput(message.Text);
+
         var response = await agent.RunAsync(message,  cancellationToken: cancellationToken);
+
+        activity?.AddNodeAgentOutput(response.Text);
+        activity?.AddNodeAgentUsage(response);
 
         if (response.TryGetFunctionArgument<TravelPlanDto>(WorkflowConstants.ExtractingNodeUpdatePlanFunctionName, out var details, Json.FunctionCallSerializerOptions))
         {
