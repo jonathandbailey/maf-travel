@@ -13,6 +13,19 @@ public static class TravelWorkflowTelemetry
         return Source.StartActivity(name);
     }
 
+    public static Activity? ToolCall(string key, object? arguments, Activity? parent)
+    {
+        var tags = new ActivityTagsCollection
+        {
+            { "gen_ai.tool.name", key },
+            { "gen_ai.tool.parameters", arguments }
+        };
+
+        var source = Source.StartActivity($"execute_tool {key}", ActivityKind.Internal, parent?.Id, tags);
+
+        return source;
+    }
+
     public static Activity? InvokeNode(string name, Guid threadId)
     {
         var tags = new ActivityTagsCollection
