@@ -2,7 +2,6 @@
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
-using System.Text.Json;
 using Travel.Agents.Services;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Telemetry;

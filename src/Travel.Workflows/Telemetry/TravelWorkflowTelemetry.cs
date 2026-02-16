@@ -1,5 +1,6 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.ObjectModel;
+using Microsoft.Extensions.AI;
 using System.Diagnostics;
 using System.Text.Json;
 using Travel.Agents.Dto;
@@ -36,6 +37,20 @@ public static class TravelWorkflowTelemetry
         source?.AddEvent(inputEvent);
 
         return source;
+    }
+
+    public static void TraceToolCalls(this AgentResponse response, Activity? parent)
+    {
+        foreach (var responseMessage in response.Messages)
+        {
+            foreach (var content in responseMessage.Contents)
+            {
+                if (content is FunctionCallContent functionCallContent)
+                {
+                    using var toolCallActivity = ToolCall(functionCallContent.Name, functionCallContent.Arguments, parent);
+                }
+            }
+        }
     }
 
     public static Activity? AddTravelPlanStateSnapshot(this Activity? activity, TravelPlanDto travelPlanDto)

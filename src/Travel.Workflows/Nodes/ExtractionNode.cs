@@ -1,6 +1,5 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
-using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 using Travel.Workflows.Common;
@@ -10,12 +9,13 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class ExtractionNode(AIAgent agent) : ReflectingExecutor<ExtractionNode>("Extraction"), IMessageHandler<ChatMessage>
+public partial class ExtractionNode(AIAgent agent) : Executor<ChatMessage>(NodeNames.ExtractionNodeName)
 {
-    public async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
-        CancellationToken cancellationToken)
+    [MessageHandler]
+    public override async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
+        CancellationToken cancellationToken = default)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode("Extraction", Guid.NewGuid());
+        using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.ExtractionNodeName, Guid.NewGuid());
 
         activity?.AddNodeAgentInput(message.Text);
 
@@ -24,16 +24,7 @@ public class ExtractionNode(AIAgent agent) : ReflectingExecutor<ExtractionNode>(
         activity?.AddNodeAgentOutput(response.Text);
         activity?.AddNodeAgentUsage(response);
 
-        foreach (var responseMessage in response.Messages)
-        {
-            foreach (var content in responseMessage.Contents)
-            {
-                if (content is FunctionCallContent functionCallContent)
-                {
-                    using var toolCallActivity = TravelWorkflowTelemetry.ToolCall(functionCallContent.Name, functionCallContent.Arguments, activity);
-                }
-            }
-        }
+        response.TraceToolCalls(activity);
 
         if (response.TryGetFunctionArgument<TravelPlanDto>(WorkflowConstants.ExtractingNodeUpdatePlanFunctionName, out var details, Json.FunctionCallSerializerOptions))
         {

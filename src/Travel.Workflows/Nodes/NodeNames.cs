@@ -3,4 +3,5 @@
 public static class NodeNames
 {
     public const string StartNodeName = "Start";
+    public const string ExtractionNodeName = "Extraction";
 }
