@@ -1,5 +1,4 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
 using Travel.Workflows.Dto;
 
 namespace Travel.Workflows;
@@ -13,7 +12,7 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
         TravelWorkflowRequest request)
     {
         _checkpointInfo = request.CheckpointInfo;
-        var run = await CreateWorkflowRun(request.Message);
+        var run = await CreateWorkflowRun(request);
 
         await foreach (var evt in run.Run.WatchStreamAsync())
         {
@@ -55,7 +54,7 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
         }
     }
 
-    private async Task<Checkpointed<StreamingRun>> CreateWorkflowRun(ChatMessage message)
+    private async Task<Checkpointed<StreamingRun>> CreateWorkflowRun(TravelWorkflowRequest request)
     {
         if (_checkpointInfo != null)
         {
@@ -69,14 +68,14 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
             _state = WorkflowState.Executing;
         }
 
-        return await InProcessExecution.StreamAsync(workflow, message, checkpointManager);
+        return await InProcessExecution.StreamAsync(workflow, request, checkpointManager);
 
         return _state switch
         {
             WorkflowState.Failed => throw new WorkflowException("Workflow cannot be started or resumed while in an Failed state."),
             WorkflowState.Executing => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             WorkflowState.Suspended => await ResumeWorkflow(),
-            WorkflowState.Created => await InProcessExecution.StreamAsync(workflow, message, checkpointManager),
+            WorkflowState.Created => await InProcessExecution.StreamAsync(workflow, request.Message, checkpointManager),
             WorkflowState.Completed => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             _ => throw new WorkflowException("Invalid workflow state.")
         };

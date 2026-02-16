@@ -1,10 +1,10 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
+using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Services;
-using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
 namespace Travel.Tests.Common;
 

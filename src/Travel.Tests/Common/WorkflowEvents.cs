@@ -2,7 +2,6 @@
 using Travel.Agents.Dto;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
-using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
 namespace Travel.Tests.Common;
 

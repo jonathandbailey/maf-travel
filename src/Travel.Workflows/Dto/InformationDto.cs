@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.AI;
+using Travel.Agents.Dto;
 
 namespace Travel.Workflows.Dto;
 

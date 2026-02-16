@@ -1,6 +1,7 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
+using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Helper;
 using Travel.Workflows.Dto;

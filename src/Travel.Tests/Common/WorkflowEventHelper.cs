@@ -65,26 +65,7 @@ public class WorkflowEventCollectionAssertions
         return new AndConstraint<WorkflowEventCollectionAssertions>(this);
     }
 
-    public AndConstraint<WorkflowEventCollectionAssertions> ShouldMatchFunctionCallResponse(RequestInformationDto informationRequestDetails, string because = "", params object[] becauseArgs)
-    {
-        var requestInfoEvent = _subject.OfType<RequestInfoEvent>().FirstOrDefault();
-
-        requestInfoEvent.Should().NotBeNull($"collection should contain a {nameof(RequestInfoEvent)}");
-
-        var data = requestInfoEvent!.Data as ExternalRequest;
-
-        data.Should().NotBeNull();
-
-        var request = data!.Data.AsType(typeof(InformationRequest)) as InformationRequest;
-
-        request.Should().NotBeNull();
-
-        request.Entities.Should().BeEquivalentTo(informationRequestDetails.RequiredInputs, because, becauseArgs);
-
-        return new AndConstraint<WorkflowEventCollectionAssertions>(this);
-    }
-
-    public AndConstraint<WorkflowEventCollectionAssertions> ShouldMatchFunctionCallResponse(Travel.Workflows.Dto.TravelPlanDto travelPlanDto, string because = "", params object[] becauseArgs)
+    public AndConstraint<WorkflowEventCollectionAssertions> ShouldMatchFunctionCallResponse(TravelPlanDto travelPlanDto, string because = "", params object[] becauseArgs)
     {
         var travelPlanUpdateEvent = _subject.OfType<TravelPlanUpdateEvent>().FirstOrDefault();
 

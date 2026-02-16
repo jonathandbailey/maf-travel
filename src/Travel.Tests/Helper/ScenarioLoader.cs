@@ -1,6 +1,6 @@
 using System.Text.Json;
+using Travel.Agents.Dto;
 using Travel.Tests.Common;
-using Travel.Workflows.Dto;
 
 namespace Travel.Tests.Helper;
 

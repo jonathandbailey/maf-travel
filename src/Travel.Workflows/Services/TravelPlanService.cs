@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Travel.Workflows.Dto;
+using Travel.Agents.Dto;
 
 namespace Travel.Workflows.Services;
 

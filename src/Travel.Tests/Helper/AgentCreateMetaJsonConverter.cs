@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Common;
-using TravelPlanDto = Travel.Workflows.Dto.TravelPlanDto;
 
 namespace Travel.Tests.Helper;
 

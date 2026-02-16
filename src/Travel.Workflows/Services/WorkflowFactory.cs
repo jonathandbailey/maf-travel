@@ -13,7 +13,7 @@ public class WorkflowFactory
     {
         var planningNode = new PlannerNode(planningAgent);
 
-        var travelPlanNode = new TravelPlanUpdateNode();
+        var travelPlanNode = new UpdateNode();
 
         var startNode = new StartNode();
 

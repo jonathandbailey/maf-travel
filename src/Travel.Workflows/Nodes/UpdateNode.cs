@@ -9,22 +9,22 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class TravelPlanUpdateNode() : ReflectingExecutor<TravelPlanUpdateNode>("Update"),
+public class UpdateNode() : ReflectingExecutor<UpdateNode>("Update"),
     IMessageHandler<TravelPlanUpdateCommand, TravelPlanContextUpdated>
 
 {
     public async ValueTask<TravelPlanContextUpdated> HandleAsync(TravelPlanUpdateCommand command, IWorkflowContext context,
         CancellationToken cancellationToken)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode("PlanUpdate", Guid.NewGuid());
+        using var activity = TravelWorkflowTelemetry.InvokeNode("Update", Guid.NewGuid());
+
+        var travelPlan = await context.GetTravelPlan(cancellationToken);
 
         activity?.AddEvent(new ActivityEvent("StateBeforeUpdate", tags: new ActivityTagsCollection
         {
-            { "snapshot", JsonSerializer.Serialize(command.TravelPlan) }
+            { "snapshot", JsonSerializer.Serialize(travelPlan) }
         }));
-
-
-        var travelPlan = await context.GetTravelPlan(cancellationToken);
+       
 
         travelPlan.ApplyPatch(command.TravelPlan);
 

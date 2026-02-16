@@ -2,6 +2,7 @@
 using Microsoft.Agents.ObjectModel;
 using System.Diagnostics;
 using System.Text.Json;
+using Travel.Agents.Dto;
 
 namespace Travel.Workflows.Telemetry;
 
@@ -35,6 +36,16 @@ public static class TravelWorkflowTelemetry
         source?.AddEvent(inputEvent);
 
         return source;
+    }
+
+    public static Activity? AddTravelPlanStateSnapshot(this Activity? activity, TravelPlanDto travelPlanDto)
+    {
+        activity?.AddEvent(new ActivityEvent("StateBeforeUpdate", tags: new ActivityTagsCollection
+        {
+            { "snapshot", JsonSerializer.Serialize(travelPlanDto) }
+        }));
+
+        return activity;
     }
 
     public static Activity? InvokeNode(string name, Guid threadId)

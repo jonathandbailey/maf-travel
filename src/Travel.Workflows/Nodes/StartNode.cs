@@ -1,21 +1,24 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
+using Travel.Agents.Dto;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class StartNode() : ReflectingExecutor<StartNode>("Start"), IMessageHandler<ChatMessage, ChatMessage>
+public class StartNode() : Executor<TravelWorkflowRequest, ChatMessage>(NodeNames.StartNodeName)
 {
-    public async ValueTask<ChatMessage> HandleAsync(ChatMessage message, IWorkflowContext context,
-        CancellationToken cancellationToken)
+    public override async ValueTask<ChatMessage> HandleAsync(TravelWorkflowRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode("Start", Guid.NewGuid());
-        
-        await context.SetTravelPlan(new TravelPlanDto(), cancellationToken);
+        using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.StartNodeName, request.ThreadId);
 
-        return message;
+        var travelPlan = request.TravelPlan ?? new TravelPlanDto();
+        
+        await context.SetTravelPlan(travelPlan, cancellationToken);
+
+        activity?.AddTravelPlanStateSnapshot(travelPlan);
+
+        return request.Message;
     }
 }
