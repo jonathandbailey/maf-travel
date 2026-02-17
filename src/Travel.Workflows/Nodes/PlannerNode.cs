@@ -16,10 +16,9 @@ public class PlannerNode(AIAgent agent) : Executor<TravelPlanContextUpdated, Age
 
         var travelPlan = await context.GetTravelPlan(cancellationToken);
 
-        var serializedPlan = JsonSerializer.Serialize(travelPlan);
-        var template = $"TravelPlanSummary : {serializedPlan}";
-
-        var response = await agent.RunAsync(template, cancellationToken: cancellationToken);
+        var serializedPlan = JsonSerializer.Serialize(new TravelPlanSummary(travelPlan));
+      
+        var response = await agent.RunAsync(serializedPlan, cancellationToken: cancellationToken);
 
         response.TraceToolCalls(activity);
 

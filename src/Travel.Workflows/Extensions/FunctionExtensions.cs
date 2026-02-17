@@ -25,7 +25,7 @@ public static class FunctionExtensions
         return toolCalls;
     }
 
-    private static bool TryGetArgument<T>(
+    public static bool TryGetArgument<T>(
         this FunctionCallContent functionCall,
         string key,
         [NotNullWhen(true)] out T? value,

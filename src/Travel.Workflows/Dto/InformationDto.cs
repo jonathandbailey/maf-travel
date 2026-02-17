@@ -11,6 +11,8 @@ public record InformationRequestDetails(string Context, List<string> Entities);
 
 public record TravelPlanUpdateCommand(TravelPlanDto TravelPlan);
 
+public record TravelPlanSummary(TravelPlanDto travelPlanSummary);
+
 public record TravelPlanContextUpdated();
 
 public record TravelPlanCompletedCommand();

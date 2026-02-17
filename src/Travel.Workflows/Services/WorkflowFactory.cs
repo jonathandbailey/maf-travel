@@ -23,7 +23,9 @@ public class WorkflowFactory
 
         var requestInformationPort = RequestPort.Create<InformationRequest, InformationResponse>("information");
 
-        var requestInformationNode = new InformationNode();
+        var requestInformationNode = new InformationRequestNode();
+
+        var informationResponseNode = new InformationResponseNode();
 
         var executionNode = new ExecutionNode();
 
@@ -48,9 +50,9 @@ public class WorkflowFactory
             
 
         builder.AddEdge(requestInformationNode, requestInformationPort);
-        builder.AddEdge(requestInformationPort, requestInformationNode);
+        builder.AddEdge(requestInformationPort, informationResponseNode);
 
-        builder.AddEdge(requestInformationNode, extractingNode);
+        builder.AddEdge(informationResponseNode, extractingNode);
 
         var workflow = builder.Build();
 

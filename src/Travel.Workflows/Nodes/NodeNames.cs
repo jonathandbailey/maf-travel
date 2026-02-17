@@ -8,4 +8,6 @@ public static class NodeNames
     public const string ExecutionNodeName = "Execution";
     public const string UpdateNode = "Update";
     public const string PlannerNode = "Planner";
+    public const string InformationResponseNode = "Information_Response";
+    public const string InformationRequestNode = "Information_Request";
 }
