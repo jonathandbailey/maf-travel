@@ -10,6 +10,10 @@ namespace Travel.Workflows.Nodes;
 
 public class ExecutionNode() : Executor<AgentResponse>(NodeNames.ExecutionNodeName)
 {
+    private const string? ThePlannerFailedToSelectARequiredTool = "The planner failed to select a required tool.";
+    private const string? MissingToolCall = "MISSING_TOOL_CALL";
+    private const string? RequiredToolsRequest = "Required tools: RequestInformation, UpdateTravelPlan, SearchFlights.";
+
     public override async ValueTask HandleAsync(AgentResponse agentResponse, IWorkflowContext context, CancellationToken cancellationToken = default)
     {
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.ExecutionNodeName, Guid.NewGuid());
@@ -31,10 +35,10 @@ public class ExecutionNode() : Executor<AgentResponse>(NodeNames.ExecutionNodeNa
 
         if (toolCalls.Count == 0)
         {
-            var error = new ErrorContent("The planner failed to select a required tool.")
+            var error = new ErrorContent(ThePlannerFailedToSelectARequiredTool)
             {
-                ErrorCode = "MISSING_TOOL_CALL",
-                Details = "Required tools: RequestInformation, UpdateTravelPlan, SearchFlights."
+                ErrorCode = MissingToolCall,
+                Details = RequiredToolsRequest
             };
 
             await context.SendMessageAsync(new ChatMessage(ChatRole.Assistant, [error]), cancellationToken: cancellationToken);
