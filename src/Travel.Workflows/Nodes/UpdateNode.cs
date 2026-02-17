@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text.Json;
-using Microsoft.Agents.AI.Workflows;
-using Microsoft.Agents.AI.Workflows.Reflection;
+﻿using Microsoft.Agents.AI.Workflows;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Extensions;
@@ -9,30 +6,20 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class UpdateNode() : ReflectingExecutor<UpdateNode>("Update"),
-    IMessageHandler<TravelPlanUpdateCommand, TravelPlanContextUpdated>
-
+public class UpdateNode() : Executor<TravelPlanUpdateCommand, TravelPlanContextUpdated>(NodeNames.UpdateNode)
 {
-    public async ValueTask<TravelPlanContextUpdated> HandleAsync(TravelPlanUpdateCommand command, IWorkflowContext context,
-        CancellationToken cancellationToken)
+    public override async ValueTask<TravelPlanContextUpdated> HandleAsync(TravelPlanUpdateCommand command, IWorkflowContext context,
+        CancellationToken cancellationToken = default)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode("Update", Guid.NewGuid());
+        using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.UpdateNode, Guid.NewGuid());
 
         var travelPlan = await context.GetTravelPlan(cancellationToken);
 
-        activity?.AddEvent(new ActivityEvent("StateBeforeUpdate", tags: new ActivityTagsCollection
-        {
-            { "snapshot", JsonSerializer.Serialize(travelPlan) }
-        }));
-       
+        activity?.AddTravelPlanStateSnapshotBefore(travelPlan);
 
         travelPlan.ApplyPatch(command.TravelPlan);
 
-
-        activity?.AddEvent(new ActivityEvent("StateAfterUpdate", tags: new ActivityTagsCollection
-        {
-            { "snapshot", JsonSerializer.Serialize(travelPlan) }
-        }));
+        activity?.AddTravelPlanStateSnapshotAfter(travelPlan);
 
         await context.SetTravelPlan(travelPlan, cancellationToken);
 

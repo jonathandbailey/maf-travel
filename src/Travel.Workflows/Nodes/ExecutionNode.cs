@@ -1,38 +1,31 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
-using Microsoft.Agents.AI.Workflows.Reflection;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Services;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Extensions;
 using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class ExecutionNode() : ReflectingExecutor<ExecutionNode>("Execution"), IMessageHandler<AgentResponse>
+public class ExecutionNode() : Executor<AgentResponse>(NodeNames.ExecutionNodeName)
 {
-    public async ValueTask HandleAsync(AgentResponse agentResponse, IWorkflowContext context, CancellationToken cancellationToken)
+    public override async ValueTask HandleAsync(AgentResponse agentResponse, IWorkflowContext context, CancellationToken cancellationToken = default)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode("Execution", Guid.NewGuid());
+        using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.ExecutionNodeName, Guid.NewGuid());
 
+        var toolCalls = agentResponse.ExtractToolCalls();
 
-        var toolCalls = new List<FunctionCallContent>();
-
-        foreach (var msg in agentResponse.Messages)
+        foreach (var functionCallContent in toolCalls)
         {
-            foreach (var content in msg.Contents)
+            switch (functionCallContent.Name)
             {
-                if (content is FunctionCallContent functionCall)
-                {
-                    toolCalls.Add(functionCall);
-
-                    await context.SendMessageAsync(functionCall, cancellationToken: cancellationToken);
-
-                    if (functionCall.Name == PlanningTools.PlanningCompleteToolName)
-                    {
-                        await context.SendMessageAsync(new TravelPlanCompletedCommand(), cancellationToken);
-                    }
-                }
-                
+                case PlanningTools.PlanningCompleteToolName:
+                    await context.SendMessageAsync(new TravelPlanCompletedCommand(), cancellationToken);
+                    break;
+                default:
+                    await context.SendMessageAsync(functionCallContent, cancellationToken: cancellationToken);
+                    break;
             }
         }
 

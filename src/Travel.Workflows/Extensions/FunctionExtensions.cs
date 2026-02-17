@@ -1,13 +1,31 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using Microsoft.Agents.AI;
+﻿using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 namespace Travel.Workflows.Extensions;
 
 public static class FunctionExtensions
 {
-    public static bool TryGetArgument<T>(
+    public static List<FunctionCallContent> ExtractToolCalls(this AgentResponse response)
+    {
+        var toolCalls = new List<FunctionCallContent>();
+
+        foreach (var msg in response.Messages)
+        {
+            foreach (var content in msg.Contents)
+            {
+                if (content is FunctionCallContent functionCall)
+                {
+                    toolCalls.Add(functionCall);
+                }
+            }
+        }
+
+        return toolCalls;
+    }
+
+    private static bool TryGetArgument<T>(
         this FunctionCallContent functionCall,
         string key,
         [NotNullWhen(true)] out T? value,
@@ -42,7 +60,7 @@ public static class FunctionExtensions
             {
                 if (content is FunctionCallContent functionCall)
                 {
-                    if (functionCall.TryGetArgument<T>(key, out value, options))
+                    if (functionCall.TryGetArgument(key, out value, options))
                     {
                         return true;
                     }

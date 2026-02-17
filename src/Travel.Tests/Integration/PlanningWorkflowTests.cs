@@ -30,14 +30,14 @@ public class PlanningWorkflowTests : IDisposable
     [MemberData(nameof(TravelPlanningScenarios))]
     public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenIncompletePlanProvided(PlanningWorkflowScenario scenario)
     {
-        using var testActivity = TestActivitySource.StartActivity($"Test: {scenario.ScenarioName ?? "PlanningWorkflow"}");
+        using var testActivity = TestActivitySource.StartActivity($"TestCase: {scenario.ScenarioName}");
 
         var harness = new WorkflowMockTestHarness2();
 
         var runIndex = 0;
         foreach (var run in scenario.Runs)
         {
-            using var runActivity = TestActivitySource.StartActivity($"Run {++runIndex}");
+            using var runActivity = TestActivitySource.StartActivity($"Run - {++runIndex}");
             await harness.WatchStreamAsync(run.Message, run.AgentMetas);
         }
 

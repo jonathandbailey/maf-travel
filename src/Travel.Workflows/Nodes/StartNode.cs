@@ -17,7 +17,7 @@ public class StartNode() : Executor<TravelWorkflowRequest, ChatMessage>(NodeName
         
         await context.SetTravelPlan(travelPlan, cancellationToken);
 
-        activity?.AddTravelPlanStateSnapshot(travelPlan);
+        activity?.AddTravelPlanStateSnapshotBefore(travelPlan);
 
         return request.Message;
     }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Agents.AI;
-using Microsoft.Agents.ObjectModel;
 using Microsoft.Extensions.AI;
 using System.Diagnostics;
 using System.Text.Json;
@@ -53,7 +52,17 @@ public static class TravelWorkflowTelemetry
         }
     }
 
-    public static Activity? AddTravelPlanStateSnapshot(this Activity? activity, TravelPlanDto travelPlanDto)
+    public static Activity? AddTravelPlanStateSnapshotAfter(this Activity? activity, TravelPlanDto travelPlanDto)
+    {
+        activity?.AddEvent(new ActivityEvent("StateAfterUpdate", tags: new ActivityTagsCollection
+        {
+            { "snapshot", JsonSerializer.Serialize(travelPlanDto) }
+        }));
+
+        return activity;
+    }
+
+    public static Activity? AddTravelPlanStateSnapshotBefore(this Activity? activity, TravelPlanDto travelPlanDto)
     {
         activity?.AddEvent(new ActivityEvent("StateBeforeUpdate", tags: new ActivityTagsCollection
         {
