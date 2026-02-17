@@ -9,9 +9,8 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public partial class ExtractionNode(AIAgent agent) : Executor<ChatMessage>(NodeNames.ExtractionNodeName)
+public class ExtractionNode(AIAgent agent) : Executor<ChatMessage>(NodeNames.ExtractionNodeName)
 {
-    [MessageHandler]
     public override async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
