@@ -3,9 +3,8 @@ using FluentAssertions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
-using Travel.Tests.Common;
 
-namespace Travel.Tests.Helper;
+namespace Travel.Tests.Shared;
 
 public static class ResponseHelper
 {

@@ -4,7 +4,7 @@ using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Common;
 
-namespace Travel.Tests.Helper;
+namespace Travel.Tests.Shared;
 
 public class AgentCreateMetaJsonConverter : JsonConverter<AgentFactoryHelper.AgentCreateMeta>
 {

@@ -5,8 +5,7 @@ using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 
-
-namespace Travel.Tests.Common;
+namespace Travel.Tests.Shared;
 
 public static  class AgentFactoryHelper
 {

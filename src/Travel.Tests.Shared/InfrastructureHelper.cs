@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace Travel.Tests.Common;
+namespace Travel.Tests.Shared;
 
 public class InfrastructureHelper
 {

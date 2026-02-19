@@ -15,7 +15,7 @@ public class InformationRequestNode() : Executor<FunctionCallContent>(NodeNames.
     {
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.InformationRequestNode, Guid.NewGuid());
 
-        if (functionCallContent.TryGetArgument<RequestInformationDto>(WorkflowConstants.ExtractingNodeUpdatePlanFunctionName, out var details, Json.FunctionCallSerializerOptions))
+        if (functionCallContent.TryGetArgument<RequestInformationDto>(WorkflowConstants.InformationRequestFunctionArgumentName, out var details, Json.FunctionCallSerializerOptions))
         {
             await context.SendMessageAsync(new InformationRequest(details.Message, details.RequiredInputs),
                 cancellationToken: cancellationToken);

@@ -1,12 +1,13 @@
-﻿using FluentAssertions;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using FluentAssertions;
 using Travel.Tests.Common;
 using Travel.Tests.Helper;
+using Travel.Tests.Shared;
 using Travel.Workflows.Events;
 
-namespace Travel.Tests.Evaluation;
+namespace Travel.Tests.Integration;
 
-public class TravelPlanning : IDisposable
+public class TravelPlanningWorkflowTests : IDisposable
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
 
@@ -19,7 +20,7 @@ public class TravelPlanning : IDisposable
         }
     }
 
-    public TravelPlanning()
+    public TravelPlanningWorkflowTests()
     {
         TelemetryHelper.Initialize(SettingsHelper.GetAspireDashboardSettings());
     }
@@ -31,10 +32,10 @@ public class TravelPlanning : IDisposable
 
     [Theory]
     [MemberData(nameof(TravelPlanningScenarios))]
-    public async Task Test1(TravelPlanningScenario scenario)
+    [Trait("Category", "Integration")]
+    public async Task Test_PlanningWorkflow(TravelPlanningScenario scenario)
     {
-        using var testActivity = TestActivitySource.StartActivity("Test:PlanningWorkflow");
-
+        using var testActivity = TestActivitySource.StartActivity();
 
         var harness = new TravelWorkflowTestHarness();
         var runIndex = 0;

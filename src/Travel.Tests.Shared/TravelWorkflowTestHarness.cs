@@ -1,13 +1,14 @@
-﻿using Microsoft.Agents.AI.Workflows;
+﻿
+using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Tests.Helper;
+using Travel.Tests.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Services;
 
-namespace Travel.Tests.Common;
+namespace Travel.Tests.Shared;
 
 public class TravelWorkflowTestHarness
 {

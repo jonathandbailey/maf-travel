@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Tests", "src\Travel.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Tests.Dashboard", "src\Travel.Tests.Dashboard\Travel.Tests.Dashboard.csproj", "{9B4CA291-BF5B-B19E-0F1E-C7DE75951108}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Tests.Integration", "src\Travel.Tests.Integration\Travel.Tests.Integration.csproj", "{63C1705A-5E8A-4EF7-86AF-C755E1D23B15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Tests.Shared", "src\Travel.Tests.Shared\Travel.Tests.Shared.csproj", "{A14562C9-1145-49A4-98ED-A86F36DFF8D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +75,14 @@ Global
 		{9B4CA291-BF5B-B19E-0F1E-C7DE75951108}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B4CA291-BF5B-B19E-0F1E-C7DE75951108}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B4CA291-BF5B-B19E-0F1E-C7DE75951108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63C1705A-5E8A-4EF7-86AF-C755E1D23B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63C1705A-5E8A-4EF7-86AF-C755E1D23B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63C1705A-5E8A-4EF7-86AF-C755E1D23B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63C1705A-5E8A-4EF7-86AF-C755E1D23B15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A14562C9-1145-49A4-98ED-A86F36DFF8D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A14562C9-1145-49A4-98ED-A86F36DFF8D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A14562C9-1145-49A4-98ED-A86F36DFF8D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A14562C9-1145-49A4-98ED-A86F36DFF8D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +96,8 @@ Global
 		{B006D2F9-B3E6-9EB4-3575-09B6542D26B6} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
 		{A1865580-D6E5-48D6-A26C-9FA4DAC31C29} = {FFAF644F-DAE2-4AC8-89C3-0246F10948D0}
 		{9B4CA291-BF5B-B19E-0F1E-C7DE75951108} = {FFAF644F-DAE2-4AC8-89C3-0246F10948D0}
+		{63C1705A-5E8A-4EF7-86AF-C755E1D23B15} = {FFAF644F-DAE2-4AC8-89C3-0246F10948D0}
+		{A14562C9-1145-49A4-98ED-A86F36DFF8D3} = {FFAF644F-DAE2-4AC8-89C3-0246F10948D0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CECF4BFE-6870-4849-BFB1-EC0B46CF01E1}

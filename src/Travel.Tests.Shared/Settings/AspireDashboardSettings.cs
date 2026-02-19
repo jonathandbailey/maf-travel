@@ -1,4 +1,4 @@
-namespace TDD.Common.Settings;
+namespace Travel.Tests.Shared.Settings;
 
 public class AspireDashboardSettings
 {

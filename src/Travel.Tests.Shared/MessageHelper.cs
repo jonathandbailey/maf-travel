@@ -2,7 +2,7 @@
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 
-namespace Travel.Tests.Helper;
+namespace Travel.Tests.Shared;
 
 public static class MessageHelper
 {

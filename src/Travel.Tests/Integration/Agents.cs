@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 using Travel.Tests.Common;
+using Travel.Tests.Shared;
 
 namespace Travel.Tests.Integration;
 

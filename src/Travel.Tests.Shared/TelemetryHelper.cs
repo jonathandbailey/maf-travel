@@ -2,9 +2,9 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using TDD.Common.Settings;
+using Travel.Tests.Shared.Settings;
 
-namespace Travel.Tests.Helper;
+namespace Travel.Tests.Shared;
 
 public static class TelemetryHelper
 {

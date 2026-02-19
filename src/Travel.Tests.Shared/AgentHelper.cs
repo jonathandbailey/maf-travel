@@ -8,8 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Travel.Tests.Shared.Settings;
 
-namespace Travel.Tests.Helper;
+namespace Travel.Tests.Shared;
 
 public static class AgentHelper
 {
@@ -45,7 +46,7 @@ public static class AgentHelper
     public static IAgentFactory CreateAgentFactory()
     {
         var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<Evaluation.Agents>()
+            .AddUserSecrets<AspireDashboardSettings>()
             .Build();
 
         var languageModelSettings = Options.Create(new LanguageModelSettings

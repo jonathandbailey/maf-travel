@@ -1,11 +1,9 @@
 ﻿using Agents.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using TDD.Common.Settings;
-using Travel.Tests.Evaluation;
-using Travel.Tests.Integration;
+using Travel.Tests.Shared.Settings;
 
-namespace Travel.Tests.Common;
+namespace Travel.Tests.Shared;
 
 public static class SettingsHelper
 {
@@ -15,15 +13,13 @@ public static class SettingsHelper
     private static IConfiguration BuildConfiguration() =>
         new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
-            .AddUserSecrets<PlanningWorkflowTests>()
+            .AddUserSecrets<AspireDashboardSettings>()
             .Build();
-
 
     public static IOptions<LanguageModelSettings> GetLanguageModelSettings()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<TravelPlanning>()
-            .Build();
+        var configuration = BuildConfiguration();
+
 
         var deploymentName = configuration[LanguageModelSettingsDeploymentName];
 

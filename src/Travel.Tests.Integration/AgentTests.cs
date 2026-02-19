@@ -1,15 +1,16 @@
 using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Configuration;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Tests.Helper;
+using Travel.Tests.Shared;
 
-namespace Travel.Tests.Evaluation
+namespace Travel.Tests.Integration
 {
     
     
-    public class Agents
+    public class AgentTests
     {
         private const string Origin = "Zurich";
         private const string Destination = "Paris";
@@ -19,11 +20,12 @@ namespace Travel.Tests.Evaluation
         private static readonly DateTime ReturnDate = new(2026, 6, 15);
 
         [Fact]
+        [Trait("Category", "Integration")]
         public async Task TravelPlanAgent_WhenProvidedWithCompletePlan_ShouldCompleteTheWorkflow()
         {
             var threadId = Guid.NewGuid().ToString();
 
-            var agent = await AgentHelper.Create("planning.yaml", PlanningTools.GetDeclarationOnlyTools());
+            var agent = await AgentHelper.Create("planning.yaml",PlanningTools.GetDeclarationOnlyTools());
 
             var message = MessageHelper.CreateTravelPlanMessage(new TravelPlanDto(Origin, Destination, DepartureDate, ReturnDate, NumberOfTravelers));
 
@@ -40,6 +42,7 @@ namespace Travel.Tests.Evaluation
 
 
         [Fact]
+        [Trait("Category", "Integration")]
         public async Task TravelPlanAgent_WhenProvidedWithNewObservationInformation_ShouldUpdateTravelPlan()
         {
             var threadId = Guid.NewGuid().ToString();
@@ -63,8 +66,13 @@ namespace Travel.Tests.Evaluation
 
 
         [Fact]
+        [Trait("Category", "Integration")]
         public async Task TravelConversation_WhenProvidedWithNewObservationInformation_ShouldUpdateTravelPlan()
         {
+            var configuration = new ConfigurationBuilder()
+                .AddUserSecrets<AgentTests>()
+                .Build();
+
             var threadId = Guid.NewGuid().ToString();
 
             var agent = await AgentHelper.Create("conversation.yaml", ConversationTools.GetDeclarationOnlyTools());
@@ -83,6 +91,7 @@ namespace Travel.Tests.Evaluation
         }
 
         [Fact]
+        [Trait("Category", "Integration")]
         public async Task TravelExtractAgent_WhenProvidedWithNewObservationInformation_ShouldUpdateTravelPlan()
         {
             var threadId = Guid.NewGuid().ToString();

@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <UserSecretsId>ccd9704b-512c-4033-b743-864b64c3eb37</UserSecretsId>
+    <UserSecretsId>5f64acac-4f51-452a-b206-cd0911f69a58</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Travel.Tests.Shared\Travel.Tests.Shared.csproj" />
     <ProjectReference Include="..\Travel.Workflows\Travel.Workflows.csproj" />
   </ItemGroup>
 
@@ -32,13 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\**\*.json">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="appsettings.json">
+    <None Update="TestData\PlanningWorkflowScenarios.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\TravelPlanningScenarios.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
