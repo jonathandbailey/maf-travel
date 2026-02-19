@@ -1,6 +1,6 @@
 ﻿using Infrastructure.Repository;
 
-namespace Travel.Tests.Common;
+namespace Travel.Tests.Shared;
 
 public class InMemoryCheckpointRepository : ICheckpointRepository
 {

@@ -4,7 +4,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 
-namespace Travel.Tests.Shared;
+namespace Travel.Tests.Shared.Helper;
 
 public static class ResponseHelper
 {
@@ -13,54 +13,7 @@ public static class ResponseHelper
         return new FunctionCallValidator(response);
     }
 
-    public static string? GetFunctionCallArgument(AgentResponse response, string functionName, string argumentName)
-    {
-        response.Messages.Should().ContainSingle();
-        var functionCalls = response.Messages.Single().Contents.OfType<FunctionCallContent>().ToList();
-        
-        var functionCall = functionCalls.Should()
-            .ContainSingle(f => f.Name == functionName, $"response should contain a call to {functionName}")
-            .Subject;
-
-        functionCall.Arguments.Should().NotBeNull()
-            .And.ContainKey(argumentName, $"function {functionName} should have argument '{argumentName}'");
-
-        return functionCall.Arguments![argumentName]?.ToString();
-    }
-
-    public static TravelPlanDto DeserializeTravelPlan(AgentResponse response, string functionName = "UpdateTravelPlan")
-    {
-        response.Messages.Should().ContainSingle();
-        var functionCalls = response.Messages.Single().Contents.OfType<FunctionCallContent>().ToList();
-        
-        var functionCall = functionCalls.Should()
-            .ContainSingle(f => f.Name == functionName, $"response should contain a call to {functionName}")
-            .Subject;
-
-        functionCall.Arguments.Should().NotBeNull()
-            .And.ContainKey("travelPlan", $"function {functionName} should have argument 'travelPlan'");
-
-        var travelPlanJson = functionCall.Arguments!["travelPlan"];
-        
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
-        if (travelPlanJson is JsonElement jsonElement)
-        {
-            var travelPlan = JsonSerializer.Deserialize<TravelPlanDto>(jsonElement.GetRawText(), options);
-            travelPlan.Should().NotBeNull("travelPlan argument should be deserializable");
-            return travelPlan!;
-        }
-        else
-        {
-            var json = JsonSerializer.Serialize(travelPlanJson);
-            var travelPlan = JsonSerializer.Deserialize<TravelPlanDto>(json, options);
-            travelPlan.Should().NotBeNull("travelPlan argument should be deserializable");
-            return travelPlan!;
-        }
-    }
+  
 }
 
 public class FunctionCallValidator
@@ -169,27 +122,7 @@ public class FunctionCallAssertion
             plan.NumberOfTravelers.Should().Be(numberOfTravelers, $"travel plan should have {numberOfTravelers} travelers"));
     }
 
-    public FunctionCallAssertion WithMessage(string message)
-    {
-        _functionCall.Arguments.Should().NotBeNull()
-            .And.ContainKey("message", $"function {_functionCall.Name} should have argument 'message'");
-
-        var actualMessage = _functionCall.Arguments!["message"]?.ToString();
-        actualMessage.Should().Be(message, $"function {_functionCall.Name} message should be '{message}'");
-
-        return this;
-    }
-
-    public FunctionCallAssertion WithThought(string thought)
-    {
-        _functionCall.Arguments.Should().NotBeNull()
-            .And.ContainKey("thought", $"function {_functionCall.Name} should have argument 'thought'");
-
-        var actualThought = _functionCall.Arguments!["thought"]?.ToString();
-        actualThought.Should().Be(thought, $"function {_functionCall.Name} thought should be '{thought}'");
-
-        return this;
-    }
+  
 
     public FunctionCallAssertion WithRequiredInputs(params string[] requiredInputs)
     {

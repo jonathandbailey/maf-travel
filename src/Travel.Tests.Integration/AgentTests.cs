@@ -4,7 +4,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Tests.Shared;
+using Travel.Tests.Shared.Helper;
 
 namespace Travel.Tests.Integration
 {

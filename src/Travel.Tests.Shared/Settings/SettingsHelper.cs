@@ -1,9 +1,8 @@
 ﻿using Agents.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Travel.Tests.Shared.Settings;
 
-namespace Travel.Tests.Shared;
+namespace Travel.Tests.Shared.Settings;
 
 public static class SettingsHelper
 {
@@ -12,7 +11,7 @@ public static class SettingsHelper
 
     private static IConfiguration BuildConfiguration() =>
         new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("settings\\appsettings.json")
             .AddUserSecrets<AspireDashboardSettings>()
             .Build();
 

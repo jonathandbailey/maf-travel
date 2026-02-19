@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Travel.Tests.Shared.Settings;
 
-namespace Travel.Tests.Shared;
+namespace Travel.Tests.Shared.Helper;
 
 public static class AgentHelper
 {

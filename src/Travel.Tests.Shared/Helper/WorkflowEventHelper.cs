@@ -1,10 +1,7 @@
 using FluentAssertions;
 using Microsoft.Agents.AI.Workflows;
-using Travel.Agents.Dto;
-using Travel.Workflows.Dto;
-using Travel.Workflows.Events;
 
-namespace Travel.Tests.Common;
+namespace Travel.Tests.Shared.Helper;
 
 public static class WorkflowEventHelper
 {
@@ -61,24 +58,6 @@ public class WorkflowEventCollectionAssertions
 
         var actualCount = matchingEvents.Count;
         actualCount.Should().BeGreaterThan(0, because, becauseArgs);
-
-        return new AndConstraint<WorkflowEventCollectionAssertions>(this);
-    }
-
-    public AndConstraint<WorkflowEventCollectionAssertions> ShouldMatchFunctionCallResponse(TravelPlanDto travelPlanDto, string because = "", params object[] becauseArgs)
-    {
-        var travelPlanUpdateEvent = _subject.OfType<TravelPlanUpdateEvent>().FirstOrDefault();
-
-        travelPlanUpdateEvent.Should().NotBeNull($"collection should contain a {nameof(TravelPlanUpdateEvent)}");
-
-        var data = travelPlanUpdateEvent!.TravelPlanDto;
-
-        data.Should().NotBeNull();
-
-        data!.Origin.Should().Be(travelPlanDto.Origin, because, becauseArgs);
-        data.Destination.Should().Be(travelPlanDto.Destination, because, becauseArgs);
-        data.StartDate.Should().Be(travelPlanDto.StartDate, because, becauseArgs);
-        data.EndDate.Should().Be(travelPlanDto.EndDate, because, becauseArgs);
 
         return new AndConstraint<WorkflowEventCollectionAssertions>(this);
     }

@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 using FluentAssertions;
 using Travel.Tests.Common;
-using Travel.Tests.Helper;
 using Travel.Tests.Shared;
+using Travel.Tests.Shared.Helper;
+using Travel.Tests.Shared.Settings;
 using Travel.Workflows.Events;
 
 namespace Travel.Tests.Integration;

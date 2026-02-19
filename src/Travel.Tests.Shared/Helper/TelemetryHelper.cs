@@ -4,7 +4,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Travel.Tests.Shared.Settings;
 
-namespace Travel.Tests.Shared;
+namespace Travel.Tests.Shared.Helper;
 
 public static class TelemetryHelper
 {
