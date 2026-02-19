@@ -2,11 +2,10 @@
 using System.Diagnostics;
 using FluentAssertions;
 using Travel.Tests.Common;
-using Travel.Tests.Helper;
 using Travel.Tests.Shared;
 using Travel.Workflows.Events;
 
-namespace Travel.Tests.Integration;
+namespace Travel.Tests.Unit;
 
 public class PlanningWorkflowTests : IDisposable
 {

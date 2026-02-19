@@ -1,9 +1,7 @@
 using System.Text.Json;
 using Travel.Agents.Dto;
-using Travel.Tests.Common;
-using Travel.Tests.Shared;
 
-namespace Travel.Tests.Helper;
+namespace Travel.Tests.Shared;
 
 public record TravelPlanningScenario(string[] Messages, TravelPlanDto ExpectedTravelPlan);
 

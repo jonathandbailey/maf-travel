@@ -5,7 +5,7 @@ using Travel.Agents.Dto;
 using Travel.Tests.Common;
 using Travel.Tests.Shared;
 
-namespace Travel.Tests.Integration;
+namespace Travel.Tests.Unit;
 
 public class Agents
 {
