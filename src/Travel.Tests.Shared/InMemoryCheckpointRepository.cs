@@ -13,7 +13,7 @@ public class InMemoryCheckpointRepository : ICheckpointRepository
 
     public async Task SaveAsync(Guid threadId, StoreStateDto storeState)
     {
-        var path = $"{threadId}-{storeState.CheckpointInfo.CheckpointId}-{storeState.CheckpointInfo.RunId}.json";
+        var path = $"{threadId}-{storeState.CheckpointInfo.CheckpointId}-{storeState.CheckpointInfo.SessionId}.json";
 
         _store[path] = storeState;
 

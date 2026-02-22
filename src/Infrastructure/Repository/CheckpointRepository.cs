@@ -22,7 +22,7 @@ public class CheckpointRepository(IFileRepository fileRepository) : ICheckpointR
 
     public async Task SaveAsync(Guid threadId, StoreStateDto storeState)
     {
-        var path = $"{threadId}-{storeState.CheckpointInfo.CheckpointId}-{storeState.CheckpointInfo.RunId}.json";
+        var path = $"{threadId}-{storeState.CheckpointInfo.CheckpointId}-{storeState.CheckpointInfo.SessionId}.json";
 
 
 

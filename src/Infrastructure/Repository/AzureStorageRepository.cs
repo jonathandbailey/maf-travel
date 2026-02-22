@@ -206,7 +206,7 @@ public class AzureStorageRepository(BlobServiceClient blobServiceClient, ILogger
 
         try
         {
-            await foreach (var blobItem in blobContainerClient.GetBlobsAsync(prefix: prefix))
+            await foreach (var blobItem in blobContainerClient.GetBlobsAsync(new GetBlobsOptions {Prefix = prefix}))
             {
                 blobNames.Add(blobItem.Name);
             }
