@@ -8,7 +8,17 @@ public class InMemoryCheckpointRepository : ICheckpointRepository
     
     public async Task<List<StoreStateDto>> GetAsync(string runId)
     {
-        throw new NotImplementedException();
+        var list = new List<StoreStateDto>();
+
+        foreach (var storeStateDto in _store)
+        {
+            if (storeStateDto.Key.Contains(runId))
+            {
+                list.Add(storeStateDto.Value);
+            }
+        }
+
+        return list;
     }
 
     public async Task SaveAsync(Guid threadId, StoreStateDto storeState)

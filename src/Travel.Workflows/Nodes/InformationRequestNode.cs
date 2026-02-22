@@ -8,9 +8,10 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class InformationRequestNode() : Executor<FunctionCallContent>(NodeNames.InformationRequestNode) 
+public partial class InformationRequestNode() : Executor(NodeNames.InformationRequestNode) 
 {
-    public override async ValueTask HandleAsync(FunctionCallContent functionCallContent, IWorkflowContext context,
+    [MessageHandler(Send = [typeof(InformationRequest)])]
+    private async ValueTask HandleAsync(FunctionCallContent functionCallContent, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.InformationRequestNode, Guid.NewGuid());

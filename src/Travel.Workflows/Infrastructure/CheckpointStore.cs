@@ -14,6 +14,8 @@ public class CheckpointStore(ICheckpointRepository checkpointRepository, Guid th
         return stateByRunId.Select(x => x.CheckpointInfo);
     }
 
+    
+
     public override async ValueTask<CheckpointInfo> CreateCheckpointAsync(string runId, JsonElement value, CheckpointInfo? parent = null)
     {
         var checkpointInfo = new CheckpointInfo(runId, Guid.NewGuid().ToString());

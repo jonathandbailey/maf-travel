@@ -8,13 +8,14 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class ExecutionNode() : Executor<AgentResponse>(NodeNames.ExecutionNodeName)
+public partial class ExecutionNode() : Executor(NodeNames.ExecutionNodeName)
 {
     private const string? ThePlannerFailedToSelectARequiredTool = "The planner failed to select a required tool.";
     private const string? MissingToolCall = "MISSING_TOOL_CALL";
     private const string? RequiredToolsRequest = "Required tools: RequestInformation, UpdateTravelPlan, SearchFlights.";
 
-    public override async ValueTask HandleAsync(AgentResponse agentResponse, IWorkflowContext context, CancellationToken cancellationToken = default)
+    [MessageHandler(Send = [typeof(FunctionCallContent), typeof(TravelPlanCompletedCommand)])]
+    private async ValueTask HandleAsync(AgentResponse agentResponse, IWorkflowContext context, CancellationToken cancellationToken = default)
     {
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.ExecutionNodeName, Guid.NewGuid());
 

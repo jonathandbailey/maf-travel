@@ -1,12 +1,14 @@
 ﻿using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.AI;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class InformationResponseNode() : Executor<InformationResponse>(NodeNames.InformationResponseNode)
+public partial class InformationResponseNode() : Executor(NodeNames.InformationResponseNode)
 {
-    public override async ValueTask HandleAsync(InformationResponse informationResponse, IWorkflowContext context,
+    [MessageHandler(Send = [typeof(ChatMessage)])]
+    private async ValueTask HandleAsync(InformationResponse informationResponse, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.InformationResponseNode, Guid.NewGuid());
