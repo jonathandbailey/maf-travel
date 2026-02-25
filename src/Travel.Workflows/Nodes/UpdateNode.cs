@@ -1,30 +1,48 @@
-﻿using Microsoft.Agents.AI.Workflows;
+using System.Diagnostics;
+using Microsoft.Agents.AI.Workflows;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
+using Travel.Workflows.Exceptions;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class UpdateNode() : Executor<TravelPlanUpdateCommand, TravelPlanContextUpdated>(NodeNames.UpdateNode)
+public partial class UpdateNode() : Executor(NodeNames.UpdateNode)
 {
-    public override async ValueTask<TravelPlanContextUpdated> HandleAsync(TravelPlanUpdateCommand command, IWorkflowContext context,
+    [MessageHandler(Send = [typeof(TravelPlanContextUpdated)])]
+    private async ValueTask HandleAsync(TravelPlanUpdateCommand command, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.UpdateNode, Guid.NewGuid());
+        var threadId = await context.GetThreadId(cancellationToken);
 
-        var travelPlan = await context.GetTravelPlan(cancellationToken);
+        using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.UpdateNode, threadId);
 
-        activity?.AddTravelPlanStateSnapshotBefore(travelPlan);
+        if (command.TravelPlan == null)
+        {
+            throw new WorkflowValidationException("UpdateNode received a command with a null TravelPlan.", NodeNames.UpdateNode, threadId);
+        }
 
-        travelPlan.ApplyPatch(command.TravelPlan);
+        try
+        {
+            var travelPlan = await context.GetTravelPlan(cancellationToken);
 
-        activity?.AddTravelPlanStateSnapshotAfter(travelPlan);
+            activity?.AddTravelPlanStateSnapshotBefore(travelPlan);
 
-        await context.SetTravelPlan(travelPlan, cancellationToken);
+            travelPlan.ApplyPatch(command.TravelPlan);
 
-        await context.AddEventAsync(new TravelPlanUpdateEvent(travelPlan), cancellationToken);
+            activity?.AddTravelPlanStateSnapshotAfter(travelPlan);
 
-        return new TravelPlanContextUpdated();
+            await context.SetTravelPlan(travelPlan, cancellationToken);
+
+            await context.AddEventAsync(new TravelPlanUpdateEvent(travelPlan), cancellationToken);
+
+            await context.SendMessageAsync(new TravelPlanContextUpdated(), cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, exception.Message);
+            throw new WorkflowException("UpdateNode failed to apply travel plan update.", NodeNames.UpdateNode, threadId, exception);
+        }
     }
 }
