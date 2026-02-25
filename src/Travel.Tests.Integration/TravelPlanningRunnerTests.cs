@@ -7,7 +7,7 @@ using Travel.Workflows.Events;
 
 namespace Travel.Tests.Integration;
 
-public class TravelPlanningWorkflowTests : IDisposable
+public class TravelPlanningRunnerTests : IDisposable
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
 
@@ -20,7 +20,7 @@ public class TravelPlanningWorkflowTests : IDisposable
         }
     }
 
-    public TravelPlanningWorkflowTests()
+    public TravelPlanningRunnerTests()
     {
         TelemetryHelper.Initialize(SettingsHelper.GetAspireDashboardSettings());
     }

@@ -4,7 +4,10 @@
       "Bash(xargs grep -l \"RequestPort\")",
       "Read(//c/Users/jonat/**)",
       "Bash(dotnet build src/Travel.Workflows/Travel.Workflows.csproj --no-incremental -q)",
-      "Bash(dotnet build src/Travel.Workflows/Travel.Workflows.csproj --no-incremental)"
+      "Bash(dotnet build src/Travel.Workflows/Travel.Workflows.csproj --no-incremental)",
+      "Bash(dotnet build MafTravel.sln --no-restore -v q)",
+      "Bash(dotnet build src/Travel.Workflows/Travel.Workflows.csproj src/Travel.Tests.Shared/Travel.Tests.Shared.csproj src/Travel.Tests.Integration/Travel.Tests.Integration.csproj src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --no-restore -v q)",
+      "Bash(dotnet build src/Travel.Tests.Integration/Travel.Tests.Integration.csproj --no-restore -v q)"
     ]
   }
 }

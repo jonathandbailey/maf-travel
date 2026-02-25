@@ -1,20 +1,23 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Events;
 using Travel.Workflows.Exceptions;
 
 namespace Travel.Workflows.Services;
 
-public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpointManager)
+public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpointManager, WorkflowSession? session = null)
 {
-    private CheckpointInfo? _checkpointInfo;
-    private WorkflowState _state = WorkflowState.Created;
+    private CheckpointInfo? _checkpointInfo = session?.LastCheckpoint;
+    private WorkflowState _state = session?.State ?? WorkflowState.Created;
 
-    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(
-        TravelWorkflowRequest request, CheckpointInfo? checkpointInfo = null)
+    public WorkflowState State => _state;
+    public CheckpointInfo? LastCheckpoint => _checkpointInfo;
+
+    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
     {
-        _checkpointInfo = checkpointInfo;
         var run = await CreateWorkflowRun(request);
+       
 
         await foreach (var evt in run.WatchStreamAsync())
         {
@@ -41,15 +44,20 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
                         yield return evt;
                         yield break;
                     }
-                    case WorkflowState.Suspended:
+                    case WorkflowState.Resumed:
                     {
                         var resp = requestInfoEvent.Request.CreateResponse(new InformationResponse(request.Message));
 
                         _state = WorkflowState.Executing;
                         await run.SendResponseAsync(resp);
-                        break;   
+                        break;
                     }
                 }
+            }
+
+            if (evt is TravelPlanningCompleteEvent)
+            {
+                _state = WorkflowState.Completed;
             }
 
             yield return evt;
@@ -58,29 +66,23 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
 
     private async ValueTask<StreamingRun> CreateWorkflowRun(TravelWorkflowRequest request)
     {
-        if (_checkpointInfo != null)
-        {
-            _state = WorkflowState.Suspended;
-
-            return await ResumeWorkflow();
-        }
-
-        if (_state == WorkflowState.Created)
-        {
-            _state = WorkflowState.Executing;
-        }
-
-        return await InProcessExecution.RunStreamingAsync(workflow, request, checkpointManager);
-
         return _state switch
         {
             WorkflowState.Failed => throw new WorkflowException("Workflow cannot be started or resumed while in an Failed state."),
             WorkflowState.Executing => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             WorkflowState.Suspended => await ResumeWorkflow(),
-            WorkflowState.Created => await InProcessExecution.RunStreamingAsync(workflow, request.Message, checkpointManager),
+            WorkflowState.Created => await RunWorkflow(request),
             WorkflowState.Completed => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             _ => throw new WorkflowException("Invalid workflow state.")
         };
+    }
+
+    private async ValueTask<StreamingRun> RunWorkflow(TravelWorkflowRequest request)
+    {
+        _state = WorkflowState.Executing;
+
+        var run = await InProcessExecution.RunStreamingAsync(workflow, request, checkpointManager);
+        return run;
     }
 
     private async ValueTask<StreamingRun> ResumeWorkflow()
@@ -89,8 +91,12 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
         {
             throw new WorkflowException("CheckpointInfo is NULL, but checkpoint information is required to resume a workflow.");
         }
-        
-        return await InProcessExecution.ResumeStreamingAsync(workflow, _checkpointInfo,
+
+        var run = await InProcessExecution.ResumeStreamingAsync(workflow, _checkpointInfo,
             checkpointManager);
+
+        _state = WorkflowState.Resumed;
+
+        return run;
     }
 }

@@ -13,43 +13,40 @@ namespace Travel.Tests.Shared;
 
 public class TravelWorkflowTestHarness
 {
-    private readonly Guid _threadId  = Guid.NewGuid();
-    private CheckpointInfo? _lastCheckpoint;
-    
+    private readonly Guid _threadId = Guid.NewGuid();
+
     private List<WorkflowEvent> _lastEvents = [];
     private readonly IAgentProvider _agentProvider;
     private readonly Mock<ITravelPlanService> _mockSvc;
     private readonly InMemoryCheckpointRepository _repo;
+    private readonly InMemoryWorkflowSessionRepository _sessionRepo;
 
     public List<WorkflowEvent> Events => _lastEvents;
 
     public TravelWorkflowTestHarness()
     {
         _repo = new InMemoryCheckpointRepository();
+        _sessionRepo = new InMemoryWorkflowSessionRepository();
         _mockSvc = new Mock<ITravelPlanService>();
         _mockSvc.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
 
-         _agentProvider = new AgentProvider(
+        _agentProvider = new AgentProvider(
             AgentHelper.CreateAgentFactory(),
             AgentHelper.CreateAgentTemplateRepository());
-
     }
+
     public async Task<List<WorkflowEvent>> WatchStreamAsync(string message)
     {
-        var service = new TravelWorkflowService(_mockSvc.Object, _repo, _agentProvider);
+        var service = new TravelWorkflowService(_mockSvc.Object, _repo, _sessionRepo, _agentProvider);
 
         var request = new TravelWorkflowRequest(
             new ChatMessage(ChatRole.User, message),
             _threadId, new TravelPlanDto());
 
-        _lastEvents = await service.WatchStreamAsync(request, _lastCheckpoint).ToListAsync();
-
-        _lastCheckpoint = _lastEvents.GetCheckpointInfo();
+        _lastEvents = await service.WatchStreamAsync(request).ToListAsync();
 
         Events.AddRange(_lastEvents);
 
         return _lastEvents;
     }
-
-   
 }

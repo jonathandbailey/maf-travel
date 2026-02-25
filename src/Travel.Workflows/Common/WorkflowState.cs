@@ -6,5 +6,6 @@ public enum WorkflowState
     Executing, 
     Completed,
     Failed,
-    Suspended
+    Suspended,
+    Resumed
 }

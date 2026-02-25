@@ -13,18 +13,16 @@ namespace Travel.Tests.Common;
 public class WorkflowMockTestHarness2
 {
     private readonly InMemoryCheckpointRepository _checkpointRepository = new();
+    private readonly InMemoryWorkflowSessionRepository _sessionRepository = new();
     private readonly Mock<ITravelPlanService> _travelPlanService;
     private readonly Guid _threadId = Guid.NewGuid();
-    private CheckpointInfo? _checkpointInfo;
 
     private List<WorkflowEvent> _lastEvents = [];
     public List<WorkflowEvent> Events => _lastEvents;
 
-
     public WorkflowMockTestHarness2()
     {
-         _travelPlanService = new Mock<ITravelPlanService>();
-
+        _travelPlanService = new Mock<ITravelPlanService>();
         _travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
     }
 
@@ -37,22 +35,19 @@ public class WorkflowMockTestHarness2
             var chatClient = AgentFactoryHelper.CreateMockChatClient(meta);
 
             var agent = await AgentFactoryHelper.Create(meta.AgentType);
-            
+
             agentProvider.Setup(x => x.CreateAsync(meta.AgentType))
                 .ReturnsAsync(agent);
         }
 
-        var workflowService = new TravelWorkflowService(_travelPlanService.Object, _checkpointRepository, agentProvider.Object);
+        var workflowService = new TravelWorkflowService(_travelPlanService.Object, _checkpointRepository, _sessionRepository, agentProvider.Object);
 
         var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, message), _threadId, new TravelPlanDto());
 
-        var events = await workflowService.WatchStreamAsync(request, _checkpointInfo).ToListAsync();
-
-        _checkpointInfo = events.GetCheckpointInfo();
+        var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
         Events.AddRange(events);
 
         return events;
     }
-    
 }
