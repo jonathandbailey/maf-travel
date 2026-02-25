@@ -8,13 +8,14 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class StartNode() : Executor<TravelWorkflowRequest, ChatMessage>(NodeNames.StartNodeName)
+public partial class StartNode() : Executor(NodeNames.StartNodeName)
 {
-    public override async ValueTask<ChatMessage> HandleAsync(TravelWorkflowRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
+    [MessageHandler(Send = [typeof(TravelPlanExtractCommand)])]
+    private async ValueTask HandleAsync(TravelWorkflowRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
     {
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.StartNodeName, request.ThreadId);
 
-        Validate(request);
+        request.Validate();
 
         activity?.AddNodeAgentInput(request.Message.Text);
 
@@ -28,30 +29,12 @@ public class StartNode() : Executor<TravelWorkflowRequest, ChatMessage>(NodeName
 
             activity?.AddTravelPlanStateSnapshotAfter(travelPlan);
 
-            return request.Message;
+            await context.SendMessageAsync(new TravelPlanExtractCommand(request.Message), cancellationToken);
         }
         catch (Exception exception)
         {
             activity?.SetStatus(ActivityStatusCode.Error, exception.Message);
             throw new WorkflowException("StartNode failed to initialize workflow state.", NodeNames.StartNodeName, request.ThreadId, exception);
-        }
-    }
-
-    private static void Validate(TravelWorkflowRequest request)
-    {
-        if (request.ThreadId == Guid.Empty)
-        {
-            throw new WorkflowValidationException("ThreadId cannot be Guid.Empty.", NodeNames.StartNodeName, Guid.Empty);
-        }
-
-        if (request.Message.Role != ChatRole.User)
-        {
-            throw new WorkflowValidationException("Message must have Role 'User'.", NodeNames.StartNodeName, request.ThreadId);
-        }
-
-        if (string.IsNullOrEmpty(request.Message.Text))
-        {
-            throw new WorkflowValidationException("Message Text must have Content.", NodeNames.StartNodeName, request.ThreadId);
         }
     }
 }

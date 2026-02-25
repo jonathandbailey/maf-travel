@@ -1,6 +1,5 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
@@ -14,14 +13,14 @@ public partial class ExtractionNode(AIAgent agent) : Executor(NodeNames.Extracti
 {
 
     [MessageHandler(Send = [typeof(TravelPlanUpdateCommand)])]
-    private async ValueTask HandleAsync(ChatMessage message, IWorkflowContext context,
+    private async ValueTask HandleAsync(TravelPlanExtractCommand command, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.ExtractionNodeName, Guid.NewGuid());
 
-        activity?.AddNodeAgentInput(message.Text);
+        activity?.AddNodeAgentInput(command.Message.Text);
 
-        var response = await agent.RunAsync(message,  cancellationToken: cancellationToken);
+        var response = await agent.RunAsync(command.Message,  cancellationToken: cancellationToken);
 
         activity?.AddNodeAgentOutput(response.Text);
         activity?.AddNodeAgentUsage(response);
