@@ -43,7 +43,7 @@ public partial class ExtractionNode(AIAgent agent) : Executor(NodeNames.Extracti
         }
 
         activity?.AddNodeAgentOutput(response.Text);
-        activity?.AddNodeAgentUsage(response);
+        activity?.AddNodeAgentUsage(response, NodeNames.ExtractionNodeName, threadId);
 
         response.TraceToolCalls(activity);
 

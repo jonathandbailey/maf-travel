@@ -45,7 +45,7 @@ public partial class PlannerNode(AIAgent agent) : Executor(NodeNames.PlannerNode
         }
 
         activity?.AddNodeAgentOutput(response.Text);
-        activity?.AddNodeAgentUsage(response);
+        activity?.AddNodeAgentUsage(response, NodeNames.PlannerNode, threadId);
 
         response.TraceToolCalls(activity);
 

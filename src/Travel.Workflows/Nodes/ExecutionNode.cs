@@ -25,7 +25,7 @@ public partial class ExecutionNode() : Executor(NodeNames.ExecutionNodeName)
         var toolCalls = agentResponse.ExtractToolCalls();
 
         activity?.AddNodeAgentOutput(agentResponse.Text);
-        activity?.AddNodeAgentUsage(agentResponse);
+        activity?.AddNodeAgentUsage(agentResponse, NodeNames.ExecutionNodeName, threadId);
 
         agentResponse.TraceToolCalls(activity);
 

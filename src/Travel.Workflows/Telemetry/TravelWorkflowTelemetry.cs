@@ -1,6 +1,7 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Travel.Agents.Dto;
 
@@ -9,7 +10,17 @@ namespace Travel.Workflows.Telemetry;
 public static class TravelWorkflowTelemetry
 {
     private static readonly ActivitySource Source = new ActivitySource("Travel.Workflows", "1.0.0");
+    private static readonly Meter Meter = new("Application.Workflows", "1.0.0");
     private static readonly int MaxPreviewLength = 100;
+
+    private static readonly Counter<long> InputTokenCounter = 
+        Meter.CreateCounter<long>("gen_ai.token.input", "tokens", "Number of input tokens consumed");
+
+    private static readonly Counter<long> OutputTokenCounter = 
+        Meter.CreateCounter<long>("gen_ai.token.output", "tokens", "Number of output tokens generated");
+
+    private static readonly Counter<long> TotalTokenCounter = 
+        Meter.CreateCounter<long>("gen_ai.token.total", "tokens", "Total tokens consumed");
 
     public static Activity? Start(string name)
     {
@@ -83,11 +94,29 @@ public static class TravelWorkflowTelemetry
         return Source.StartActivity($"invoke_node {name}", ActivityKind.Internal, null, tags);
     }
 
-    public static void AddNodeAgentUsage(this Activity activity, AgentResponse agentWorkflowResponse)
+    public static void AddNodeAgentUsage(this Activity activity, AgentResponse agentWorkflowResponse, string nodeName, Guid threadId)
     {
         activity.SetTag("gen_ai.usage.input_tokens", agentWorkflowResponse.Usage?.InputTokenCount );
         activity.SetTag("gen_ai.usage.output_tokens", agentWorkflowResponse.Usage?.OutputTokenCount );
         activity.SetTag("gen_ai.usage.total_tokens", agentWorkflowResponse.Usage?.TotalTokenCount );
+
+        if (agentWorkflowResponse.Usage != null)
+        {
+            var tags = new TagList
+            {
+                { "thread.id", threadId.ToString() },
+                { "node.name", nodeName }
+            };
+
+            if (agentWorkflowResponse.Usage.InputTokenCount.HasValue)
+                InputTokenCounter.Add(agentWorkflowResponse.Usage.InputTokenCount.Value, tags);
+
+            if (agentWorkflowResponse.Usage.OutputTokenCount.HasValue)
+                OutputTokenCounter.Add(agentWorkflowResponse.Usage.OutputTokenCount.Value, tags);
+
+            if (agentWorkflowResponse.Usage.TotalTokenCount.HasValue)
+                TotalTokenCounter.Add(agentWorkflowResponse.Usage.TotalTokenCount.Value, tags);
+        }
     }
 
     public static void AddNodeAgentInput(this Activity activity, string input)
