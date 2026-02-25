@@ -1,4 +1,4 @@
-﻿using Microsoft.Agents.AI.Workflows;
+using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Moq;
 using Travel.Agents.Dto;
@@ -14,17 +14,10 @@ public class WorkflowMockTestHarness2
 {
     private readonly InMemoryCheckpointRepository _checkpointRepository = new();
     private readonly InMemoryWorkflowSessionRepository _sessionRepository = new();
-    private readonly Mock<ITravelPlanService> _travelPlanService;
     private readonly Guid _threadId = Guid.NewGuid();
 
     private List<WorkflowEvent> _lastEvents = [];
     public List<WorkflowEvent> Events => _lastEvents;
-
-    public WorkflowMockTestHarness2()
-    {
-        _travelPlanService = new Mock<ITravelPlanService>();
-        _travelPlanService.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
-    }
 
     public async Task<List<WorkflowEvent>> WatchStreamAsync(string message, List<AgentFactoryHelper.AgentCreateMeta> metas)
     {
@@ -40,7 +33,7 @@ public class WorkflowMockTestHarness2
                 .ReturnsAsync(agent);
         }
 
-        var workflowService = new TravelWorkflowService(_travelPlanService.Object, _checkpointRepository, _sessionRepository, agentProvider.Object);
+        var workflowService = new TravelWorkflowService(_checkpointRepository, _sessionRepository, agentProvider.Object);
 
         var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, message), _threadId, new TravelPlanDto());
 

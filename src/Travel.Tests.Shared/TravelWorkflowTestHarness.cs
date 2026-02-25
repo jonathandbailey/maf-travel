@@ -1,7 +1,6 @@
 ﻿
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Common;
@@ -17,7 +16,6 @@ public class TravelWorkflowTestHarness
 
     private List<WorkflowEvent> _lastEvents = [];
     private readonly IAgentProvider _agentProvider;
-    private readonly Mock<ITravelPlanService> _mockSvc;
     private readonly InMemoryCheckpointRepository _repo;
     private readonly InMemoryWorkflowSessionRepository _sessionRepo;
 
@@ -27,8 +25,6 @@ public class TravelWorkflowTestHarness
     {
         _repo = new InMemoryCheckpointRepository();
         _sessionRepo = new InMemoryWorkflowSessionRepository();
-        _mockSvc = new Mock<ITravelPlanService>();
-        _mockSvc.Setup(x => x.GetTravelPlanAsync()).ReturnsAsync(new TravelPlanDto());
 
         _agentProvider = new AgentProvider(
             AgentHelper.CreateAgentFactory(),
@@ -37,7 +33,7 @@ public class TravelWorkflowTestHarness
 
     public async Task<List<WorkflowEvent>> WatchStreamAsync(string message)
     {
-        var service = new TravelWorkflowService(_mockSvc.Object, _repo, _sessionRepo, _agentProvider);
+        var service = new TravelWorkflowService(_repo, _sessionRepo, _agentProvider);
 
         var request = new TravelWorkflowRequest(
             new ChatMessage(ChatRole.User, message),

@@ -12,7 +12,7 @@ public class TravelPlanService : ITravelPlanService
 
     public Task<TravelPlanDto> GetTravelPlanAsync()
     {
-        throw new NotImplementedException();
+        return Task.FromResult(new TravelPlanDto());
     }
 }
 

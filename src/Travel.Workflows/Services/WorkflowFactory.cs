@@ -7,7 +7,7 @@ namespace Travel.Workflows.Services;
 
 public class WorkflowFactory
 {
-    public Workflow Build(AIAgent planningAgent, AIAgent extractingAgent)
+    public static Workflow Build(AIAgent planningAgent, AIAgent extractingAgent)
     {
         var planningNode = new PlannerNode(planningAgent);
 
