@@ -1,6 +1,6 @@
-﻿namespace Travel.Workflows.Exceptions;
+namespace Travel.Workflows.Exceptions;
 
-public class WorkflowValidationException : Exception
+public class WorkflowValidationException : WorkflowException
 {
     public WorkflowValidationException()
     {
@@ -10,7 +10,7 @@ public class WorkflowValidationException : Exception
     {
     }
 
-    public WorkflowValidationException(string message, Exception inner) : base(message, inner)
+    public WorkflowValidationException(string message, string nodeName, Guid threadId) : base(message, nodeName, threadId)
     {
     }
 }
