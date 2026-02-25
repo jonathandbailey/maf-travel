@@ -10,7 +10,7 @@ namespace Travel.Workflows.Services;
 public class TravelWorkflowService(
     ICheckpointRepository checkpointRepository,
     IWorkflowSessionRepository sessionRepository,
-    IAgentProvider agentProvider)
+    IAgentProvider agentProvider) 
 {
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
     {

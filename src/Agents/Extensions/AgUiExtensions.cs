@@ -81,4 +81,22 @@ public static class AgUiExtensions
         additionalPropertiesDictionary["agent_thread_id"] = Guid.Parse(threadId);
         return options;
     }
+
+    public static AgentRunOptions AddAgUiThreadId(this AgentRunOptions options, string threadId)
+    {
+        var additionalPropertiesDictionary = GetAdditionalPropertiesDictionary(options);
+        additionalPropertiesDictionary["ag_ui_thread_id"] = Guid.Parse(threadId);
+        return options;
+    }
+
+    public static void AddToolCalls(this Dictionary<string, FunctionCallContent> tools, IList<AIContent> contents)
+    {
+        foreach (var content in contents)
+        {
+            if (content is FunctionCallContent callContent)
+            {
+                tools[callContent.Name] = callContent;
+            }
+        }
+    }
 }

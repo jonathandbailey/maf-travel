@@ -64,29 +64,3 @@ public static class ExtractingTools
     }
 }
 
-public static class ConversationTools
-{
-    private static readonly Dictionary<string, AIFunction> Tools = new();
-
-    [Description("Plan Travel")]
-    private static string PlanTravel(
-        [Description("Plan Travel")] string message,
-        [Description("Reasoning for selecting this tool based on the user request")] string reasoning,
-        [Description("Confidence score for the tool selection, in the range 0.0 to 1.0")] decimal confidenceScore
-
-        )
-        => $"The travel plan has been created successfully.";
-
-    static ConversationTools()
-    {
-        var function = AIFunctionFactory.Create(PlanTravel);
-
-        Tools[function.Name] = function;
-    }
-
-    public static List<AITool> GetDeclarationOnlyTools()
-    {
-        return Tools.Select(toolMeta => toolMeta.Value.AsDeclarationOnly()).Cast<AITool>().ToList();
-    }
-
-}

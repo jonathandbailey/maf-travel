@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Agents\Agents.csproj" />
+    <ProjectReference Include="..\Travel.Workflows\Travel.Workflows.csproj" />
   </ItemGroup>
 
 </Project>

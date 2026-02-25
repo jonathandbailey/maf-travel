@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Travel.Experience.Application\Travel.Experience.Application.csproj" />
     <ProjectReference Include="..\Travel.Tests.Shared\Travel.Tests.Shared.csproj" />
   </ItemGroup>
 
