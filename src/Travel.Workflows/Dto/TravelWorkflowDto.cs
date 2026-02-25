@@ -1,11 +1,9 @@
-﻿using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
+﻿using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 
 namespace Travel.Workflows.Dto;
 
 public record TravelWorkflowRequest(
     ChatMessage Message, 
-    Guid ThreadId, 
-    CheckpointInfo? CheckpointInfo = null, 
+    Guid ThreadId,
     TravelPlanDto? TravelPlan = null);

@@ -40,10 +40,9 @@ public class TravelWorkflowTestHarness
 
         var request = new TravelWorkflowRequest(
             new ChatMessage(ChatRole.User, message),
-            _threadId,
-            _lastCheckpoint);
+            _threadId);
 
-        _lastEvents = await service.WatchStreamAsync(request).ToListAsync();
+        _lastEvents = await service.WatchStreamAsync(request, _lastCheckpoint).ToListAsync();
 
         _lastCheckpoint = _lastEvents.GetCheckpointInfo();
 

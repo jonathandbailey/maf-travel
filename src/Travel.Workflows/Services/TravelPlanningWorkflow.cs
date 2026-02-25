@@ -1,7 +1,9 @@
 ﻿using Microsoft.Agents.AI.Workflows;
+using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Exceptions;
 
-namespace Travel.Workflows;
+namespace Travel.Workflows.Services;
 
 public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpointManager)
 {
@@ -9,9 +11,9 @@ public class TravelPlanningWorkflow(Workflow workflow, CheckpointManager checkpo
     private WorkflowState _state = WorkflowState.Created;
 
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(
-        TravelWorkflowRequest request)
+        TravelWorkflowRequest request, CheckpointInfo? checkpointInfo = null)
     {
-        _checkpointInfo = request.CheckpointInfo;
+        _checkpointInfo = checkpointInfo;
         var run = await CreateWorkflowRun(request);
 
         await foreach (var evt in run.WatchStreamAsync())

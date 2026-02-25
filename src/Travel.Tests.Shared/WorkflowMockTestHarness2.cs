@@ -44,9 +44,9 @@ public class WorkflowMockTestHarness2
 
         var workflowService = new TravelWorkflowService(_travelPlanService.Object, _checkpointRepository, agentProvider.Object);
 
-        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, message), _threadId, _checkpointInfo);
+        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, message), _threadId);
 
-        var events = await workflowService.WatchStreamAsync(request).ToListAsync();
+        var events = await workflowService.WatchStreamAsync(request, _checkpointInfo).ToListAsync();
 
         _checkpointInfo = events.GetCheckpointInfo();
 

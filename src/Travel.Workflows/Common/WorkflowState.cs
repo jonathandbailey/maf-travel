@@ -1,4 +1,4 @@
-﻿namespace Travel.Workflows;
+﻿namespace Travel.Workflows.Common;
 
 public enum WorkflowState
 {

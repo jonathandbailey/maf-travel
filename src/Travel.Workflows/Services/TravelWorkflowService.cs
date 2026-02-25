@@ -11,7 +11,7 @@ public class TravelWorkflowService(
     ICheckpointRepository checkpointRepository,
     IAgentProvider agentProvider)
 {
-    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
+    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request, CheckpointInfo? checkpointInfo = null)
     {
         var workflowFactory = new WorkflowFactory();
 
@@ -27,7 +27,7 @@ public class TravelWorkflowService(
 
         var travelPlan = await travelPlanService.GetTravelPlanAsync();
 
-        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(request with{ TravelPlan = travelPlan }))
+        await foreach (var evt in travelPlanningWorkflow.WatchStreamAsync(request with{ TravelPlan = travelPlan }, checkpointInfo))
         {
             yield return evt;
         }
