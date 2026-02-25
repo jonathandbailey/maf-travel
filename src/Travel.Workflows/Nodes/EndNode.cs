@@ -9,9 +9,10 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public class EndNode() : Executor<TravelPlanCompletedCommand>(NodeNames.EndNode)
+public partial class EndNode() : Executor(NodeNames.EndNode)
 {
-    public override async ValueTask HandleAsync(TravelPlanCompletedCommand message, IWorkflowContext context,
+    [MessageHandler]
+    private async ValueTask HandleAsync(TravelPlanCompletedCommand message, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         var threadId = await context.GetThreadId(cancellationToken);
