@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(xargs grep -l \"RequestPort\")",
-      "Read(//c/Users/jonat/**)"
+      "Read(//c/Users/jonat/**)",
+      "Bash(dotnet build src/Travel.Workflows/Travel.Workflows.csproj --no-incremental -q)",
+      "Bash(dotnet build src/Travel.Workflows/Travel.Workflows.csproj --no-incremental)"
     ]
   }
 }
