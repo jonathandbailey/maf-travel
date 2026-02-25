@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.AI;
+using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Exceptions;
-using Travel.Workflows.Nodes;
 
 namespace Travel.Workflows.Extensions;
 

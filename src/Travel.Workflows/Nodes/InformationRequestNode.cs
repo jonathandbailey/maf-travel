@@ -1,6 +1,4 @@
 ﻿using Microsoft.Agents.AI.Workflows;
-using Microsoft.Extensions.AI;
-using Travel.Agents.Dto;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Extensions;
@@ -8,18 +6,17 @@ using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Nodes;
 
-public partial class InformationRequestNode() : Executor(NodeNames.InformationRequestNode) 
+public partial class InformationRequestNode() : Executor(NodeNames.InformationRequestNode)
 {
     [MessageHandler(Send = [typeof(InformationRequest)])]
-    private async ValueTask HandleAsync(FunctionCallContent functionCallContent, IWorkflowContext context,
+    private async ValueTask HandleAsync(RequestInformationCommand command, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
-        using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.InformationRequestNode, Guid.NewGuid());
+        var threadId = await context.GetThreadId(cancellationToken);
 
-        if (functionCallContent.TryGetArgument<RequestInformationDto>(WorkflowConstants.InformationRequestFunctionArgumentName, out var details, Json.FunctionCallSerializerOptions))
-        {
-            await context.SendMessageAsync(new InformationRequest(details.Message, details.RequiredInputs),
-                cancellationToken: cancellationToken);
-        }
+        using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.InformationRequestNode, threadId);
+
+        await context.SendMessageAsync(new InformationRequest(command.Details.Message, command.Details.RequiredInputs),
+            cancellationToken: cancellationToken);
     }
 }

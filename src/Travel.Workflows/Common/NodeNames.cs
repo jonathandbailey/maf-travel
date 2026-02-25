@@ -1,4 +1,4 @@
-﻿namespace Travel.Workflows.Nodes;
+﻿namespace Travel.Workflows.Common;
 
 public static class NodeNames
 {

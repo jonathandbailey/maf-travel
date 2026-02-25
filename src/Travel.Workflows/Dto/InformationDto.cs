@@ -17,4 +17,6 @@ public record TravelPlanContextUpdated();
 
 public record TravelPlanCompletedCommand();
 
+public record RequestInformationCommand(RequestInformationDto Details);
+
 public record TravelPlanExtractCommand(ChatMessage Message);

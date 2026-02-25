@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep -l \"RequestPort\")",
+      "Read(//c/Users/jonat/**)"
+    ]
+  }
+}
