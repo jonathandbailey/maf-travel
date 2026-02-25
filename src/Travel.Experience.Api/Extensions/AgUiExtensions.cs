@@ -1,10 +1,6 @@
 ﻿using Agents.Services;
-using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
-using Microsoft.Extensions.AI;
-using System.Text.Json;
-using Travel.Experience.Api.Agents;
-using Travel.Experience.Api.Dto;
+using Travel.Experience.Application.Agents;
 
 namespace Travel.Experience.Api.Extensions;
 
@@ -28,18 +24,5 @@ public static class AgUiExtensions
 
         return app;
     }
-
-    public static AgentResponseUpdate ToAgentResponseStatusMessage(this string message)
-    {
-        var statusUpdate = new StatusUpdate("StatusUpdate", "Conversation Agent", message, string.Empty);
-
-        var snapshot = new SnapShot<StatusUpdate>(statusUpdate.Type, statusUpdate);
-
-        var stateBytes = JsonSerializer.SerializeToUtf8Bytes(snapshot);
-
-        return new AgentResponseUpdate
-        {
-            Contents = [new DataContent(stateBytes, ApplicationJsonMediaType)]
-        };
-    }
+  
 }

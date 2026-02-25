@@ -2,7 +2,7 @@
 using A2A;
 using Microsoft.Agents.AI;
 
-namespace Travel.Experience.Api.Observability;
+namespace Travel.Experience.Application.Observability;
 
 public static class ConversationAgentTelemetry
 {

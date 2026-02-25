@@ -3,10 +3,10 @@ using Agents;
 using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using Travel.Experience.Api.Extensions;
-using Travel.Experience.Api.Observability;
+using Travel.Experience.Application.Extensions;
+using Travel.Experience.Application.Observability;
 
-namespace Travel.Experience.Api.Agents;
+namespace Travel.Experience.Application.Agents;
 
 public class ConversationAgent(AIAgent agent) : DelegatingAIAgent(agent)
 {
@@ -40,7 +40,6 @@ public class ConversationAgent(AIAgent agent) : DelegatingAIAgent(agent)
         
      
         yield return ExecutingTravelWorkflow.ToAgentResponseStatusMessage();
-
 
       
    

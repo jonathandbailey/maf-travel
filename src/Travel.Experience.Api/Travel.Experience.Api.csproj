@@ -25,6 +25,7 @@
     <ProjectReference Include="..\Agents\Agents.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Travel.Experience.Application\Travel.Experience.Application.csproj" />
   </ItemGroup>
 
 </Project>

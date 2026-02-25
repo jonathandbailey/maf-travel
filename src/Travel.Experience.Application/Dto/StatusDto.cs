@@ -1,6 +1,6 @@
-﻿namespace Travel.Experience.Api.Dto;
+﻿namespace Travel.Experience.Application.Dto;
 
-class SnapShot<T>(string type, T payload)
+public class SnapShot<T>(string type, T payload)
 {
     public string Type { get; } = type;
     public T Payload { get; } = payload;

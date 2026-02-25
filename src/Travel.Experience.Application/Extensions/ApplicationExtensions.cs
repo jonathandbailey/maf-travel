@@ -1,6 +1,8 @@
 ﻿using Infrastructure.Settings;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Travel.Experience.Api.Extensions;
+namespace Travel.Experience.Application.Extensions;
 
 public static class ApplicationExtensions
 {
