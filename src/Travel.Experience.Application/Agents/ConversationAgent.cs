@@ -1,9 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using Agents;
+﻿using Agents;
 using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using ModelContextProtocol.Protocol;
+using System.Runtime.CompilerServices;
 using Travel.Agents.Dto;
 using Travel.Experience.Application.Extensions;
 using Travel.Experience.Application.Observability;
@@ -53,6 +54,8 @@ public class ConversationAgent(AIAgent agent, IWorkflowFactory workflowFactory) 
 
         foreach (var functionCallContent in tools)
         {
+            var toolActivity = ConversationAgentTelemetry.StartTool(functionCallContent.Key, functionCallContent.Value.Arguments.ToString(), agentActivity);
+
             if (functionCallContent.Key == ConversationAgentTools.RequestInformationToolName)
             {
                 var workflow = await workflowFactory.Create();
@@ -68,21 +71,25 @@ public class ConversationAgent(AIAgent agent, IWorkflowFactory workflowFactory) 
                     {
                         if (evt is RequestInfoEvent requestInfoEvent)
                         {
+                            var data = requestInfoEvent.Data as ExternalRequest;
 
+                            var informationRequest = data.Data.AsType(typeof(InformationRequest));
+
+
+                            toolResults.Add(new FunctionResultContent(
+                                functionCallContent.Value.CallId,
+                                informationRequest));
                         }
                     }
                 }
             }
+
+            toolActivity?.Dispose();
         }
 
-        await foreach (var update in InnerAgent.RunStreamingAsync(localMessages, thread, options, cancellationToken))
+        await foreach (var update in InnerAgent.RunStreamingAsync([new ChatMessage(ChatRole.Tool, toolResults)], thread, cancellationToken: cancellationToken))
         {
             yield return update;
         }
-        
-     
-        yield return ExecutingTravelWorkflow.ToAgentResponseStatusMessage();
-   
-        yield return ProcessingResults.ToAgentResponseStatusMessage();
     }
 }
