@@ -1,6 +1,7 @@
 import { Card, Input } from "antd";
 import Exchange from "../features/chat/Exchange";
 import { useState } from "react";
+import { HttpAgent, randomUUID } from "@ag-ui/client";
 
 interface ExchangeItem {
     id: string;
@@ -9,12 +10,47 @@ interface ExchangeItem {
     error?: string;
 }
 
+const AGENT_URL = `${import.meta.env.VITE_API_BASE_URL}/ag-ui`;
+
+
 const ChatPage = () => {
     const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
     const [inputValue, setInputValue] = useState("");
 
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key !== "Enter") return;
+
+        const text = inputValue;
+        if (!text.trim()) return;
+
+        setInputValue("");
+
+        const exchangeId = randomUUID();
+        setExchanges((prev) => [...prev, { id: exchangeId, userContent: text }]);
+
+        const agent = new HttpAgent({
+            url: AGENT_URL,
+            threadId: randomUUID(),
+            initialMessages: [{ id: randomUUID(), role: "user", content: text }],
+        });
+
+        agent.subscribe({
+            onRunFailed: ({ error }) => {
+                console.error("Agent run failed:", error);
+                setExchanges((prev) =>
+                    prev.map((ex) => ex.id === exchangeId ? { ...ex, error: error.message } : ex)
+                );
+            },
+        });
+
+        const runResult = await agent.runAgent({ runId: randomUUID() });
+
+        if (runResult.newMessages?.length) {
+            const assistantContent = runResult.newMessages.map((m) => m.content).join("\n");
+            setExchanges((prev) =>
+                prev.map((ex) => ex.id === exchangeId ? { ...ex, assistantContent } : ex)
+            );
+        }
     }
 
     return (<>

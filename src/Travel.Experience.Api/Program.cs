@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+builder.AddCorsPolicyFromServiceDiscovery();
+
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
@@ -39,7 +41,10 @@ else
     app.UseHttpsRedirection();
 }
 
+app.UseCorsPolicyServiceDiscovery();
+
 await app.MapAgUiToAgent();
+
 
 
 
