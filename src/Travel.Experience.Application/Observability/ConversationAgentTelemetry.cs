@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using A2A;
 using Microsoft.Agents.AI;
+using Microsoft.Agents.AI.Workflows;
 
 namespace Travel.Experience.Application.Observability;
 
@@ -47,6 +48,22 @@ public static class ConversationAgentTelemetry
             {
                 { "gen_ai.content.part", content },
                 { "gen_ai.task.state", state.ToString()},
+                { "gen_ai.event.type", updateType },
+            }));
+
+        return activity;
+    }
+
+    public static Activity? AddEvent(this Activity activity, WorkflowEvent workflowEvent, string content)
+    {
+        var updateType = workflowEvent.GetType().Name ?? "Unknown";
+
+
+        activity?.AddEvent(new ActivityEvent("gen_ai.stream.chunk",
+            tags: new ActivityTagsCollection
+            {
+                { "gen_ai.content.part", content },
+
                 { "gen_ai.event.type", updateType },
             }));
 

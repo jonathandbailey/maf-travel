@@ -5,6 +5,8 @@ using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Shared.Settings;
+using Travel.Workflows.Interfaces;
+using Travel.Workflows.Services;
 
 namespace Travel.Tests.Shared.Helper;
 
@@ -12,6 +14,23 @@ public static  class AgentFactoryHelper
 {
     private const string PlanningYaml = "planning.yaml";
     private const string ExtractingYaml = "extracting.yaml";
+
+    public static IWorkflowFactory Create()
+    {
+        var mockFactory = new Mock<IWorkflowFactory>();
+
+        var repo = new InMemoryCheckpointRepository();
+        var sessionRepo = new InMemoryWorkflowSessionRepository();
+
+        var agentProvider = new AgentProvider(
+            AgentHelper.CreateAgentFactory(),
+            AgentHelper.CreateAgentTemplateRepository());
+
+        mockFactory.Setup(x => x.Create())
+            .ReturnsAsync(() => new TravelWorkflowService(repo, sessionRepo, agentProvider));
+
+        return mockFactory.Object;
+    }
 
     public static async Task<AIAgent> CreateMockPlanningAgent(RequestInformationDto requestInfoDto)
     {

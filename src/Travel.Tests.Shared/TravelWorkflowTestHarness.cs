@@ -6,12 +6,14 @@ using Travel.Agents.Services;
 using Travel.Tests.Common;
 using Travel.Tests.Shared.Helper;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Interfaces;
 using Travel.Workflows.Services;
 
 namespace Travel.Tests.Shared;
 
 public class TravelWorkflowTestHarness
 {
+    private readonly IWorkflowFactory _factory;
     private readonly Guid _threadId = Guid.NewGuid();
 
     private List<WorkflowEvent> _lastEvents = [];
@@ -21,8 +23,9 @@ public class TravelWorkflowTestHarness
 
     public List<WorkflowEvent> Events => _lastEvents;
 
-    public TravelWorkflowTestHarness()
+    public TravelWorkflowTestHarness(IWorkflowFactory factory)
     {
+        _factory = factory;
         _repo = new InMemoryCheckpointRepository();
         _sessionRepo = new InMemoryWorkflowSessionRepository();
 
@@ -33,7 +36,7 @@ public class TravelWorkflowTestHarness
 
     public async Task<List<WorkflowEvent>> WatchStreamAsync(string message)
     {
-        var service = new TravelWorkflowService(_repo, _sessionRepo, _agentProvider);
+        var service = await _factory.Create();
 
         var request = new TravelWorkflowRequest(
             new ChatMessage(ChatRole.User, message),

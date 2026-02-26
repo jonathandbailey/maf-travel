@@ -17,7 +17,6 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
     {
         var run = await CreateWorkflowRun(request);
-       
 
         await foreach (var evt in run.WatchStreamAsync())
         {
@@ -29,8 +28,6 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
                 {
                     _checkpointInfo = checkpoint;
                 }
-
-                yield return evt;
             }
 
             if (evt is RequestInfoEvent requestInfoEvent)
@@ -58,9 +55,9 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
             if (evt is TravelPlanningCompleteEvent)
             {
                 _state = WorkflowState.Completed;
-            }
 
-            yield return evt;
+                yield return evt;
+            }
         }
     }
 

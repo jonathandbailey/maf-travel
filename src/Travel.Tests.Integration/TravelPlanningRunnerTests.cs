@@ -1,34 +1,14 @@
-﻿using System.Diagnostics;
-using FluentAssertions;
+﻿using FluentAssertions;
+using System.Diagnostics;
 using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
-using Travel.Tests.Shared.Settings;
 using Travel.Workflows.Events;
 
 namespace Travel.Tests.Integration;
 
-public class TravelPlanningRunnerTests : IDisposable
+public class TravelPlanningRunnerTests : IClassFixture<TelemetryFixture>
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
-
-    public static IEnumerable<object[]> TravelPlanningScenarios()
-    {
-        var scenarios = ScenarioLoader.LoadTravelPlanningScenarios();
-        foreach (var scenario in scenarios)
-        {
-            yield return [scenario];
-        }
-    }
-
-    public TravelPlanningRunnerTests()
-    {
-        TelemetryHelper.Initialize(SettingsHelper.GetAspireDashboardSettings());
-    }
-
-    public void Dispose()
-    {
-        TelemetryHelper.Dispose();
-    }
 
     [Theory]
     [MemberData(nameof(TravelPlanningScenarios))]
@@ -37,7 +17,9 @@ public class TravelPlanningRunnerTests : IDisposable
     {
         using var testActivity = TestActivitySource.StartActivity();
 
-        var harness = new TravelWorkflowTestHarness();
+        var workflowFactory = AgentFactoryHelper.Create();
+
+        var harness = new TravelWorkflowTestHarness(workflowFactory);
         var runIndex = 0;
         foreach (var message in scenario.Messages)
         {
@@ -55,5 +37,14 @@ public class TravelPlanningRunnerTests : IDisposable
         planningCompleteEvent.
             TravelPlan.Should().
             BeEquivalentTo(scenario.ExpectedTravelPlan, "The emitted travel plan should match the expected travel plan.");
+    }
+
+    public static IEnumerable<object[]> TravelPlanningScenarios()
+    {
+        var scenarios = ScenarioLoader.LoadTravelPlanningScenarios();
+        foreach (var scenario in scenarios)
+        {
+            yield return [scenario];
+        }
     }
 }

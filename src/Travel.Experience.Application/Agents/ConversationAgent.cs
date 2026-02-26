@@ -1,15 +1,16 @@
-﻿using Agents;
+﻿using A2A;
+using Agents;
 using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using ModelContextProtocol.Protocol;
 using System.Runtime.CompilerServices;
 using Travel.Agents.Dto;
 using Travel.Experience.Application.Extensions;
 using Travel.Experience.Application.Observability;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Events;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Interfaces;
 
@@ -75,10 +76,20 @@ public class ConversationAgent(AIAgent agent, IWorkflowFactory workflowFactory) 
 
                             var informationRequest = data.Data.AsType(typeof(InformationRequest));
 
+                            //toolActivity?.AddEvent(evt, informationRequest);
+
 
                             toolResults.Add(new FunctionResultContent(
                                 functionCallContent.Value.CallId,
                                 informationRequest));
+                        }
+
+                        if (evt is TravelPlanningCompleteEvent travelPlanningCompleteEvent)
+                        {
+
+                            toolResults.Add(new FunctionResultContent(
+                                functionCallContent.Value.CallId,
+                                "Travel Planning Complete"));
                         }
                     }
                 }
