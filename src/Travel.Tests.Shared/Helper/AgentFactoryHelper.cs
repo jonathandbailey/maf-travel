@@ -1,10 +1,15 @@
 ﻿using Agents.Services;
+using Infrastructure.Repository;
+using Infrastructure.Settings;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Shared.Settings;
+using Travel.Workflows.Infrastructure;
 using Travel.Workflows.Interfaces;
 using Travel.Workflows.Services;
 
@@ -28,6 +33,34 @@ public static  class AgentFactoryHelper
 
         mockFactory.Setup(x => x.Create())
             .ReturnsAsync(() => new TravelWorkflowService(repo, sessionRepo, agentProvider));
+
+        return mockFactory.Object;
+    }
+
+    public static IWorkflowFactory CreateWithFileRepositories()
+    {
+        var mockFactory = new Mock<IWorkflowFactory>();
+
+        var fileStorageSettings = Options.Create(new FileStorageSettings
+        {
+            AgentTemplateFolder = "Templates",
+            AgentThreadFolder = "Threads",
+            CheckpointFolder = "Checkpoints",
+            SessionFolder = "Sessions"
+        });
+
+        var mockFileLogger = new Mock<ILogger<FileRepository>>();
+        var fileRepository = new FileRepository(mockFileLogger.Object);
+
+        var checkpointRepo = new CheckpointRepository(fileRepository, fileStorageSettings);
+        var sessionRepo = new WorkflowSessionRepository(fileRepository, fileStorageSettings);
+
+        var agentProvider = new AgentProvider(
+            AgentHelper.CreateAgentFactory(),
+            AgentHelper.CreateAgentTemplateRepository());
+
+        mockFactory.Setup(x => x.Create())
+            .ReturnsAsync(() => new TravelWorkflowService(checkpointRepo, sessionRepo, agentProvider));
 
         return mockFactory.Object;
     }

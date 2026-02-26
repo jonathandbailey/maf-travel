@@ -1,4 +1,5 @@
-﻿using Agents.Services;
+﻿using Agents.Middleware;
+using Agents.Services;
 using Agents.Settings;
 using Infrastructure.Repository;
 using Infrastructure.Settings;
@@ -43,6 +44,35 @@ public static class AgentHelper
         var templateRepository = new AgentTemplateRepository(fileRepository, fileStorageSettings);
 
         return templateRepository;
+    }
+
+    public static async Task<AIAgent> CreateWithFileThread(string templateName, List<AITool>? tools = null)
+    {
+        var templateRepository = CreateAgentTemplateRepository();
+        var agentTemplate = await templateRepository.LoadAsync(templateName);
+        var agentFactory = CreateAgentFactory();
+        var agent = await agentFactory.Create(agentTemplate, tools);
+
+        var fileStorageSettings = Options.Create(new FileStorageSettings
+        {
+            AgentTemplateFolder = "Templates",
+            AgentThreadFolder = "Threads",
+            CheckpointFolder = "Checkpoints",
+            SessionFolder = "Sessions"
+        });
+
+        var mockFileLogger = new Mock<ILogger<FileRepository>>();
+        var fileRepository = new FileRepository(mockFileLogger.Object);
+        var agentThreadRepository = new AgentThreadRepository(fileRepository, fileStorageSettings);
+
+        var mockThreadLogger = new Mock<ILogger<IAgentAgUiMiddleware>>();
+        var agentThreadMiddleware = new AgentThreadMiddleware(agentThreadRepository, mockThreadLogger.Object);
+
+        var agentWithFileThread = agent.AsBuilder()
+            .Use(runFunc: agentThreadMiddleware.RunAsync, runStreamingFunc: agentThreadMiddleware.RunStreamingAsync)
+            .Build();
+
+        return agentWithFileThread;
     }
 
     public static IAgentFactory CreateAgentFactory()

@@ -35,7 +35,9 @@ public class ConversationAgent(AIAgent agent, IConversationToolHandlerRegistry r
 
         var tools = new Dictionary<string, FunctionCallContent>();
 
-        await foreach (var update in InnerAgent.RunStreamingAsync(localMessages, thread, options, cancellationToken))
+        var localThread = await InnerAgent.CreateSessionAsync(cancellationToken);
+
+        await foreach (var update in InnerAgent.RunStreamingAsync(localMessages, localThread, options, cancellationToken))
         {
             tools.AddToolCalls(update.Contents);
             yield return update;
@@ -69,9 +71,9 @@ public class ConversationAgent(AIAgent agent, IConversationToolHandlerRegistry r
 
         yield return ProcessingResults.ToAgentResponseStatusMessage();
 
-        await foreach (var update in InnerAgent.RunStreamingAsync(
-            [new ChatMessage(ChatRole.Tool, toolResults)], thread,
-            cancellationToken: cancellationToken))
+        var message = new ChatMessage(ChatRole.Tool, toolResults);
+
+        await foreach (var update in InnerAgent.RunStreamingAsync([message], localThread, options, cancellationToken))
         {
             yield return update;
         }
