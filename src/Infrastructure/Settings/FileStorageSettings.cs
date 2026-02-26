@@ -7,4 +7,6 @@ public class FileStorageSettings
     public required string AgentThreadFolder { get; init; }
 
     public required string CheckpointFolder { get; init; }
+
+    public required string SessionFolder { get; init; }
 }

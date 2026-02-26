@@ -1,13 +1,14 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Text.Json;
 using Agents.Extensions;
-using Agents.Services;
+using Infrastructure.Repository;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 
 namespace Agents.Middleware;
 
-public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgUiMiddleware> logger) :IAgentThreadMiddleware, IAgentMiddleware
+public class AgentThreadMiddleware(IAgentThreadRepository repository, ILogger<IAgentAgUiMiddleware> logger) : IAgentThreadMiddleware, IAgentMiddleware
 {
     public async Task<AgentResponse> RunAsync(
         IEnumerable<ChatMessage> messages,
@@ -28,10 +29,9 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
 
         var response = await innerAgent.RunAsync(messages, memoryThread, options, cancellationToken);
 
-        var threadState = await innerAgent.SerializeSessionAsync(memoryThread,cancellationToken: cancellationToken);
+        var threadState = await innerAgent.SerializeSessionAsync(memoryThread, cancellationToken: cancellationToken);
 
-        await memory.SaveAsync(new AgentState(threadState), GetResourceName(innerAgent.Name!, threadId));
-
+        await repository.SaveAsync(innerAgent.Name!, threadId.ToString(), threadState.GetRawText());
 
         return response;
     }
@@ -52,9 +52,9 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
         }
 
         var threadId = options.GetThreadId();
-        
+
         var memoryThread = await LoadAsync(innerAgent, threadId);
-        
+
         await foreach (var update in innerAgent.RunStreamingAsync(messages, memoryThread, options, cancellationToken))
         {
             yield return update;
@@ -62,30 +62,21 @@ public class AgentThreadMiddleware(IAgentMemoryService memory, ILogger<IAgentAgU
 
         var threadState = await innerAgent.SerializeSessionAsync(memoryThread, cancellationToken: cancellationToken);
 
-        await memory.SaveAsync(new AgentState(threadState), GetResourceName(innerAgent.Name!, threadId));
+        await repository.SaveAsync(innerAgent.Name!, threadId.ToString(), threadState.GetRawText());
     }
 
     private async Task<AgentSession> LoadAsync(AIAgent agent, Guid threadId)
     {
-        AgentSession? thread;
-
-        if (!await memory.ExistsAsync(GetResourceName(agent.Name!, threadId)))
+        try
         {
-            thread = await agent.CreateSessionAsync();
+            var json = await repository.LoadAsync(agent.Name!, threadId.ToString());
+            var element = JsonDocument.Parse(json).RootElement;
+            return await agent.DeserializeSessionAsync(element);
         }
-        else
+        catch (FileNotFoundException)
         {
-            var stateDto = await memory.LoadAsync(GetResourceName(agent.Name!, threadId));
-
-            thread = await agent.DeserializeSessionAsync(stateDto.Thread);
+            return await agent.CreateSessionAsync();
         }
-
-        return thread;
-    }
-
-    private static string GetResourceName(string agentName, Guid threadId)
-    {
-        return $"{threadId}/{agentName}";
     }
 }
 

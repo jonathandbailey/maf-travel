@@ -15,7 +15,6 @@ public static  class AgentServiceExtensions
             configuration.GetSection("LanguageModelSettings").Bind(settings));
 
 
-        services.AddSingleton<IAgentMemoryService, AgentMemoryService>();
         services.AddSingleton<IAgentThreadMiddleware, AgentThreadMiddleware>();
         services.AddSingleton<IAgentAgUiMiddleware, AgentAgUiMiddleware>();
         services.AddSingleton<IAgentFactory, AgentFactory>();

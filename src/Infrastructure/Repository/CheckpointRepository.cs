@@ -1,11 +1,13 @@
-﻿using Microsoft.Agents.AI.Workflows;
+﻿using Infrastructure.Settings;
+using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Infrastructure.Repository;
 
 
-public class CheckpointRepository(IFileRepository fileRepository) : ICheckpointRepository
+public class CheckpointRepository(IFileRepository fileRepository, IOptions<FileStorageSettings> settings) : ICheckpointRepository
 {
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -15,25 +17,43 @@ public class CheckpointRepository(IFileRepository fileRepository) : ICheckpointR
         Converters = { new JsonStringEnumConverter() }
     };
 
+    private string GetFolder() =>
+        Path.IsPathRooted(settings.Value.CheckpointFolder)
+            ? settings.Value.CheckpointFolder
+            : Path.Combine(AppContext.BaseDirectory, settings.Value.CheckpointFolder);
+
     public async Task<List<StoreStateDto>> GetAsync(string runId)
     {
-        throw new NotImplementedException();
+        var folder = GetFolder();
+        if (!Directory.Exists(folder))
+            return [];
+
+        var files = Directory.GetFiles(folder, $"*-{runId}.json");
+
+        var results = new List<StoreStateDto>();
+        foreach (var file in files)
+        {
+            var content = await fileRepository.LoadAsync(file);
+            var storeState = JsonSerializer.Deserialize<StoreStateDto>(content, SerializerOptions);
+            if (storeState != null)
+                results.Add(storeState);
+        }
+
+        return results;
     }
 
     public async Task SaveAsync(Guid threadId, StoreStateDto storeState)
     {
-        var path = $"{threadId}-{storeState.CheckpointInfo.CheckpointId}-{storeState.CheckpointInfo.SessionId}.json";
-
-
+        var path = Path.Combine(GetFolder(), $"{threadId}-{storeState.CheckpointInfo.CheckpointId}-{storeState.CheckpointInfo.SessionId}.json");
 
         var serializedStoreState = JsonSerializer.Serialize(storeState, SerializerOptions);
-        
+
         await fileRepository.SaveAsync(path, serializedStoreState);
     }
 
     public async Task<StoreStateDto> LoadAsync(Guid threadId, string checkpointId, string runId)
     {
-        var path = $"{threadId}-{checkpointId}-{runId}.json";
+        var path = Path.Combine(GetFolder(), $"{threadId}-{checkpointId}-{runId}.json");
         var content = await fileRepository.LoadAsync(path);
       
         var storeState = JsonSerializer.Deserialize<StoreStateDto>(content, SerializerOptions);

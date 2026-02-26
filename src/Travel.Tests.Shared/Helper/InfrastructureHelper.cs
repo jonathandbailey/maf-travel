@@ -16,13 +16,15 @@ public class InfrastructureHelper
         {
             AgentTemplateFolder = AgentTemplateFolder,
             AgentThreadFolder = "",
-            CheckpointFolder = ""
+            CheckpointFolder = "",
+            SessionFolder = ""
 
         });
 
-        var mockLogger = new Mock<ILogger<AgentTemplateRepository>>();
+        var mockFileLogger = new Mock<ILogger<FileRepository>>();
+        var fileRepository = new FileRepository(mockFileLogger.Object);
 
-        var templateRepository = new AgentTemplateRepository(mockLogger.Object, fileStorageSettings);
+        var templateRepository = new AgentTemplateRepository(fileRepository, fileStorageSettings);
 
         return templateRepository;
     }

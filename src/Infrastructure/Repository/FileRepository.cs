@@ -27,7 +27,7 @@ public class FileRepository(ILogger<FileRepository> logger) : IFileRepository
         }
         catch (FileNotFoundException exception)
         {
-            logger.LogError(exception, "File not found at path: {Path}", path);
+            logger.LogDebug(exception, "File not found at path: {Path}", path);
             throw;
         }
         catch (UnauthorizedAccessException exception)

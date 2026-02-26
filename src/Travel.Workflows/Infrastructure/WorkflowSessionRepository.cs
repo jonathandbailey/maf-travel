@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Infrastructure.Repository;
+using Infrastructure.Settings;
+using Microsoft.Extensions.Options;
 using Travel.Workflows.Common;
 
 namespace Travel.Workflows.Infrastructure;
@@ -11,7 +13,7 @@ public interface IWorkflowSessionRepository
     Task SaveAsync(WorkflowSession session);
 }
 
-public class WorkflowSessionRepository(IFileRepository fileRepository) : IWorkflowSessionRepository
+public class WorkflowSessionRepository(IFileRepository fileRepository, IOptions<FileStorageSettings> settings) : IWorkflowSessionRepository
 {
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -23,7 +25,7 @@ public class WorkflowSessionRepository(IFileRepository fileRepository) : IWorkfl
 
     public async Task<WorkflowSession?> LoadAsync(Guid threadId)
     {
-        var path = $"{threadId}-session.json";
+        var path = BuildPath($"{threadId}-session.json");
         try
         {
             var content = await fileRepository.LoadAsync(path);
@@ -37,8 +39,16 @@ public class WorkflowSessionRepository(IFileRepository fileRepository) : IWorkfl
 
     public async Task SaveAsync(WorkflowSession session)
     {
-        var path = $"{session.ThreadId}-session.json";
+        var path = BuildPath($"{session.ThreadId}-session.json");
         var content = JsonSerializer.Serialize(session, SerializerOptions);
         await fileRepository.SaveAsync(path, content);
+    }
+
+    private string BuildPath(string fileName)
+    {
+        var folder = settings.Value.SessionFolder;
+        return Path.IsPathRooted(folder)
+            ? Path.Combine(folder, fileName)
+            : Path.Combine(AppContext.BaseDirectory, folder, fileName);
     }
 }

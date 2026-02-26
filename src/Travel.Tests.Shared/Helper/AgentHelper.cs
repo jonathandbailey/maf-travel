@@ -33,12 +33,14 @@ public static class AgentHelper
         {
             AgentTemplateFolder = "Templates",
             AgentThreadFolder = "Threads",
-            CheckpointFolder = "Checkpoints"
+            CheckpointFolder = "Checkpoints",
+            SessionFolder = "Sessions"
         });
 
-        var mockLogger = new Mock<ILogger<AgentTemplateRepository>>();
+        var mockFileLogger = new Mock<ILogger<FileRepository>>();
+        var fileRepository = new FileRepository(mockFileLogger.Object);
 
-        var templateRepository = new AgentTemplateRepository(mockLogger.Object, fileStorageSettings);
+        var templateRepository = new AgentTemplateRepository(fileRepository, fileStorageSettings);
 
         return templateRepository;
     }
