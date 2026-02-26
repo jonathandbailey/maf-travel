@@ -6,14 +6,15 @@ import Status from "./Status";
 interface ExchangeProps {
     userContent: string;
     assistantContent?: string;
+    statusMessage?: string;
     error?: string;
 }
 
-const Exchange = ({ userContent, assistantContent, error }: ExchangeProps) => {
+const Exchange = ({ userContent, assistantContent, statusMessage, error }: ExchangeProps) => {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 64, marginBottom: 32 }}>
             <UserMessage content={userContent} />
-            {!assistantContent && !error && <Status />}
+            {!assistantContent && !error && <Status message={statusMessage} />}
             {assistantContent && <AssistantMessage content={assistantContent} />}
             {error && <Error message={error} />}
         </div>

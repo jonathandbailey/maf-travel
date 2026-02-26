@@ -1,12 +1,14 @@
 import { Card, Input } from "antd";
 import Exchange from "../features/chat/Exchange";
 import { useState } from "react";
-import { EventType, HttpAgent, randomUUID, type BaseEvent } from "@ag-ui/client";
+import { EventType, HttpAgent, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
+import type { StatusUpdate } from "../features/chat/domain/StatusUpdate";
 
 interface ExchangeItem {
     id: string;
     userContent: string;
     assistantContent?: string;
+    statusMessage?: string;
     error?: string;
 }
 
@@ -54,6 +56,30 @@ const ChatPage = () => {
                         )
                     );
                 }
+
+                if (event.type === EventType.STATE_SNAPSHOT) {
+                    const snapshotEvent = event as StateSnapshotEvent;
+                    const snapshot = snapshotEvent.snapshot;
+
+                    if (typeof snapshot === 'object' && snapshot !== null && 'Type' in snapshot && snapshot.Type === 'StatusUpdate') {
+                        // Handle StatusUpdate type
+                        const payload = (snapshot as any).Payload;
+                        if (payload) {
+                            const statusUpdate: StatusUpdate = {
+                                type: payload.Type,
+                                source: payload.Source,
+                                status: payload.Status,
+                                details: payload.Details
+                            };
+                            setExchanges((prev) =>
+                                prev.map((ex) => ex.id === exchangeId
+                                    ? { ...ex, statusMessage: statusUpdate.status }
+                                    : ex
+                                )
+                            );
+                        }
+                    }
+                }
             }
         });
 
@@ -65,7 +91,7 @@ const ChatPage = () => {
         <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", alignItems: "center" }}>
             <div style={{ flex: 1, overflow: "auto", width: "100%", maxWidth: 768 }}>
                 {exchanges.map((ex) => (
-                    <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} error={ex.error} />
+                    <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusMessage={ex.statusMessage} error={ex.error} />
                 ))}
             </div>
             <Card
