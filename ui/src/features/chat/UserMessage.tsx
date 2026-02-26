@@ -4,7 +4,7 @@ interface UserMessageProps {
 
 const UserMessage = ({ content }: UserMessageProps) => {
     return (
-        <div style={{ alignSelf: "flex-end", background: "#e6f7ff", padding: "8px 12px", borderRadius: 8, maxWidth: "80%" }}>
+        <div style={{ alignSelf: "flex-end", background: "#F0EEE6", padding: "8px 12px", borderRadius: 8, maxWidth: "80%", fontFamily: "'Roboto', sans-serif", fontSize: "1.05rem" }}>
             {content}
         </div>
     );

@@ -16,6 +16,7 @@ const AGENT_URL = `${import.meta.env.VITE_API_BASE_URL}/ag-ui`;
 const ChatPage = () => {
     const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
     const [inputValue, setInputValue] = useState("");
+    const [threadId] = useState(randomUUID());
 
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key !== "Enter") return;
@@ -30,7 +31,7 @@ const ChatPage = () => {
 
         const agent = new HttpAgent({
             url: AGENT_URL,
-            threadId: randomUUID(),
+            threadId: threadId,
             initialMessages: [{ id: randomUUID(), role: "user", content: text }],
         });
 
@@ -67,9 +68,10 @@ const ChatPage = () => {
                     width: "100%",
                     maxWidth: 768,
                     minWidth: 700,
-                    marginBottom: 0,
+                    marginBottom: 24,
                     marginTop: 0,
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    boxShadow: "0 0 8px rgba(0, 0, 0, 0.1)",
+                    borderRadius: 16,
                 }}
             >
                 <Input

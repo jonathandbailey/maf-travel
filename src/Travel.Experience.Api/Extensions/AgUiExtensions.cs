@@ -20,12 +20,13 @@ public static class AgUiExtensions
 
         var agent = await agentFactory.Create(template, ConversationAgentTools.GetDeclarationOnlyTools());
 
-        var conversationAgent = new ConversationAgent(agent, registry);
-      
-        var agui =  agentFactory.UseMiddleware(conversationAgent, "agent-thread");
-        var thread = agentFactory.UseMiddleware(agui, "agent-ag-ui");
+        var threadAgent = agentFactory.UseMiddleware(agent, "agent-thread");
 
-        app.MapAGUI("ag-ui", thread);
+        var conversationAgent = new ConversationAgent(threadAgent, registry);
+        
+        var agUiAgent = agentFactory.UseMiddleware(conversationAgent, "agent-ag-ui");
+
+        app.MapAGUI("ag-ui", agUiAgent);
 
         return app;
     }

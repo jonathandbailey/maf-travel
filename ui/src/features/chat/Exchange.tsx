@@ -10,7 +10,7 @@ interface ExchangeProps {
 
 const Exchange = ({ userContent, assistantContent, error }: ExchangeProps) => {
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 64, marginBottom: 32 }}>
             <UserMessage content={userContent} />
             {assistantContent && <AssistantMessage content={assistantContent} />}
             {error && <Error message={error} />}

@@ -23,7 +23,7 @@ public class ConversationAgent(AIAgent agent, IConversationToolHandlerRegistry r
         var localMessages = messages.ToList();
 
         Verify.NotNull(options);
-        Verify.NotNull(thread);
+        
         Verify.NotEmpty(localMessages);
 
         var threadId = options.GetAgUiThreadId();
