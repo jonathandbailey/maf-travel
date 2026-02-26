@@ -1,7 +1,7 @@
 import { Card, Input } from "antd";
 import Exchange from "../features/chat/Exchange";
 import { useState } from "react";
-import { HttpAgent, randomUUID } from "@ag-ui/client";
+import { EventType, HttpAgent, randomUUID, type BaseEvent } from "@ag-ui/client";
 
 interface ExchangeItem {
     id: string;
@@ -42,16 +42,22 @@ const ChatPage = () => {
                     prev.map((ex) => ex.id === exchangeId ? { ...ex, error: error.message } : ex)
                 );
             },
+            onEvent: ({ event }: { event: BaseEvent }) => {
+                console.log("Received agent event:", event);
+
+                if (event.type === EventType.TEXT_MESSAGE_CONTENT) {
+                    const delta = (event as any).delta || '';
+                    setExchanges((prev) =>
+                        prev.map((ex) => ex.id === exchangeId
+                            ? { ...ex, assistantContent: (ex.assistantContent ?? '') + delta }
+                            : ex
+                        )
+                    );
+                }
+            }
         });
 
-        const runResult = await agent.runAgent({ runId: randomUUID() });
-
-        if (runResult.newMessages?.length) {
-            const assistantContent = runResult.newMessages.map((m) => m.content).join("\n");
-            setExchanges((prev) =>
-                prev.map((ex) => ex.id === exchangeId ? { ...ex, assistantContent } : ex)
-            );
-        }
+        await agent.runAgent({ runId: randomUUID() });
     }
 
     return (<>
