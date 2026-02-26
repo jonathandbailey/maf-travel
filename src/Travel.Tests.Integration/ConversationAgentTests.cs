@@ -2,6 +2,7 @@
 using Microsoft.Agents.AI;
 using System.Diagnostics;
 using Travel.Experience.Application.Agents;
+using Travel.Experience.Application.Agents.ToolHandling;
 using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
 
@@ -23,8 +24,10 @@ public class ConversationAgentTests : IClassFixture<TelemetryFixture>
         var agent = await AgentHelper.Create("conversation.yaml", ConversationAgentTools.GetDeclarationOnlyTools());
 
         var workflowFactory = AgentFactoryHelper.Create();
+        IConversationToolHandler[] handlers = [new TravelWorkflowToolHandler(workflowFactory)];
+        var registry = new ConversationToolHandlerRegistry(handlers);
 
-        var conversationAgent = new ConversationAgent(agent, workflowFactory);
+        var conversationAgent = new ConversationAgent(agent, registry);
     
         var agentRunOptions = new ChatClientAgentRunOptions();
 

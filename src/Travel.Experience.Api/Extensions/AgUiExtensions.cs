@@ -1,7 +1,7 @@
 ﻿using Agents.Services;
 using Microsoft.Agents.AI.Hosting.AGUI.AspNetCore;
 using Travel.Experience.Application.Agents;
-using Travel.Workflows.Interfaces;
+using Travel.Experience.Application.Agents.ToolHandling;
 
 namespace Travel.Experience.Api.Extensions;
 
@@ -13,11 +13,11 @@ public static class AgUiExtensions
     {
         var agentFactory = app.Services.GetRequiredService<IAgentFactory>();
 
-        var workflowFactory = app.Services.GetRequiredService<IWorkflowFactory>();
+        var registry = app.Services.GetRequiredService<IConversationToolHandlerRegistry>();
 
         var agent = await agentFactory.Create("conversation_agent");
 
-        var conversationAgent = new ConversationAgent(agent, workflowFactory);
+        var conversationAgent = new ConversationAgent(agent, registry);
 
       
         var agui =  agentFactory.UseMiddleware(conversationAgent, "agent-thread");
