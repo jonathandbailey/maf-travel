@@ -21,7 +21,9 @@ public class AgentTemplateRepository(ILogger<AgentTemplateRepository> logger, IO
                 throw new ArgumentException("Path cannot be null or whitespace.", nameof(name));
             }
 
-            var filePath = Path.Combine(settings.Value.AgentTemplateFolder, name);
+            var filePath = Path.IsPathRooted(settings.Value.AgentTemplateFolder)
+                ? Path.Combine(settings.Value.AgentTemplateFolder, name)
+                : Path.Combine(AppContext.BaseDirectory, settings.Value.AgentTemplateFolder, name);
 
             if (!File.Exists(filePath))
             {

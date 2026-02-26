@@ -1,58 +1,22 @@
-﻿using Microsoft.Agents.AI;
-using Microsoft.Agents.AI.Workflows;
-using Travel.Workflows.Dto;
-using Travel.Workflows.Nodes;
+using Infrastructure.Repository;
+using Travel.Agents.Services;
+using Travel.Workflows.Infrastructure;
+using Travel.Workflows.Interfaces;
 
 namespace Travel.Workflows.Services;
 
-public class WorkflowFactory
+public class WorkflowFactory(
+    ICheckpointRepository checkpointRepository,
+    IWorkflowSessionRepository sessionRepository,
+    IAgentProvider agentProvider) : IWorkflowFactory
 {
-    public static Workflow Build(AIAgent planningAgent, AIAgent extractingAgent)
+    public Task<TravelWorkflowService> Create()
     {
-        var planningNode = new PlannerNode(planningAgent);
+        var workflowService = new TravelWorkflowService(
+            checkpointRepository,
+            sessionRepository,
+            agentProvider);
 
-        var travelPlanNode = new UpdateNode();
-
-        var startNode = new StartNode();
-
-        var extractingNode = new ExtractionNode(extractingAgent);
-
-        var builder = new WorkflowBuilder(startNode);
-
-        var requestInformationPort = RequestPort.Create<InformationRequest, InformationResponse>("information");
-
-        var requestInformationNode = new InformationRequestNode();
-
-        var informationResponseNode = new InformationResponseNode();
-
-        var executionNode = new ExecutionNode();
-
-        var endNode = new EndNode();
-
-        builder.AddEdge(startNode, extractingNode);
-
-        builder.AddEdge(extractingNode, travelPlanNode);
-
-        builder.AddEdge(travelPlanNode, planningNode);
-
-        builder.AddEdge(planningNode, executionNode);
-
-        builder.AddEdge(executionNode, endNode);
-
-        builder.AddEdge(executionNode, requestInformationNode);
-
-      
-            
-
-        builder.AddEdge(requestInformationNode, requestInformationPort);
-        builder.AddEdge(requestInformationPort, informationResponseNode);
-
-        builder.AddEdge(informationResponseNode, extractingNode);
-
-        var workflow = builder.Build();
-
-    
-
-        return workflow;
+        return Task.FromResult(workflowService);
     }
 }

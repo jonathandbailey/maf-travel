@@ -2,7 +2,7 @@
 
 public class LanguageModelSettings
 {
-    public string DeploymentName { get; init; } = string.Empty;
+    public required string DeploymentName { get; init; }
 
-    public string EndPoint { get; init; } = string.Empty;
+    public required string EndPoint { get; init; }
 }

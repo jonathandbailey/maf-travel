@@ -48,7 +48,7 @@ public class TravelWorkflowService(
         var extractingTask = agentProvider.CreateAsync(AgentType.Extracting);
         await Task.WhenAll(planningTask, extractingTask);
 
-        var workflow = WorkflowFactory.Build(planningTask.Result, extractingTask.Result);
+        var workflow = TravelWorkflowBuilder.Build(planningTask.Result, extractingTask.Result);
 
         var checkpointManager = CheckpointManager.CreateJson(new CheckpointStore(checkpointRepository, request.ThreadId));
 
