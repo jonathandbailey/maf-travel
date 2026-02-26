@@ -1,33 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState } from 'react';
 import './App.css'
+import { Input, Layout } from 'antd';
+
+const { Header, Content } = Layout;
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [inputValue, setInputValue] = useState("");
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => { }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Layout>
+        <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 16px', background: 'white', borderBottom: '1px solid #e0e0e0', flexShrink: 0 }}>
+
+        </Header>
+        <Layout style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+          <Content style={{
+            height: '100%',
+            background: 'white',
+            minHeight: 0, overflow: 'hidden', padding: '16px'
+          }}>
+            <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", alignItems: "center" }}>
+              <div style={{ flex: 1, overflow: "auto", width: "100%", maxWidth: 768 }}>
+
+              </div>
+              <Input
+                placeholder="Where would you like to go today?"
+                style={{ flexShrink: 0, width: "100%", maxWidth: 768 }}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+
+          </Content>
+        </Layout>
+      </Layout>
     </>
   )
 }
