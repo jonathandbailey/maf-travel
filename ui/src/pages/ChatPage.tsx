@@ -1,6 +1,7 @@
 import Exchange from "../features/chat/Exchange";
 import ChatInput from "../features/chat/components/ChatInput";
 import TravelPlan from "../features/travel/components/TravelPlan";
+import Welcome from "../features/travel/components/Welcome";
 import { useState } from "react";
 import { Button } from "antd";
 import { EventType, HttpAgent, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
@@ -121,11 +122,15 @@ const ChatPage = () => {
         <div style={{ display: "flex", flexDirection: "row", height: "100%", overflow: "hidden" }}>
             <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
                 <div style={{ flex: 1, overflow: "auto", width: "100%" }}>
-                    <div style={{ maxWidth: 768, margin: "0 auto" }}>
-                        {exchanges.map((ex) => (
-                            <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusUpdates={ex.statusUpdates} error={ex.error} />
-                        ))}
-                    </div>
+                    {exchanges.length === 0 ? (
+                        <Welcome />
+                    ) : (
+                        <div style={{ maxWidth: 768, margin: "0 auto" }}>
+                            {exchanges.map((ex) => (
+                                <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusUpdates={ex.statusUpdates} error={ex.error} />
+                            ))}
+                        </div>
+                    )}
                 </div>
                 <ChatInput
                     value={inputValue}
