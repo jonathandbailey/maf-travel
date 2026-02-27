@@ -1,5 +1,5 @@
-import { Card, Input } from "antd";
 import Exchange from "../features/chat/Exchange";
+import ChatInput from "../features/chat/components/ChatInput";
 import { useState } from "react";
 import { EventType, HttpAgent, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import type { StatusUpdate } from "../features/chat/domain/StatusUpdate";
@@ -45,7 +45,7 @@ const ChatPage = () => {
                 );
             },
             onEvent: ({ event }: { event: BaseEvent }) => {
-                console.log("Received agent event:", event);
+
 
                 if (event.type === EventType.TEXT_MESSAGE_CONTENT) {
                     const delta = (event as any).delta || '';
@@ -79,6 +79,12 @@ const ChatPage = () => {
                             );
                         }
                     }
+
+                    if (typeof snapshot === 'object'
+                        && snapshot !== null
+                        && 'Type' in snapshot && snapshot.Type === 'TravelPlanUpdate') {
+                        console.log("Received agent event:", event);
+                    }
                 }
             }
         });
@@ -96,28 +102,11 @@ const ChatPage = () => {
                     ))}
                 </div>
             </div>
-            <Card
-                style={{
-
-                    width: "100%",
-                    maxWidth: 768,
-                    minWidth: 700,
-                    marginBottom: 24,
-                    marginTop: 0,
-                    margin: "0 auto 24px",
-                    boxShadow: "0 0 8px rgba(0, 0, 0, 0.1)",
-                    borderRadius: 16,
-                }}
-            >
-                <Input
-                    placeholder="Ask me anything..."
-                    variant="borderless"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    style={{ flex: 1, width: "100%" }}
-                />
-            </Card>
+            <ChatInput
+                value={inputValue}
+                onChange={setInputValue}
+                onKeyDown={handleKeyDown}
+            />
 
         </div>
     </>)
