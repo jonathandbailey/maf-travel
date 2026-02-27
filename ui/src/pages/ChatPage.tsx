@@ -2,6 +2,7 @@ import Exchange from "../features/chat/Exchange";
 import ChatInput from "../features/chat/components/ChatInput";
 import TravelPlan from "../features/travel/components/TravelPlan";
 import { useState } from "react";
+import { Button } from "antd";
 import { EventType, HttpAgent, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import type { StatusUpdate } from "../features/chat/domain/StatusUpdate";
 import type { TravelPlan as TravelPlanModel } from "../features/travel/domain/TravelPlan";
@@ -20,7 +21,13 @@ const AGENT_URL = `${import.meta.env.VITE_API_BASE_URL}/ag-ui`;
 const ChatPage = () => {
     const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
     const [inputValue, setInputValue] = useState("");
-    const [threadId] = useState(randomUUID());
+    const [threadId, setThreadId] = useState(randomUUID());
+
+    const handleNewPlan = () => {
+        setExchanges([]);
+        setTravelPlan({ origin: null, destination: null, startDate: null, endDate: null, numberOfTravelers: null });
+        setThreadId(randomUUID());
+    };
     const [travelPlan, setTravelPlan] = useState<TravelPlanModel>({
         origin: null,
         destination: null,
@@ -126,7 +133,8 @@ const ChatPage = () => {
                     onKeyDown={handleKeyDown}
                 />
             </div>
-            <div style={{ width: 320, padding: 16, alignSelf: "flex-start" }}>
+            <div style={{ width: 320, padding: 16, alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 12 }}>
+                <Button type="primary" block onClick={handleNewPlan}>New Travel Plan</Button>
                 <TravelPlan travelPlan={travelPlan} />
             </div>
         </div>
