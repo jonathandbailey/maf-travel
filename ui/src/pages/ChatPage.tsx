@@ -2,7 +2,7 @@ import Exchange from "../features/chat/Exchange";
 import ChatInput from "../features/chat/components/ChatInput";
 import TravelPlan from "../features/travel/components/TravelPlan";
 import Welcome from "../features/travel/components/Welcome";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "antd";
 import { EventType, HttpAgent, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import type { StatusUpdate } from "../features/chat/domain/StatusUpdate";
@@ -24,6 +24,11 @@ const ChatPage = () => {
     const [inputValue, setInputValue] = useState("");
     const [threadId, setThreadId] = useState(randomUUID());
     const [isStreaming, setIsStreaming] = useState(false);
+    const agentRef = useRef<InstanceType<typeof HttpAgent> | null>(null);
+
+    const handleCancel = () => {
+        agentRef.current?.abortRun();
+    };
 
     const handleNewPlan = () => {
         setExchanges([]);
@@ -49,6 +54,7 @@ const ChatPage = () => {
             threadId: threadId,
             initialMessages: [{ id: randomUUID(), role: "user", content: text }],
         });
+        agentRef.current = agent;
 
         agent.subscribe({
             onRunFailed: ({ error }) => {
@@ -116,6 +122,7 @@ const ChatPage = () => {
             await agent.runAgent({ runId: randomUUID() });
         } finally {
             setIsStreaming(false);
+            agentRef.current = null;
         }
     }
 
@@ -149,6 +156,7 @@ const ChatPage = () => {
                         sendMessage(text);
                     }}
                     isStreaming={isStreaming}
+                    onCancel={handleCancel}
                 />
             </div>
             <div style={{ width: 320, padding: 16, alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 12 }}>

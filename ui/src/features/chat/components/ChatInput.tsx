@@ -8,6 +8,7 @@ interface ChatInputProps {
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     onSuggestionSelect?: (suggestion: string) => void;
     onSubmit?: () => void;
+    onCancel?: () => void;
     isStreaming?: boolean;
 }
 
@@ -22,7 +23,7 @@ const suggestions: MenuProps["items"] = [
     },
 ];
 
-const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect, onSubmit, isStreaming }: ChatInputProps) => {
+const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect, onSubmit, onCancel, isStreaming }: ChatInputProps) => {
     const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
         const item = suggestions?.find((s) => s?.key === key);
         if (item && "label" in item && typeof item.label === "string") {
@@ -64,7 +65,7 @@ const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect, onSubmit, i
                     type="primary"
                     shape="circle"
                     icon={isStreaming ? <StopOutlined /> : <ArrowUpOutlined />}
-                    onClick={!isStreaming ? onSubmit : undefined}
+                    onClick={isStreaming ? onCancel : onSubmit}
                     disabled={!isStreaming && !value.trim()}
                 />
             </div>
