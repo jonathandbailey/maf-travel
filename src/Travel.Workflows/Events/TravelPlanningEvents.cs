@@ -12,3 +12,8 @@ public class TravelPlanningCompleteEvent(TravelPlanDto travelPlan) : WorkflowEve
 {
     public TravelPlanDto TravelPlan { get; } = travelPlan;
 }
+
+public class TravelPlanStatusUpdateEvent(string Status) : WorkflowEvent
+{
+    public string Status { get; } = Status;
+}

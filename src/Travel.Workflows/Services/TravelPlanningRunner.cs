@@ -52,6 +52,11 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
                 }
             }
 
+            if (evt is TravelPlanStatusUpdateEvent)
+            {
+                yield return evt;
+            }
+
             if (evt is TravelPlanningCompleteEvent)
             {
                 _state = WorkflowState.Completed;

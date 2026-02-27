@@ -1,10 +1,11 @@
-using System.Diagnostics;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
+using System.Diagnostics;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Events;
 using Travel.Workflows.Exceptions;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Telemetry;
@@ -35,6 +36,8 @@ public partial class ExtractionNode(AIAgent agent) : Executor(NodeNames.Extracti
         try
         {
             response = await agent.RunAsync(command.Message, cancellationToken: cancellationToken);
+
+            await context.AddEventAsync(new TravelPlanStatusUpdateEvent("Key Details Extracted."), cancellationToken);
         }
         catch (Exception exception)
         {

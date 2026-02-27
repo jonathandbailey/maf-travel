@@ -69,10 +69,16 @@ public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) 
                 yield return new ToolResultUpdate(
                     new FunctionResultContent(call.CallId, informationRequest));
             }
-            else if (evt is TravelPlanningCompleteEvent)
+
+            if (evt is TravelPlanningCompleteEvent)
             {
                 yield return new ToolResultUpdate(
                     new FunctionResultContent(call.CallId, "Travel Planning Complete"));
+            }
+
+            if (evt is TravelPlanStatusUpdateEvent travelPlanStatusUpdateEvent)
+            {
+                yield return new ToolStatusUpdate(travelPlanStatusUpdateEvent.Status);
             }
         }
     }
