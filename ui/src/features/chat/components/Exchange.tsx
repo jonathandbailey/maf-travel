@@ -1,9 +1,10 @@
-import UserMessage from "./UserMessage";
 import AssistantMessage from "./AssistantMessage";
 import Error from "./Error";
+
+import ThoughtProcess from "./ThoughProcess";
+import type { StatusUpdate } from "../domain/StatusUpdate";
+import UserMessage from "./UserMessage";
 import Status from "./Status";
-import ThoughtProcess from "./components/ThoughProcess";
-import type { StatusUpdate } from "./domain/StatusUpdate";
 
 interface ExchangeProps {
     userContent: string;

@@ -15,7 +15,10 @@
       "Bash(dotnet build src/Travel.Experience.Api/Travel.Experience.Api.csproj)",
       "Bash(dotnet build src/Travel.Tests.Integration/Travel.Tests.Integration.csproj)",
       "Bash(xargs grep -l \"AgentResponseUpdate\\\\|RunStreamingAsync\")",
-      "Bash(dotnet build MafTravel.sln --no-restore -v quiet)"
+      "Bash(dotnet build MafTravel.sln --no-restore -v quiet)",
+      "Bash(npm run build)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(find . -name \"*.tsbuildinfo\" -delete)"
     ]
   }
 }
