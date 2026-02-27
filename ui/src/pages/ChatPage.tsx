@@ -88,11 +88,13 @@ const ChatPage = () => {
 
     return (<>
 
-        <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", alignItems: "center" }}>
-            <div style={{ flex: 1, overflow: "auto", width: "100%", maxWidth: 768 }}>
-                {exchanges.map((ex) => (
-                    <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusUpdates={ex.statusUpdates} error={ex.error} />
-                ))}
+        <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+            <div style={{ flex: 1, overflow: "auto", width: "100%" }}>
+                <div style={{ maxWidth: 768, margin: "0 auto" }}>
+                    {exchanges.map((ex) => (
+                        <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusUpdates={ex.statusUpdates} error={ex.error} />
+                    ))}
+                </div>
             </div>
             <Card
                 style={{
@@ -102,6 +104,7 @@ const ChatPage = () => {
                     minWidth: 700,
                     marginBottom: 24,
                     marginTop: 0,
+                    margin: "0 auto 24px",
                     boxShadow: "0 0 8px rgba(0, 0, 0, 0.1)",
                     borderRadius: 16,
                 }}
