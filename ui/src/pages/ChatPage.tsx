@@ -8,7 +8,7 @@ interface ExchangeItem {
     id: string;
     userContent: string;
     assistantContent?: string;
-    statusMessage?: string;
+    statusUpdates: StatusUpdate[];
     error?: string;
 }
 
@@ -29,7 +29,7 @@ const ChatPage = () => {
         setInputValue("");
 
         const exchangeId = randomUUID();
-        setExchanges((prev) => [...prev, { id: exchangeId, userContent: text }]);
+        setExchanges((prev) => [...prev, { id: exchangeId, userContent: text, statusUpdates: [] }]);
 
         const agent = new HttpAgent({
             url: AGENT_URL,
@@ -73,7 +73,7 @@ const ChatPage = () => {
                             };
                             setExchanges((prev) =>
                                 prev.map((ex) => ex.id === exchangeId
-                                    ? { ...ex, statusMessage: statusUpdate.status }
+                                    ? { ...ex, statusUpdates: [...ex.statusUpdates, statusUpdate] }
                                     : ex
                                 )
                             );
@@ -91,7 +91,7 @@ const ChatPage = () => {
         <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", alignItems: "center" }}>
             <div style={{ flex: 1, overflow: "auto", width: "100%", maxWidth: 768 }}>
                 {exchanges.map((ex) => (
-                    <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusMessage={ex.statusMessage} error={ex.error} />
+                    <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusUpdates={ex.statusUpdates} error={ex.error} />
                 ))}
             </div>
             <Card
