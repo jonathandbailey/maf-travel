@@ -2,7 +2,7 @@ using Microsoft.Extensions.AI;
 
 namespace Travel.Experience.Application.Agents.ToolHandling;
 
-public interface IConversationToolHandler
+public interface IToolHandler
 {
     string ToolName { get; }
 
@@ -10,4 +10,6 @@ public interface IConversationToolHandler
         FunctionCallContent call,
         ToolHandlerContext context,
         CancellationToken cancellationToken);
+
+    List<AITool> GetDeclarationOnlyTools();
 }

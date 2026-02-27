@@ -24,8 +24,8 @@ public class ConversationAgentTests : IClassFixture<TelemetryFixture>
         var agent = await AgentHelper.Create("conversation.yaml", ConversationAgentTools.GetDeclarationOnlyTools());
 
         var workflowFactory = AgentFactoryHelper.Create();
-        IConversationToolHandler[] handlers = [new TravelWorkflowToolHandler(workflowFactory)];
-        var registry = new ConversationToolHandlerRegistry(handlers);
+        IToolHandler[] handlers = [new TravelWorkflowToolHandler(workflowFactory)];
+        var registry = new ToolRegistry(handlers);
 
         var conversationAgent = new ConversationAgent(agent, registry);
     
@@ -58,8 +58,8 @@ public class ConversationAgentTests : IClassFixture<TelemetryFixture>
         var agent = await AgentHelper.CreateWithFileThread("conversation.yaml", ConversationAgentTools.GetDeclarationOnlyTools());
 
         var workflowFactory = AgentFactoryHelper.CreateWithFileRepositories();
-        IConversationToolHandler[] handlers = [new TravelWorkflowToolHandler(workflowFactory)];
-        var registry = new ConversationToolHandlerRegistry(handlers);
+        IToolHandler[] handlers = [new TravelWorkflowToolHandler(workflowFactory)];
+        var registry = new ToolRegistry(handlers);
 
         var conversationAgent = new ConversationAgent(agent, registry);
 

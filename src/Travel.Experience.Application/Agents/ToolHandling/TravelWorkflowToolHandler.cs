@@ -2,7 +2,6 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using System.Runtime.CompilerServices;
 using Travel.Agents.Dto;
-using Travel.Experience.Application.Agents;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
@@ -11,11 +10,16 @@ using Travel.Workflows.Interfaces;
 
 namespace Travel.Experience.Application.Agents.ToolHandling;
 
-public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) : IConversationToolHandler
+public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) : IToolHandler
 {
     private const string ExecutingTravelWorkflow = "Executing Travel Workflow...";
 
     public string ToolName => ConversationAgentTools.RequestInformationToolName;
+
+    public List<AITool> GetDeclarationOnlyTools()
+    {
+        return ConversationAgentTools.GetDeclarationOnlyTools();
+    }
 
     public async IAsyncEnumerable<ToolHandlerUpdate> ExecuteAsync(
         FunctionCallContent call,

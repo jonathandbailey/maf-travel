@@ -9,7 +9,7 @@ using Travel.Experience.Application.Observability;
 
 namespace Travel.Experience.Application.Agents;
 
-public class ConversationAgent(AIAgent agent, IConversationToolHandlerRegistry registry) : DelegatingAIAgent(agent)
+public class ConversationAgent(AIAgent agent, IToolRegistry registry) : DelegatingAIAgent(agent)
 {
     private const string StatusMessageThinking = "Thinking...";
     private const string ProcessingResults = "Processing Results...";
