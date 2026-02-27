@@ -3,7 +3,7 @@ import { EventType, HttpAgent, randomUUID, type BaseEvent, type StateSnapshotEve
 import type { StatusUpdate } from "../domain/StatusUpdate";
 import type { TravelPlan } from "../../travel/domain/TravelPlan";
 
-interface ExchangeItem {
+export interface ExchangeItem {
     id: string;
     userContent: string;
     assistantContent?: string;
