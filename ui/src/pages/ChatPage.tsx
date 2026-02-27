@@ -1,8 +1,10 @@
 import Exchange from "../features/chat/Exchange";
 import ChatInput from "../features/chat/components/ChatInput";
+import TravelPlan from "../features/travel/components/TravelPlan";
 import { useState } from "react";
 import { EventType, HttpAgent, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import type { StatusUpdate } from "../features/chat/domain/StatusUpdate";
+import type { TravelPlan as TravelPlanModel } from "../features/travel/domain/TravelPlan";
 
 interface ExchangeItem {
     id: string;
@@ -19,6 +21,13 @@ const ChatPage = () => {
     const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
     const [inputValue, setInputValue] = useState("");
     const [threadId] = useState(randomUUID());
+    const [travelPlan, setTravelPlan] = useState<TravelPlanModel>({
+        origin: null,
+        destination: null,
+        startDate: null,
+        endDate: null,
+        numberOfTravelers: null,
+    });
 
     const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key !== "Enter") return;
@@ -83,7 +92,16 @@ const ChatPage = () => {
                     if (typeof snapshot === 'object'
                         && snapshot !== null
                         && 'Type' in snapshot && snapshot.Type === 'TravelPlanUpdate') {
-                        console.log("Received agent event:", event);
+                        const payload = (snapshot as any).Payload;
+                        if (payload) {
+                            setTravelPlan({
+                                origin: payload.Origin ?? null,
+                                destination: payload.Destination ?? null,
+                                startDate: payload.DepartureDate ?? null,
+                                endDate: payload.ReturnDate ?? null,
+                                numberOfTravelers: payload.NumberOfTravelers ?? null,
+                            });
+                        }
                     }
                 }
             }
@@ -92,24 +110,27 @@ const ChatPage = () => {
         await agent.runAgent({ runId: randomUUID() });
     }
 
-    return (<>
-
-        <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-            <div style={{ flex: 1, overflow: "auto", width: "100%" }}>
-                <div style={{ maxWidth: 768, margin: "0 auto" }}>
-                    {exchanges.map((ex) => (
-                        <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusUpdates={ex.statusUpdates} error={ex.error} />
-                    ))}
+    return (
+        <div style={{ display: "flex", flexDirection: "row", height: "100%", overflow: "hidden" }}>
+            <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
+                <div style={{ flex: 1, overflow: "auto", width: "100%" }}>
+                    <div style={{ maxWidth: 768, margin: "0 auto" }}>
+                        {exchanges.map((ex) => (
+                            <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusUpdates={ex.statusUpdates} error={ex.error} />
+                        ))}
+                    </div>
                 </div>
+                <ChatInput
+                    value={inputValue}
+                    onChange={setInputValue}
+                    onKeyDown={handleKeyDown}
+                />
             </div>
-            <ChatInput
-                value={inputValue}
-                onChange={setInputValue}
-                onKeyDown={handleKeyDown}
-            />
-
+            <div style={{ width: 320, padding: 16, alignSelf: "flex-start" }}>
+                <TravelPlan travelPlan={travelPlan} />
+            </div>
         </div>
-    </>)
+    )
 }
 
 export default ChatPage;
