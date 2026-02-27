@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Settings;
 using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -7,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Infrastructure.Repository;
 
 
-public class CheckpointRepository(IFileRepository fileRepository, IOptions<FileStorageSettings> settings) : ICheckpointRepository
+public class CheckpointRepository(IFileRepository fileRepository, IOptions<FileStorageSettings> settings, ILogger<CheckpointRepository> logger) : ICheckpointRepository
 {
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -34,9 +35,17 @@ public class CheckpointRepository(IFileRepository fileRepository, IOptions<FileS
         foreach (var file in files)
         {
             var content = await fileRepository.LoadAsync(file);
-            var storeState = JsonSerializer.Deserialize<StoreStateDto>(content, SerializerOptions);
-            if (storeState != null)
-                results.Add(storeState);
+            try
+            {
+                var storeState = JsonSerializer.Deserialize<StoreStateDto>(content, SerializerOptions);
+                if (storeState != null)
+                    results.Add(storeState);
+            }
+            catch (JsonException ex)
+            {
+                logger.LogError(ex, "Failed to deserialize checkpoint file: {File}", file);
+                throw;
+            }
         }
 
         return results;
@@ -55,11 +64,21 @@ public class CheckpointRepository(IFileRepository fileRepository, IOptions<FileS
     {
         var path = Path.Combine(GetFolder(), $"{threadId}-{checkpointId}-{runId}.json");
         var content = await fileRepository.LoadAsync(path);
-      
-        var storeState = JsonSerializer.Deserialize<StoreStateDto>(content, SerializerOptions);
+
+        StoreStateDto? storeState;
+        try
+        {
+            storeState = JsonSerializer.Deserialize<StoreStateDto>(content, SerializerOptions);
+        }
+        catch (JsonException ex)
+        {
+            logger.LogError(ex, "Failed to deserialize checkpoint data for path: {Path}", path);
+            throw;
+        }
 
         if (storeState == null)
         {
+            logger.LogError("Checkpoint deserialized to null for path: {Path}", path);
             throw new InvalidOperationException($"Failed to deserialize checkpoint data for path: {path}");
         }
 

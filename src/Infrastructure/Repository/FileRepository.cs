@@ -27,7 +27,7 @@ public class FileRepository(ILogger<FileRepository> logger) : IFileRepository
         }
         catch (FileNotFoundException exception)
         {
-            logger.LogDebug(exception, "File not found at path: {Path}", path);
+            logger.LogWarning(exception, "File not found at path: {Path}", path);
             throw;
         }
         catch (UnauthorizedAccessException exception)
@@ -56,9 +56,9 @@ public class FileRepository(ILogger<FileRepository> logger) : IFileRepository
                 throw new ArgumentException("Path cannot be null or whitespace.", nameof(path));
             }
 
-            if (string.IsNullOrWhiteSpace(content))
+            if (string.IsNullOrEmpty(content))
             {
-                throw new ArgumentException("Content cannot be null or whitespace.", nameof(content));
+                throw new ArgumentException("Content cannot be null or empty.", nameof(content));
             }
 
             var directory = Path.GetDirectoryName(path);

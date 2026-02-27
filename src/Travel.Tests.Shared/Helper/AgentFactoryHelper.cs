@@ -52,7 +52,8 @@ public static  class AgentFactoryHelper
         var mockFileLogger = new Mock<ILogger<FileRepository>>();
         var fileRepository = new FileRepository(mockFileLogger.Object);
 
-        var checkpointRepo = new CheckpointRepository(fileRepository, fileStorageSettings);
+        var mockCheckpointLogger = new Mock<ILogger<CheckpointRepository>>();
+        var checkpointRepo = new CheckpointRepository(fileRepository, fileStorageSettings, mockCheckpointLogger.Object);
         var sessionRepo = new WorkflowSessionRepository(fileRepository, fileStorageSettings);
 
         var agentProvider = new AgentProvider(

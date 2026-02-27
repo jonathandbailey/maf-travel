@@ -41,7 +41,8 @@ public static class AgentHelper
         var mockFileLogger = new Mock<ILogger<FileRepository>>();
         var fileRepository = new FileRepository(mockFileLogger.Object);
 
-        var templateRepository = new AgentTemplateRepository(fileRepository, fileStorageSettings);
+        var mockTemplateLogger = new Mock<ILogger<AgentTemplateRepository>>();
+        var templateRepository = new AgentTemplateRepository(fileRepository, fileStorageSettings, mockTemplateLogger.Object);
 
         return templateRepository;
     }
@@ -63,7 +64,8 @@ public static class AgentHelper
 
         var mockFileLogger = new Mock<ILogger<FileRepository>>();
         var fileRepository = new FileRepository(mockFileLogger.Object);
-        var agentThreadRepository = new AgentThreadRepository(fileRepository, fileStorageSettings);
+        var mockThreadRepoLogger = new Mock<ILogger<AgentThreadRepository>>();
+        var agentThreadRepository = new AgentThreadRepository(fileRepository, fileStorageSettings, mockThreadRepoLogger.Object);
 
         var mockThreadLogger = new Mock<ILogger<IAgentAgUiMiddleware>>();
         var agentThreadMiddleware = new AgentThreadMiddleware(agentThreadRepository, mockThreadLogger.Object);

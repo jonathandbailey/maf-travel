@@ -24,7 +24,8 @@ public class InfrastructureHelper
         var mockFileLogger = new Mock<ILogger<FileRepository>>();
         var fileRepository = new FileRepository(mockFileLogger.Object);
 
-        var templateRepository = new AgentTemplateRepository(fileRepository, fileStorageSettings);
+        var mockTemplateLogger = new Mock<ILogger<AgentTemplateRepository>>();
+        var templateRepository = new AgentTemplateRepository(fileRepository, fileStorageSettings, mockTemplateLogger.Object);
 
         return templateRepository;
     }
