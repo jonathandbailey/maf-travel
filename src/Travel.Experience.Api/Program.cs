@@ -3,6 +3,7 @@ using Infrastructure.Extensions;
 using ServiceDefaults;
 using Travel.Agents.Extensions;
 using Travel.Experience.Api.Extensions;
+using Travel.Experience.Application.Extensions;
 using Travel.Workflows.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

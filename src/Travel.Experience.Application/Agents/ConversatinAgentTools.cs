@@ -9,7 +9,7 @@ public static class ConversationAgentTools
   
     private static readonly Dictionary<string, AIFunction> Tools = new();
 
-    [Description("Gathers the required travel booking details when a user wants to plan a vacation.")]
+    [Description("Gathers the required travel booking details (origin, departure date etc.) when a user wants to plan a vacation.")]
     private static string TravelBookingDetails(
         [Description("The user's travel planning request")] string request)
         => $"The information requested is: {request}";

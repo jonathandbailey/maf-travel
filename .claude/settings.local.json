@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet build src/Agents/Agents.csproj)"
+      "Bash(dotnet build src/Agents/Agents.csproj)",
+      "Bash(dotnet build src/Travel.Experience.Application/)",
+      "Bash(dotnet-script --version)"
     ]
   }
 }

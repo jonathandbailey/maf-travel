@@ -2,11 +2,21 @@ using Microsoft.Extensions.AI;
 
 namespace Travel.Experience.Application.Agents.ToolHandling;
 
-public sealed class ToolRegistry(IEnumerable<IToolHandler> handlers)
-    : IToolRegistry
+public sealed class ToolRegistry : IToolRegistry
 {
-    private readonly Dictionary<string, IToolHandler> _handlers =
-        handlers.ToDictionary(h => h.ToolName, StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, IToolHandler> _handlers;
+
+    public ToolRegistry(IEnumerable<IToolHandler> handlers)
+    {
+        _handlers = handlers.ToDictionary(h => h.ToolName, StringComparer.OrdinalIgnoreCase);
+
+        var availableTools = _handlers.Values
+            .SelectMany(h => h.GetDeclarationOnlyTools())
+            .ToList();
+
+        var capabilitiesHandler = new ToolRegistryCapabilitiesHandler(availableTools);
+        _handlers[capabilitiesHandler.ToolName] = capabilitiesHandler;
+    }
 
     public IToolHandler? GetHandler(string toolName) =>
         _handlers.TryGetValue(toolName, out var handler) ? handler : null;
