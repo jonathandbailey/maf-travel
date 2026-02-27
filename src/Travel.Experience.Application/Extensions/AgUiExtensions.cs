@@ -9,9 +9,9 @@ public static class AgUiExtensions
 {
     private const string ApplicationJsonMediaType = "application/json";
 
-    public static AgentResponseUpdate ToAgentResponseStatusMessage(this string message)
+    public static AgentResponseUpdate ToAgentResponseStatusMessage(this string message, string? thought = null)
     {
-        var statusUpdate = new StatusUpdate("StatusUpdate", "Conversation Agent", message, string.Empty);
+        var statusUpdate = new StatusUpdate("StatusUpdate", "Conversation Agent", message, thought ?? string.Empty);
 
         var snapshot = new SnapShot<StatusUpdate>(statusUpdate.Type, statusUpdate);
 

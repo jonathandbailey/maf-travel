@@ -60,7 +60,7 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
                 call, new ToolHandlerContext(threadId), cancellationToken))
             {
                 if (update is ToolStatusUpdate statusUpdate)
-                    yield return statusUpdate.Message.ToAgentResponseStatusMessage();
+                    yield return statusUpdate.Message.ToAgentResponseStatusMessage(statusUpdate.Thought);
                 else if (update is ToolResultUpdate resultUpdate)
                     toolResults.Add(resultUpdate.Result);
             }

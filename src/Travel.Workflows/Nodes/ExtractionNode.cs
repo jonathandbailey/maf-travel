@@ -37,7 +37,7 @@ public partial class ExtractionNode(AIAgent agent) : Executor(NodeNames.Extracti
         {
             response = await agent.RunAsync(command.Message, cancellationToken: cancellationToken);
 
-            await context.AddEventAsync(new TravelPlanStatusUpdateEvent("Key Details Extracted."), cancellationToken);
+            await context.AddEventAsync(new TravelPlanStatusUpdateEvent("Key Details Extracted.", response.Text), cancellationToken);
         }
         catch (Exception exception)
         {

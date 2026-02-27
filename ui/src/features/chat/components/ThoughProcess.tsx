@@ -17,6 +17,9 @@ const ThoughtProcess = ({ statusUpdates, isLoading }: ThoughtProcessProps) => {
                     {update.source && (
                         <div style={{ color: "#888", fontSize: "0.75rem" }}>{update.source}</div>
                     )}
+                    {update.details && (
+                        <div style={{ color: "#555", fontSize: "0.75rem", marginTop: 4, fontStyle: "italic" }}>{update.details}</div>
+                    )}
                 </div>
             ),
         };
