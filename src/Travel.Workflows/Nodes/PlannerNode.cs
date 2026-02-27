@@ -1,12 +1,13 @@
-using System.Diagnostics;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
+using System.Diagnostics;
 using System.Text.Json;
+using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Events;
 using Travel.Workflows.Exceptions;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Telemetry;
-using Travel.Workflows.Common;
 
 namespace Travel.Workflows.Nodes;
 
@@ -37,6 +38,9 @@ public partial class PlannerNode(AIAgent agent) : Executor(NodeNames.PlannerNode
         try
         {
             response = await agent.RunAsync(serializedPlan, cancellationToken: cancellationToken);
+
+            await context.AddEventAsync(new TravelPlanStatusUpdateEvent("Planning Next Actions...", response.Text, NodeNames.PlannerNode), cancellationToken);
+
         }
         catch (Exception exception)
         {

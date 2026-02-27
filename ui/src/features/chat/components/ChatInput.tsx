@@ -19,7 +19,7 @@ const suggestions: MenuProps["items"] = [
     },
     {
         key: "plan_paris_trip",
-        label: "Plan a trip to Paris for next month for 4 people",
+        label: "Plan a trip to Paris on the 01.06.2026 for 4 people",
     },
 ];
 

@@ -1,4 +1,4 @@
-import { Card, Timeline, Spin } from "antd";
+import { Collapse, Timeline, Spin } from "antd";
 import type { StatusUpdate } from "../domain/StatusUpdate";
 
 interface ThoughtProcessProps {
@@ -26,13 +26,16 @@ const ThoughtProcess = ({ statusUpdates, isLoading }: ThoughtProcessProps) => {
     });
 
     return (
-        <Card
+        <Collapse
+            defaultActiveKey={["1"]}
             size="small"
             style={{ alignSelf: "flex-start", minWidth: 280, maxWidth: 480 }}
-            styles={{ body: { padding: "12px 16px" } }}
-        >
-            <Timeline items={items} />
-        </Card>
+            items={[{
+                key: "1",
+                label: "Thought process",
+                children: <Timeline items={items} />,
+            }]}
+        />
     );
 };
 

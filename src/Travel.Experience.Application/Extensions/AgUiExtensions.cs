@@ -21,7 +21,7 @@ public static class AgUiExtensions
 
     public static AgentResponseUpdate ToAgentResponseStatusMessage(this string message, string? thought = null, string? source = null)
     {
-        var statusUpdate = new StatusUpdate("StatusUpdate", source ?? "Conversation Agent", message, thought ?? string.Empty);
+        var statusUpdate = new StatusUpdate("StatusUpdate", source ?? "Conversation", message, thought ?? string.Empty);
 
         var snapshot = new SnapShot<StatusUpdate>(statusUpdate.Type, statusUpdate);
 

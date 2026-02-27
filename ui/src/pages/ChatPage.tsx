@@ -103,12 +103,13 @@ const ChatPage = () => {
                         && snapshot !== null
                         && 'Type' in snapshot && snapshot.Type === 'TravelPlanUpdate') {
                         const payload = (snapshot as any).Payload;
+                        console.log("Received TravelPlanUpdate payload:", payload);
                         if (payload) {
                             setTravelPlan({
                                 origin: payload.Origin ?? null,
                                 destination: payload.Destination ?? null,
-                                startDate: payload.DepartureDate ?? null,
-                                endDate: payload.ReturnDate ?? null,
+                                startDate: payload.StartDate ?? null,
+                                endDate: payload.EndDate ?? null,
                                 numberOfTravelers: payload.NumberOfTravelers ?? null,
                             });
                         }

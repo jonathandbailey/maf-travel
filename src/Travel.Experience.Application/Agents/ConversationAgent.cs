@@ -12,8 +12,7 @@ namespace Travel.Experience.Application.Agents;
 public class ConversationAgent(AIAgent agent, IToolRegistry registry) : DelegatingAIAgent(agent)
 {
     private const string StatusMessageThinking = "Thinking...";
-    private const string ProcessingResults = "Processing Results...";
-
+   
     protected override async IAsyncEnumerable<AgentResponseUpdate> RunCoreStreamingAsync(
         IEnumerable<ChatMessage> messages,
         AgentSession? thread = null,
@@ -30,18 +29,23 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
         options = options.AddThreadId(threadId);
 
         using var agentActivity = ConversationAgentTelemetry.Start(localMessages.First().Text, threadId);
-
-        yield return StatusMessageThinking.ToAgentResponseStatusMessage();
-
+      
         var tools = new Dictionary<string, FunctionCallContent>();
 
         var localThread = await InnerAgent.CreateSessionAsync(cancellationToken);
 
-        await foreach (var update in InnerAgent.RunStreamingAsync(localMessages, localThread, options, cancellationToken))
+        var response = await InnerAgent.RunAsync(localMessages, localThread, options, cancellationToken);
+
+        foreach (var responseMessage in response.Messages)
         {
-            tools.AddToolCalls(update.Contents);
-            yield return update;
+            tools.AddToolCalls(responseMessage.Contents);
+
+            if (responseMessage.Role == ChatRole.Assistant)
+            {
+                yield return StatusMessageThinking.ToAgentResponseStatusMessage(thought:responseMessage.Text);
+            }
         }
+
 
         if (tools.Count == 0)
             yield break;
@@ -70,9 +74,7 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
 
         if (toolResults.Count == 0)
             yield break;
-
-        yield return ProcessingResults.ToAgentResponseStatusMessage();
-
+   
         var message = new ChatMessage(ChatRole.Tool, toolResults);
 
         await foreach (var update in InnerAgent.RunStreamingAsync([message], localThread, options, cancellationToken))
