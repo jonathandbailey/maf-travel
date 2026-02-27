@@ -4,7 +4,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Experience.Application.Agents;
+using Travel.Experience.Application.Agents.ToolHandling;
 using Travel.Tests.Shared.Helper;
 
 namespace Travel.Tests.Integration;
@@ -74,7 +74,7 @@ public class AgentTests
 
         var threadId = Guid.NewGuid().ToString();
 
-        var agent = await AgentHelper.Create("conversation.yaml", ConversationAgentTools.GetDeclarationOnlyTools());
+        var agent = await AgentHelper.Create("conversation.yaml", new TravelWorkflowToolHandler(AgentFactoryHelper.Create()).GetDeclarationOnlyTools());
 
         var message = new ChatMessage(ChatRole.User, "I want to plan a trip from Zurich to Paris on the 1st of May, 2026, for 2 people.");
 

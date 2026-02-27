@@ -1,5 +1,6 @@
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Travel.Agents.Dto;
 using Travel.Workflows.Common;
@@ -12,13 +13,29 @@ namespace Travel.Experience.Application.Agents.ToolHandling;
 
 public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) : IToolHandler
 {
+    public const string RequestInformationToolName = "travel_booking_details";
+
     private const string ExecutingTravelWorkflow = "Executing Travel Workflow...";
 
-    public string ToolName => ConversationAgentTools.RequestInformationToolName;
+    private static readonly Dictionary<string, AIFunction> s_tools;
+
+    [Description("Gathers the required travel booking details (origin, departure date etc.) when a user wants to plan a vacation.")]
+    private static string TravelBookingDetails(
+        [Description("The user's travel planning request")] string request)
+        => $"The information requested is: {request}";
+
+    static TravelWorkflowToolHandler()
+    {
+        s_tools = [];
+        var function = AIFunctionFactory.Create(TravelBookingDetails, RequestInformationToolName);
+        s_tools[function.Name] = function;
+    }
+
+    public string ToolName => RequestInformationToolName;
 
     public List<AITool> GetDeclarationOnlyTools()
     {
-        return ConversationAgentTools.GetDeclarationOnlyTools();
+        return s_tools.Select(toolMeta => toolMeta.Value.AsDeclarationOnly()).Cast<AITool>().ToList();
     }
 
     public async IAsyncEnumerable<ToolHandlerUpdate> ExecuteAsync(
