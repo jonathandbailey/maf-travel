@@ -37,13 +37,8 @@ const ChatPage = () => {
         numberOfTravelers: null,
     });
 
-    const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key !== "Enter") return;
-
-        const text = inputValue;
+    const sendMessage = async (text: string) => {
         if (!text.trim()) return;
-
-        setInputValue("");
 
         const exchangeId = randomUUID();
         setExchanges((prev) => [...prev, { id: exchangeId, userContent: text, statusUpdates: [] }]);
@@ -135,7 +130,13 @@ const ChatPage = () => {
                 <ChatInput
                     value={inputValue}
                     onChange={setInputValue}
-                    onKeyDown={handleKeyDown}
+                    onKeyDown={(e) => {
+                        if (e.key !== "Enter") return;
+                        const text = inputValue;
+                        setInputValue("");
+                        sendMessage(text);
+                    }}
+                    onSuggestionSelect={(suggestion) => sendMessage(suggestion)}
                 />
             </div>
             <div style={{ width: 320, padding: 16, alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 12 }}>

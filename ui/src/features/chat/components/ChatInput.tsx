@@ -1,12 +1,33 @@
-import { Card, Input } from "antd";
+import { Card, Input, Dropdown, Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import type { MenuProps } from "antd";
 
 interface ChatInputProps {
     value: string;
     onChange: (value: string) => void;
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onSuggestionSelect?: (suggestion: string) => void;
 }
 
-const ChatInput = ({ value, onChange, onKeyDown }: ChatInputProps) => {
+const suggestions: MenuProps["items"] = [
+    {
+        key: "capabilities",
+        label: "Show me the application capabilities",
+    },
+    {
+        key: "plan_paris_trip",
+        label: "Plan a trip to Paris for next month for 4 people",
+    },
+];
+
+const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect }: ChatInputProps) => {
+    const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+        const item = suggestions?.find((s) => s?.key === key);
+        if (item && "label" in item && typeof item.label === "string") {
+            onSuggestionSelect?.(item.label);
+        }
+    };
+
     return (
         <Card
             style={{
@@ -21,14 +42,23 @@ const ChatInput = ({ value, onChange, onKeyDown }: ChatInputProps) => {
                 borderRadius: 16,
             }}
         >
-            <Input
-                placeholder="Ask me anything..."
-                variant="borderless"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                onKeyDown={onKeyDown}
-                style={{ flex: 1, width: "100%" }}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Dropdown
+                    menu={{ items: suggestions, onClick: handleMenuClick }}
+                    placement="topLeft"
+                    trigger={["click"]}
+                >
+                    <Button type="text" icon={<PlusOutlined />} />
+                </Dropdown>
+                <Input
+                    placeholder="Ask me anything..."
+                    variant="borderless"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    onKeyDown={onKeyDown}
+                    style={{ flex: 1 }}
+                />
+            </div>
         </Card>
     );
 };
