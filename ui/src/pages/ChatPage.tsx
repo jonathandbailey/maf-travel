@@ -23,6 +23,7 @@ const ChatPage = () => {
     const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
     const [inputValue, setInputValue] = useState("");
     const [threadId, setThreadId] = useState(randomUUID());
+    const [isStreaming, setIsStreaming] = useState(false);
 
     const handleNewPlan = () => {
         setExchanges([]);
@@ -110,7 +111,12 @@ const ChatPage = () => {
             }
         });
 
-        await agent.runAgent({ runId: randomUUID() });
+        try {
+            setIsStreaming(true);
+            await agent.runAgent({ runId: randomUUID() });
+        } finally {
+            setIsStreaming(false);
+        }
     }
 
     return (
@@ -137,6 +143,12 @@ const ChatPage = () => {
                         sendMessage(text);
                     }}
                     onSuggestionSelect={(suggestion) => sendMessage(suggestion)}
+                    onSubmit={() => {
+                        const text = inputValue;
+                        setInputValue("");
+                        sendMessage(text);
+                    }}
+                    isStreaming={isStreaming}
                 />
             </div>
             <div style={{ width: 320, padding: 16, alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 12 }}>

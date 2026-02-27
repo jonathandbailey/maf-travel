@@ -1,5 +1,5 @@
 import { Card, Input, Dropdown, Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, ArrowUpOutlined, StopOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 
 interface ChatInputProps {
@@ -7,6 +7,8 @@ interface ChatInputProps {
     onChange: (value: string) => void;
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     onSuggestionSelect?: (suggestion: string) => void;
+    onSubmit?: () => void;
+    isStreaming?: boolean;
 }
 
 const suggestions: MenuProps["items"] = [
@@ -20,7 +22,7 @@ const suggestions: MenuProps["items"] = [
     },
 ];
 
-const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect }: ChatInputProps) => {
+const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect, onSubmit, isStreaming }: ChatInputProps) => {
     const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
         const item = suggestions?.find((s) => s?.key === key);
         if (item && "label" in item && typeof item.label === "string") {
@@ -57,6 +59,13 @@ const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect }: ChatInput
                     onChange={(e) => onChange(e.target.value)}
                     onKeyDown={onKeyDown}
                     style={{ flex: 1 }}
+                />
+                <Button
+                    type="primary"
+                    shape="circle"
+                    icon={isStreaming ? <StopOutlined /> : <ArrowUpOutlined />}
+                    onClick={!isStreaming ? onSubmit : undefined}
+                    disabled={!isStreaming && !value.trim()}
                 />
             </div>
         </Card>
