@@ -16,9 +16,7 @@ public class AgentTemplateRepository(IFileRepository fileRepository, IOptions<Fi
         if (string.IsNullOrEmpty(name))
             throw new ArgumentException("Template name cannot be null or empty.", nameof(name));
 
-        var filePath = Path.IsPathRooted(settings.Value.AgentTemplateFolder)
-            ? Path.Combine(settings.Value.AgentTemplateFolder, name)
-            : Path.Combine(AppContext.BaseDirectory, settings.Value.AgentTemplateFolder, name);
+        var filePath = Path.Combine(settings.Value.ResolveFolder(settings.Value.AgentTemplateFolder), name);
 
         logger.LogDebug("Loading agent template {Name} from {Path}", name, filePath);
 

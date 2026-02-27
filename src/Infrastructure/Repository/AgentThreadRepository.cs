@@ -36,10 +36,6 @@ public class AgentThreadRepository(IFileRepository fileRepository, IOptions<File
 
     private string GetPath(string name, string threadId)
     {
-        var folder = Path.IsPathRooted(settings.Value.AgentThreadFolder)
-            ? settings.Value.AgentThreadFolder
-            : Path.Combine(AppContext.BaseDirectory, settings.Value.AgentThreadFolder);
-
-        return Path.Combine(folder, $"{threadId}-{name}.json");
+        return Path.Combine(settings.Value.ResolveFolder(settings.Value.AgentThreadFolder), $"{threadId}-{name}.json");
     }
 }

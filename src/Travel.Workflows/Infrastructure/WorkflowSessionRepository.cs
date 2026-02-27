@@ -44,11 +44,6 @@ public class WorkflowSessionRepository(IFileRepository fileRepository, IOptions<
         await fileRepository.SaveAsync(path, content);
     }
 
-    private string BuildPath(string fileName)
-    {
-        var folder = settings.Value.SessionFolder;
-        return Path.IsPathRooted(folder)
-            ? Path.Combine(folder, fileName)
-            : Path.Combine(AppContext.BaseDirectory, folder, fileName);
-    }
+    private string BuildPath(string fileName) =>
+        Path.Combine(settings.Value.ResolveFolder(settings.Value.SessionFolder), fileName);
 }

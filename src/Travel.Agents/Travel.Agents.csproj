@@ -26,12 +26,15 @@
   <ItemGroup>
     <None Update="Templates\conversation.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>Travel\Templates\conversation.yaml</TargetPath>
     </None>
     <None Update="Templates\extracting.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>Travel\Templates\extracting.yaml</TargetPath>
     </None>
     <None Update="Templates\planning.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>Travel\Templates\planning.yaml</TargetPath>
     </None>
   </ItemGroup>
 

@@ -18,10 +18,7 @@ public class CheckpointRepository(IFileRepository fileRepository, IOptions<FileS
         Converters = { new JsonStringEnumConverter() }
     };
 
-    private string GetFolder() =>
-        Path.IsPathRooted(settings.Value.CheckpointFolder)
-            ? settings.Value.CheckpointFolder
-            : Path.Combine(AppContext.BaseDirectory, settings.Value.CheckpointFolder);
+    private string GetFolder() => settings.Value.ResolveFolder(settings.Value.CheckpointFolder);
 
     public async Task<List<StoreStateDto>> GetAsync(string runId)
     {

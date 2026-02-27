@@ -32,6 +32,7 @@ public static class AgentHelper
     {
         var fileStorageSettings = Options.Create(new FileStorageSettings
         {
+            RootFolder = "Travel",
             AgentTemplateFolder = "Templates",
             AgentThreadFolder = "Threads",
             CheckpointFolder = "Checkpoints",
@@ -56,6 +57,7 @@ public static class AgentHelper
 
         var fileStorageSettings = Options.Create(new FileStorageSettings
         {
+            RootFolder = "Travel",
             AgentTemplateFolder = "Templates",
             AgentThreadFolder = "Threads",
             CheckpointFolder = "Checkpoints",

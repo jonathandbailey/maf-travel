@@ -43,6 +43,7 @@ public static  class AgentFactoryHelper
 
         var fileStorageSettings = Options.Create(new FileStorageSettings
         {
+            RootFolder = "Travel",
             AgentTemplateFolder = "Templates",
             AgentThreadFolder = "Threads",
             CheckpointFolder = "Checkpoints",

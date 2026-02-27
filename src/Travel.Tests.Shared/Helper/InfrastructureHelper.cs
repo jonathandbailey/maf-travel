@@ -14,11 +14,11 @@ public class InfrastructureHelper
     {
         var fileStorageSettings = Options.Create(new FileStorageSettings
         {
+            RootFolder = "Travel",
             AgentTemplateFolder = AgentTemplateFolder,
             AgentThreadFolder = "",
             CheckpointFolder = "",
             SessionFolder = ""
-
         });
 
         var mockFileLogger = new Mock<ILogger<FileRepository>>();
