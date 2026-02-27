@@ -78,7 +78,7 @@ public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) 
 
             if (evt is TravelPlanStatusUpdateEvent travelPlanStatusUpdateEvent)
             {
-                yield return new ToolStatusUpdate(travelPlanStatusUpdateEvent.Status, travelPlanStatusUpdateEvent.Thought);
+                yield return new ToolStatusUpdate(travelPlanStatusUpdateEvent.Status, travelPlanStatusUpdateEvent.Thought, travelPlanStatusUpdateEvent.Source);
             }
         }
     }
