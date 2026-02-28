@@ -4,7 +4,9 @@
       "Bash(dotnet build src/Agents/Agents.csproj)",
       "Bash(dotnet build src/Travel.Experience.Application/)",
       "Bash(dotnet-script --version)",
-      "Bash(dotnet build MafTravel.sln --no-restore)"
+      "Bash(dotnet build MafTravel.sln --no-restore)",
+      "Bash(dotnet build src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --no-incremental -v q)",
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~TravelPlannerRunnerTests\" -v n)"
     ]
   }
 }
