@@ -1,8 +1,8 @@
 ﻿using Agents.Extensions;
 using Microsoft.Agents.AI;
 using System.Diagnostics;
+using Agents.Tools;
 using Travel.Experience.Application.Agents;
-using Travel.Experience.Application.Agents.ToolHandling;
 using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
 

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.AI;
 
-namespace Travel.Experience.Application.Agents.ToolHandling;
+namespace Agents.Tools;
 
 public sealed class ToolRegistry : IToolRegistry
 {

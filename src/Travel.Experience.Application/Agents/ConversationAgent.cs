@@ -3,7 +3,7 @@ using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using System.Runtime.CompilerServices;
-using Travel.Experience.Application.Agents.ToolHandling;
+using Agents.Tools;
 using Travel.Experience.Application.Extensions;
 using Travel.Experience.Application.Observability;
 

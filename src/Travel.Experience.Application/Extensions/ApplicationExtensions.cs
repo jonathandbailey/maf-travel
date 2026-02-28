@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Agents.Tools;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Travel.Experience.Application.Agents;
-using Travel.Experience.Application.Agents.ToolHandling;
 
 namespace Travel.Experience.Application.Extensions;
 

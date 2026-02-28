@@ -2,6 +2,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Agents.Tools;
 using Travel.Agents.Dto;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
@@ -9,7 +10,7 @@ using Travel.Workflows.Events;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Interfaces;
 
-namespace Travel.Experience.Application.Agents.ToolHandling;
+namespace Travel.Experience.Application.Agents;
 
 public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) : IToolHandler
 {

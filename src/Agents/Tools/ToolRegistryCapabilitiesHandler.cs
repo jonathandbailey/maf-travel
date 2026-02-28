@@ -1,9 +1,9 @@
-using Microsoft.Extensions.AI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Microsoft.Extensions.AI;
 
-namespace Travel.Experience.Application.Agents.ToolHandling;
+namespace Agents.Tools;
 
 public sealed class ToolRegistryCapabilitiesHandler(IReadOnlyList<AITool> availableTools) : IToolHandler
 {

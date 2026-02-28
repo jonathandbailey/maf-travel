@@ -1,7 +1,7 @@
 using Agents.Services;
+using Agents.Tools;
 using Infrastructure.Repository;
 using Microsoft.Agents.AI;
-using Travel.Experience.Application.Agents.ToolHandling;
 
 namespace Travel.Experience.Application.Agents;
 
