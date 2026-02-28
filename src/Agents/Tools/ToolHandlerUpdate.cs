@@ -10,4 +10,4 @@ public sealed record ToolResultUpdate(FunctionResultContent Result) : ToolHandle
 
 public sealed record ToolStateSnapshotUpdate(string Type, object Data) : ToolHandlerUpdate;
 
-public record ToolHandlerContext(string ThreadId);
+public record ToolHandlerContext(Guid ThreadId);

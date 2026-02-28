@@ -44,8 +44,7 @@ public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) 
         ToolHandlerContext context,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        if (!Guid.TryParse(context.ThreadId, out var threadId))
-            yield break;
+        var threadId = context.ThreadId;
 
         if (!call.TryGetArgument<string>("request", out var details, Json.FunctionCallSerializerOptions))
             yield break;

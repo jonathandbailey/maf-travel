@@ -29,7 +29,7 @@ public static class AgUiExtensions
         return threadId;
     }
 
-    public static string GetAgUiThreadId(this AgentRunOptions options)
+    public static Guid GetAgUiThreadId(this AgentRunOptions options)
     {
         var additionalPropertiesDictionary = GetAdditionalPropertiesDictionary(options);
 
@@ -52,7 +52,7 @@ public static class AgUiExtensions
             throw new ArgumentException("The provided ChatClientAgentRunOptions must have ChatOptions.AdditionalProperties['ag_ui_thread_id'] not empty.");
         }
 
-        return threadId;
+        return Guid.Parse(threadId);
     }
 
     private static AdditionalPropertiesDictionary GetAdditionalPropertiesDictionary(AgentRunOptions options)
@@ -75,10 +75,10 @@ public static class AgUiExtensions
         return chatClientAgentOptions.ChatOptions.AdditionalProperties;
     }
 
-    public static AgentRunOptions AddThreadId(this AgentRunOptions options, string threadId)
+    public static AgentRunOptions AddThreadId(this AgentRunOptions options, Guid threadId)
     {
         var additionalPropertiesDictionary = GetAdditionalPropertiesDictionary(options);
-        additionalPropertiesDictionary["agent_thread_id"] = Guid.Parse(threadId);
+        additionalPropertiesDictionary["agent_thread_id"] = threadId;
         return options;
     }
 

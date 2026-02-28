@@ -22,7 +22,7 @@ public class AgentTests
     [Trait("Category", "Integration")]
     public async Task TravelPlanAgent_WhenProvidedWithCompletePlan_ShouldCompleteTheWorkflow()
     {
-        var threadId = Guid.NewGuid().ToString();
+        var threadId = Guid.NewGuid();
 
         var agent = await AgentHelper.Create("planning.yaml",PlanningTools.GetDeclarationOnlyTools());
 
@@ -44,7 +44,7 @@ public class AgentTests
     [Trait("Category", "Integration")]
     public async Task TravelPlanAgent_WhenProvidedWithNewObservationInformation_ShouldUpdateTravelPlan()
     {
-        var threadId = Guid.NewGuid().ToString();
+        var threadId = Guid.NewGuid();
 
         var agent = await AgentHelper.Create("planning.yaml", PlanningTools.GetDeclarationOnlyTools());
 
@@ -72,7 +72,7 @@ public class AgentTests
             .AddUserSecrets<AgentTests>()
             .Build();
 
-        var threadId = Guid.NewGuid().ToString();
+        var threadId = Guid.NewGuid();
 
         var agent = await AgentHelper.Create("conversation.yaml", new TravelWorkflowToolHandler(AgentFactoryHelper.Create()).GetDeclarationOnlyTools());
 
@@ -93,7 +93,7 @@ public class AgentTests
     [Trait("Category", "Integration")]
     public async Task TravelExtractAgent_WhenProvidedWithNewObservationInformation_ShouldUpdateTravelPlan()
     {
-        var threadId = Guid.NewGuid().ToString();
+        var threadId = Guid.NewGuid();
 
         var agent = await AgentHelper.Create("extracting.yaml", ExtractingTools.GetDeclarationOnlyTools());
 

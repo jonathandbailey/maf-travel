@@ -11,7 +11,7 @@ public static class ConversationAgentTelemetry
     
     private static readonly ActivitySource Source = new ActivitySource("Travel.Experience.Agent", "1.0.0");
 
-    public static Activity? Start(string input, string threadId)
+    public static Activity? Start(string input, Guid threadId)
     {
         var tags = new ActivityTagsCollection
         {
