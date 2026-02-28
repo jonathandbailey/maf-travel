@@ -42,7 +42,9 @@ public class TravelWorkflowService(
 
     private async Task<TravelPlanningRunner> CreateRunnerAsync(TravelWorkflowRequest request)
     {
-        var session = await sessionRepository.LoadAsync(request.ThreadId);
+        var session = await sessionRepository.ExistsAsync(request.ThreadId)
+            ? await sessionRepository.LoadAsync(request.ThreadId)
+            : new WorkflowSession(request.ThreadId, WorkflowState.Created, null);
 
         var planningTask = agentProvider.CreateAsync(AgentType.Planning);
         var extractingTask = agentProvider.CreateAsync(AgentType.Extracting);

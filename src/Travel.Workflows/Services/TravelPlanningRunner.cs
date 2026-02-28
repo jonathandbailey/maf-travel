@@ -6,10 +6,10 @@ using Travel.Workflows.Exceptions;
 
 namespace Travel.Workflows.Services;
 
-public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpointManager, WorkflowSession? session = null)
+public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpointManager, WorkflowSession session)
 {
-    private CheckpointInfo? _checkpointInfo = session?.LastCheckpoint;
-    private WorkflowState _state = session?.State ?? WorkflowState.Created;
+    private CheckpointInfo? _checkpointInfo = session.LastCheckpoint;
+    private WorkflowState _state = session.State;
 
     public WorkflowState State => _state;
     public CheckpointInfo? LastCheckpoint => _checkpointInfo;
@@ -79,6 +79,17 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
             WorkflowState.Executing => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             WorkflowState.Suspended => await ResumeWorkflow(),
             WorkflowState.Created => await RunWorkflow(request),
+            WorkflowState.Completed => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
+            _ => throw new WorkflowException("Invalid workflow state.")
+        };
+    }
+
+    private async ValueTask<StreamingRun> ValidateState()
+    {
+        return _state switch
+        {
+            WorkflowState.Failed => throw new WorkflowException("Workflow cannot be started or resumed while in an Failed state."),
+            WorkflowState.Executing => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             WorkflowState.Completed => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             _ => throw new WorkflowException("Invalid workflow state.")
         };

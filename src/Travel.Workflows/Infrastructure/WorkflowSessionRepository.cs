@@ -9,6 +9,7 @@ namespace Travel.Workflows.Infrastructure;
 
 public interface IWorkflowSessionRepository
 {
+    Task<bool> ExistsAsync(Guid threadId);
     Task<WorkflowSession?> LoadAsync(Guid threadId);
     Task SaveAsync(WorkflowSession session);
 }
@@ -23,18 +24,14 @@ public class WorkflowSessionRepository(IFileRepository fileRepository, IOptions<
         Converters = { new JsonStringEnumConverter() }
     };
 
+    public Task<bool> ExistsAsync(Guid threadId) =>
+        fileRepository.ExistsAsync(BuildPath($"{threadId}-session.json"));
+
     public async Task<WorkflowSession?> LoadAsync(Guid threadId)
     {
         var path = BuildPath($"{threadId}-session.json");
-        try
-        {
-            var content = await fileRepository.LoadAsync(path);
-            return JsonSerializer.Deserialize<WorkflowSession>(content, SerializerOptions);
-        }
-        catch (FileNotFoundException)
-        {
-            return null;
-        }
+        var content = await fileRepository.LoadAsync(path);
+        return JsonSerializer.Deserialize<WorkflowSession>(content, SerializerOptions);
     }
 
     public async Task SaveAsync(WorkflowSession session)

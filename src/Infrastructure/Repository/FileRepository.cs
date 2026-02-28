@@ -47,6 +47,8 @@ public class FileRepository(ILogger<FileRepository> logger) : IFileRepository
         }
     }
 
+    public Task<bool> ExistsAsync(string path) => Task.FromResult(File.Exists(path));
+
     public async Task SaveAsync(string path, string content)
     {
         try
@@ -97,4 +99,6 @@ public interface IFileRepository
     public Task<string> LoadAsync(string path);
 
     public Task SaveAsync(string path, string content);
+
+    public Task<bool> ExistsAsync(string path);
 }
