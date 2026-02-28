@@ -14,62 +14,65 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
     public WorkflowState State => _state;
     public CheckpointInfo? LastCheckpoint => _checkpointInfo;
 
+    public WorkflowSession Session => session;
+
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
     {
         var run = await CreateWorkflowRun(request);
 
         await foreach (var evt in run.WatchStreamAsync())
         {
-            if (evt is SuperStepCompletedEvent superStepCompletedEvt)
+            switch (evt)
             {
-                var checkpoint = superStepCompletedEvt.CompletionInfo!.Checkpoint;
-
-                if (checkpoint != null)
-                {
-                    _checkpointInfo = checkpoint;
-                }
-            }
-
-            if (evt is RequestInfoEvent requestInfoEvent)
-            {
-                switch (_state)
-                {
-                    case WorkflowState.Executing:
+                case SuperStepCompletedEvent superStepCompletedEvt:
+                    HandleSuperStepCompletedEvent(superStepCompletedEvt);
+                    break;
+                case RequestInfoEvent requestInfoEvent:
+                    switch (_state)
                     {
-                        _state = WorkflowState.Suspended;
+                        case WorkflowState.Executing:
+                        {
+                            _state = WorkflowState.Suspended;
 
-                        yield return evt;
-                        yield break;
+                            yield return evt;
+                            yield break;
+                        }
+                        case WorkflowState.Suspended:
+                        {
+                            var resp = requestInfoEvent.Request.CreateResponse(new InformationResponse(request.Message));
+
+                            _state = WorkflowState.Executing;
+                            await run.SendResponseAsync(resp);
+                            break;
+                        }
                     }
-                    case WorkflowState.Resumed:
-                    {
-                        var resp = requestInfoEvent.Request.CreateResponse(new InformationResponse(request.Message));
 
-                        _state = WorkflowState.Executing;
-                        await run.SendResponseAsync(resp);
-                        break;
-                    }
-                }
-            }
+                    break;
+                case TravelPlanStatusUpdateEvent:
+                case TravelPlanUpdateEvent:
+                    yield return evt;
+                    break;
+                case TravelPlanningCompleteEvent:
+                    _state = WorkflowState.Completed;
 
-            if (evt is TravelPlanStatusUpdateEvent)
-            {
-                yield return evt;
-            }
-
-            if (evt is TravelPlanUpdateEvent)
-            {
-                yield return evt;
-            }
-
-            if (evt is TravelPlanningCompleteEvent)
-            {
-                _state = WorkflowState.Completed;
-
-                yield return evt;
+                    yield return evt;
+                    break;
             }
         }
     }
+
+   
+
+    private void HandleSuperStepCompletedEvent(SuperStepCompletedEvent superStepCompletedEvt)
+    {
+        var checkpoint = superStepCompletedEvt.CompletionInfo!.Checkpoint;
+
+        if (checkpoint != null)
+        {
+            _checkpointInfo = checkpoint;
+        }
+    }
+
 
     private async ValueTask<StreamingRun> CreateWorkflowRun(TravelWorkflowRequest request)
     {
@@ -79,17 +82,6 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
             WorkflowState.Executing => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             WorkflowState.Suspended => await ResumeWorkflow(),
             WorkflowState.Created => await RunWorkflow(request),
-            WorkflowState.Completed => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
-            _ => throw new WorkflowException("Invalid workflow state.")
-        };
-    }
-
-    private async ValueTask<StreamingRun> ValidateState()
-    {
-        return _state switch
-        {
-            WorkflowState.Failed => throw new WorkflowException("Workflow cannot be started or resumed while in an Failed state."),
-            WorkflowState.Executing => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             WorkflowState.Completed => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
             _ => throw new WorkflowException("Invalid workflow state.")
         };
@@ -113,7 +105,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
         var run = await InProcessExecution.ResumeStreamingAsync(workflow, _checkpointInfo,
             checkpointManager);
 
-        _state = WorkflowState.Resumed;
+        _state = WorkflowState.Suspended;
 
         return run;
     }
