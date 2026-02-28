@@ -29,7 +29,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
 
                     TransitionTo(WorkflowState.Executing);
                     await run.SendResponseAsync(resp);
-                    yield break;
+                    break;
 
                 case RequestInfoEvent when Session.State == WorkflowState.Executing:
                     TransitionTo(WorkflowState.Suspended);
@@ -40,10 +40,9 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
                 case TravelPlanUpdateEvent:
                     yield return evt;
                     break;
-             
+
                 case TravelPlanningCompleteEvent:
                     TransitionTo(WorkflowState.Completed);
-
                     yield return evt;
                     break;
             }

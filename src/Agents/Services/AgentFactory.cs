@@ -15,6 +15,8 @@ public class AgentFactory : IAgentFactory
     private readonly IAgentMiddlewareFactory _agentMiddlewareFactory;
     private readonly ChatClient _chatClient;
 
+    public AgentFactory() {}
+
     public AgentFactory(IOptions<LanguageModelSettings> settings, IAgentMiddlewareFactory agentMiddlewareFactory)
     {
         _agentMiddlewareFactory = agentMiddlewareFactory;
@@ -36,6 +38,9 @@ public class AgentFactory : IAgentFactory
         ChatResponseFormat? chatResponseFormat = null,
         List<AITool>? tools = null)
     {
+        ArgumentNullException.ThrowIfNull(_chatClient, "ChatClient has not been created.");
+
+
         ChatOptions chatOptions = new()
         {
             ResponseFormat = chatResponseFormat,
@@ -59,7 +64,8 @@ public class AgentFactory : IAgentFactory
 
     public async Task<AIAgent> Create(string template, List<AITool>? tools = null)
     {
-
+        ArgumentNullException.ThrowIfNull(_chatClient,"ChatClient has not been created.");
+        
         var agentFactory = new CustomPromptAgentFactory(_chatClient.AsIChatClient(), tools: tools);
         var agent = await agentFactory.CreateFromYamlAsync(template);
 

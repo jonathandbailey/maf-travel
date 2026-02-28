@@ -3,12 +3,11 @@ using Microsoft.Extensions.AI;
 using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Services;
 
-namespace Travel.Tests.Common;
+namespace Travel.Tests.Shared;
 
 public class WorkflowMockTestHarness2
 {
@@ -27,7 +26,7 @@ public class WorkflowMockTestHarness2
         {
             var chatClient = AgentFactoryHelper.CreateMockChatClient(meta);
 
-            var agent = await AgentFactoryHelper.Create(meta.AgentType);
+            var agent = await AgentFactoryHelper.Create(meta.AgentType, chatClient);
 
             agentProvider.Setup(x => x.CreateAsync(meta.AgentType))
                 .ReturnsAsync(agent);

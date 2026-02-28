@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Tests.Common;
 using Travel.Tests.Shared.Helper;
 
 namespace Travel.Tests.Shared;

@@ -3,7 +3,6 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Tests.Common;
 using Travel.Tests.Shared.Helper;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Interfaces;

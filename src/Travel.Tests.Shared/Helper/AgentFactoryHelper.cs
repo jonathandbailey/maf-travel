@@ -149,6 +149,19 @@ public static  class AgentFactoryHelper
         return await agentProvider.CreateAsync(type);
     }
 
+    public static async Task<AIAgent> Create(AgentType type, IChatClient chatClient)
+    {
+        var mockMiddlewareFactory = new Mock<IAgentMiddlewareFactory>();
+
+        var agentFactory = new AgentFactory(SettingsHelper.GetLanguageModelSettings(), mockMiddlewareFactory.Object);
+
+        var templateRepository = InfrastructureHelper.Create();
+
+        var agentProvider = new AgentProvider(agentFactory, templateRepository);
+
+        return await agentProvider.CreateAsync(type, chatClient);
+    }
+
     public class AgentCreateMeta(AgentType agentType, string name, string? argumentsKey = null, object? arguments = null)
     {
         public AgentType AgentType { get; } = agentType;

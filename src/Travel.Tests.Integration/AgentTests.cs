@@ -36,7 +36,7 @@ public class AgentTests
 
         ResponseHelper.ValidateFunctionCalls(response)
             .ShouldHaveCallCount(1)
-            .ShouldContainCall("PlanningComplete");
+            .ShouldContainCall("planning_complete");
     }
 
 
@@ -58,7 +58,7 @@ public class AgentTests
 
         ResponseHelper.ValidateFunctionCalls(response)
             .ShouldHaveCallCount(1)
-            .ShouldContainCall("RequestInformation")
+            .ShouldContainCall("request_information")
             .WithArgument("request")
             .WithRequiredInputs("Origin", "EndDate", "NumberOfTravelers");
     }
