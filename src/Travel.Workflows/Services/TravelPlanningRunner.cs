@@ -66,37 +66,29 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
 
     private async ValueTask<StreamingRun> CreateWorkflowRun(TravelWorkflowRequest request)
     {
-        return _session.State switch
+        switch (_session.State)
         {
-            WorkflowState.Failed => throw new WorkflowException("Workflow cannot be started or resumed while in an Failed state."),
-            WorkflowState.Executing => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
-            WorkflowState.Suspended => await ResumeWorkflow(),
-            WorkflowState.Created => await RunWorkflow(request),
-            WorkflowState.Completed => throw new WorkflowException("Workflow cannot be started or resumed while in an Executing state."),
-            _ => throw new WorkflowException("Invalid workflow state.")
-        };
-    }
+            case WorkflowState.Created:
+                TransitionTo(WorkflowState.Executing);
+                return await InProcessExecution.RunStreamingAsync(workflow, request, checkpointManager);
 
-    private async ValueTask<StreamingRun> RunWorkflow(TravelWorkflowRequest request)
-    {
-        TransitionTo(WorkflowState.Executing);
+            case WorkflowState.Suspended when _session.LastCheckpoint != null:
+                return await InProcessExecution.ResumeStreamingAsync(workflow, _session.LastCheckpoint, checkpointManager);
 
-        var run = await InProcessExecution.RunStreamingAsync(workflow, request, checkpointManager);
-        return run;
-    }
+            case WorkflowState.Suspended:
+                throw new WorkflowException("Cannot resume: workflow is suspended but has no checkpoint.");
 
-    private async ValueTask<StreamingRun> ResumeWorkflow()
-    {
-        if (_session.LastCheckpoint == null)
-        {
-            throw new WorkflowException("CheckpointInfo is NULL, but checkpoint information is required to resume a workflow.");
+            case WorkflowState.Executing:
+                throw new WorkflowException("Workflow is already executing.");
+
+            case WorkflowState.Completed:
+                throw new WorkflowException("Workflow has already completed and cannot be restarted.");
+
+            case WorkflowState.Failed:
+                throw new WorkflowException("Workflow has failed and cannot be restarted.");
+
+            default:
+                throw new WorkflowException("Invalid workflow state.");
         }
-
-        var run = await InProcessExecution.ResumeStreamingAsync(workflow, _session.LastCheckpoint,
-            checkpointManager);
-
-        TransitionTo(WorkflowState.Suspended);
-
-        return run;
     }
 }
