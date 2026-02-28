@@ -23,31 +23,24 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
                 case SuperStepCompletedEvent superStepCompletedEvt:
                     HandleSuperStepCompletedEvent(superStepCompletedEvt);
                     break;
-                case RequestInfoEvent requestInfoEvent:
-                    switch (_session.State)
-                    {
-                        case WorkflowState.Executing:
-                        {
-                            TransitionTo(WorkflowState.Suspended);
+                
+                case RequestInfoEvent requestInfoEvent when Session.State == WorkflowState.Suspended:
+                    var resp = requestInfoEvent.Request.CreateResponse(new InformationResponse(request.Message));
 
-                            yield return evt;
-                            yield break;
-                        }
-                        case WorkflowState.Suspended:
-                        {
-                            var resp = requestInfoEvent.Request.CreateResponse(new InformationResponse(request.Message));
+                    TransitionTo(WorkflowState.Executing);
+                    await run.SendResponseAsync(resp);
+                    yield break;
 
-                            TransitionTo(WorkflowState.Executing);
-                            await run.SendResponseAsync(resp);
-                            break;
-                        }
-                    }
+                case RequestInfoEvent when Session.State == WorkflowState.Executing:
+                    TransitionTo(WorkflowState.Suspended);
+                    yield return evt;
+                    yield break;
 
-                    break;
                 case TravelPlanStatusUpdateEvent:
                 case TravelPlanUpdateEvent:
                     yield return evt;
                     break;
+             
                 case TravelPlanningCompleteEvent:
                     TransitionTo(WorkflowState.Completed);
 
