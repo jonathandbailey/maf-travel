@@ -2,7 +2,7 @@ import './App.css'
 import { Layout } from 'antd';
 import ChatPage from './pages/ChatPage';
 
-const { Header, Content } = Layout;
+const { Header, Content, Sider } = Layout;
 
 function App() {
 
@@ -13,6 +13,7 @@ function App() {
 
         </Header>
         <Layout style={{ flex: 1, minHeight: 0, overflow: 'hidden', background: '#FAF9F5' }}>
+          <Sider width={250} style={{ minHeight: 0, borderRight: '1px solid #d9d9d9', background: '#FAF9F5' }}>left sidebar</Sider>
           <Content style={{ height: '100%', minHeight: 0, overflow: 'hidden', padding: '16px' }}>
             <ChatPage />
           </Content>
