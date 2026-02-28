@@ -19,7 +19,7 @@ public class ConversationAgentFactory(
     {
         var template = await agentTemplateRepository.LoadAsync("conversation.yaml");
 
-        var agent = await agentFactory.Create(template, registry.GetAllDeclarationOnlyTools());
+        var agent = await agentFactory.Create(template, registry.GetDeclarationOnlyTools("conversation"));
 
         var threadAgent = agentFactory.UseMiddleware(agent, "agent-thread");
 

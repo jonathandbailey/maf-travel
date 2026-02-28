@@ -9,8 +9,12 @@ public static class ApplicationExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IToolHandler, TravelWorkflowToolHandler>();
-        services.AddSingleton<IToolRegistry>(sp => new ToolRegistry(sp.GetServices<IToolHandler>()));
+        services.AddSingleton<TravelWorkflowToolHandler>();
+        services.AddSingleton<IToolRegistry>(sp =>
+        {
+            var handler = sp.GetRequiredService<TravelWorkflowToolHandler>();
+            return new ToolRegistry([new ToolHandlerRegistration(handler, ["conversation"])]);
+        });
         services.AddSingleton<IConversationAgentFactory, ConversationAgentFactory>();
 
         return services;
