@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Agents.Extensions;
 using Infrastructure.Repository;
@@ -10,6 +11,8 @@ namespace Agents.Middleware;
 
 public class AgentThreadMiddleware(IAgentThreadRepository repository, ILogger<IAgentAgUiMiddleware> logger) : IAgentThreadMiddleware, IAgentMiddleware
 {
+    private static readonly ActivitySource ActivitySource = new("Agents.Middleware", "1.0.0");
+
     public async Task<AgentResponse> RunAsync(
         IEnumerable<ChatMessage> messages,
         AgentSession? thread,
@@ -17,21 +20,31 @@ public class AgentThreadMiddleware(IAgentThreadRepository repository, ILogger<IA
         AIAgent innerAgent,
         CancellationToken cancellationToken)
     {
-        if (options == null)
-        {
-            logger.LogError("AgentRunOptions is null. AG-UI middleware requires an Agent Run Options.");
-            throw new ArgumentException("AgentRunOptions is null");
-        }
+        ArgumentNullException.ThrowIfNull(options);
 
         var threadId = options.GetThreadId();
 
-        var memoryThread = await LoadAsync(innerAgent, threadId);
+        using var activity = ActivitySource.StartActivity(
+            $"middleware {Name}",
+            ActivityKind.Internal,
+            default(ActivityContext),
+            [new("agent.thread_id", threadId)]);
 
-        var response = await innerAgent.RunAsync(messages, memoryThread, options, cancellationToken);
+        var memoryThread = await LoadAsync(innerAgent, threadId, activity);
 
-        var threadState = await innerAgent.SerializeSessionAsync(memoryThread, cancellationToken: cancellationToken);
+        AgentResponse response;
+        try
+        {
+            response = await innerAgent.RunAsync(messages, memoryThread, options, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            logger.LogError(ex, "Failed to run agent for thread {ThreadId}", threadId);
+            throw;
+        }
 
-        await repository.SaveAsync(innerAgent.Name!, threadId.ToString(), threadState.GetRawText());
+        await PersistSessionAsync(innerAgent, memoryThread, threadId, activity, cancellationToken);
 
         return response;
     }
@@ -45,27 +58,39 @@ public class AgentThreadMiddleware(IAgentThreadRepository repository, ILogger<IA
         AIAgent innerAgent,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        if (options == null)
-        {
-            logger.LogError("AgentRunOptions is null. AG-UI middleware requires an Agent Run Options.");
-            throw new ArgumentException("AgentRunOptions is null");
-        }
+        ArgumentNullException.ThrowIfNull(options);
 
         var threadId = options.GetThreadId();
 
-        var memoryThread = await LoadAsync(innerAgent, threadId);
+        using var activity = ActivitySource.StartActivity(
+            $"middleware {Name} streaming",
+            ActivityKind.Internal,
+            default(ActivityContext),
+            [new("agent.thread_id", threadId)]);
 
-        await foreach (var update in innerAgent.RunStreamingAsync(messages, memoryThread, options, cancellationToken))
+        var memoryThread = await LoadAsync(innerAgent, threadId, activity);
+
+        IAsyncEnumerable<AgentResponseUpdate> stream;
+        try
+        {
+            stream = innerAgent.RunStreamingAsync(messages, memoryThread, options, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            logger.LogError(ex, "Failed to start streaming agent run for thread {ThreadId}", threadId);
+            throw;
+        }
+
+        await foreach (var update in stream)
         {
             yield return update;
         }
 
-        var threadState = await innerAgent.SerializeSessionAsync(memoryThread, cancellationToken: cancellationToken);
-
-        await repository.SaveAsync(innerAgent.Name!, threadId.ToString(), threadState.GetRawText());
+        await PersistSessionAsync(innerAgent, memoryThread, threadId, activity, cancellationToken);
     }
 
-    private async Task<AgentSession> LoadAsync(AIAgent agent, Guid threadId)
+    private async Task<AgentSession> LoadAsync(AIAgent agent, Guid threadId, Activity? activity)
     {
         try
         {
@@ -77,41 +102,26 @@ public class AgentThreadMiddleware(IAgentThreadRepository repository, ILogger<IA
         {
             return await agent.CreateSessionAsync();
         }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            logger.LogError(ex, "Failed to load thread session {ThreadId}, starting fresh", threadId);
+            return await agent.CreateSessionAsync();
+        }
     }
-}
 
-public interface IAgentThreadMiddleware
-{
-    IAsyncEnumerable<AgentResponseUpdate> RunStreamingAsync(
-        IEnumerable<ChatMessage> messages,
-        AgentSession? thread,
-        AgentRunOptions? options,
-        AIAgent innerAgent,
-        CancellationToken cancellationToken);
-
-    Task<AgentResponse> RunAsync(
-        IEnumerable<ChatMessage> messages,
-        AgentSession? thread,
-        AgentRunOptions? options,
-        AIAgent innerAgent,
-        CancellationToken cancellationToken);
-}
-
-public interface IAgentMiddleware
-{
-    IAsyncEnumerable<AgentResponseUpdate> RunStreamingAsync(
-        IEnumerable<ChatMessage> messages,
-        AgentSession? thread,
-        AgentRunOptions? options,
-        AIAgent innerAgent,
-        CancellationToken cancellationToken);
-
-    Task<AgentResponse> RunAsync(
-        IEnumerable<ChatMessage> messages,
-        AgentSession? thread,
-        AgentRunOptions? options,
-        AIAgent innerAgent,
-        CancellationToken cancellationToken);
-
-    public string Name { get; }
+    private async Task PersistSessionAsync(AIAgent agent, AgentSession session, Guid threadId, Activity? activity, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var threadState = await agent.SerializeSessionAsync(session, cancellationToken: cancellationToken);
+            await repository.SaveAsync(agent.Name!, threadId.ToString(), threadState.GetRawText());
+        }
+        catch (Exception ex)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            logger.LogError(ex, "Failed to persist thread session {ThreadId}", threadId);
+            throw;
+        }
+    }
 }

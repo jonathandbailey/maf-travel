@@ -79,13 +79,3 @@ public class AgentAgUiMiddleware(ILogger<IAgentAgUiMiddleware> logger) : IAgentM
 
     public string Name { get; } = "agent-ag-ui";
 }
-
-public interface IAgentAgUiMiddleware
-{
-    IAsyncEnumerable<AgentResponseUpdate> RunStreamingAsync(
-        IEnumerable<ChatMessage> messages,
-        AgentSession? thread,
-        AgentRunOptions? options,
-        AIAgent innerAgent,
-        CancellationToken cancellationToken);
-}

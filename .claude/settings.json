@@ -18,7 +18,8 @@
       "Bash(dotnet build MafTravel.sln --no-restore -v quiet)",
       "Bash(npm run build)",
       "Bash(npx tsc --noEmit)",
-      "Bash(find . -name \"*.tsbuildinfo\" -delete)"
+      "Bash(find . -name \"*.tsbuildinfo\" -delete)",
+      "Bash(dotnet build src/Agents/Agents.csproj --no-restore -v q)"
     ]
   }
 }
