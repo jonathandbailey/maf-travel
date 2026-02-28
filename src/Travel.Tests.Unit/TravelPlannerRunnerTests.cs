@@ -32,7 +32,7 @@ public class TravelPlannerRunnerTests
     {
         var (runner, _) = SetupRunner(new CompletingNode());
 
-        runner.State.Should().Be(WorkflowState.Created);
+        runner.Session.State.Should().Be(WorkflowState.Created);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class TravelPlannerRunnerTests
     {
         var (runner, _) = SetupRunner(new CompletingNode());
 
-        runner.LastCheckpoint.Should().BeNull();
+        runner.Session.LastCheckpoint.Should().BeNull();
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class TravelPlannerRunnerTests
 
         await foreach (var _ in runner.WatchStreamAsync(request)) { }
 
-        runner.State.Should().Be(WorkflowState.Completed);
+        runner.Session.State.Should().Be(WorkflowState.Completed);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class TravelPlannerRunnerTests
             events.Add(evt);
 
         events.Should().ContainSingle(e => e is RequestInfoEvent);
-        runner.State.Should().Be(WorkflowState.Suspended);
+        runner.Session.State.Should().Be(WorkflowState.Suspended);
     }
 
     [Fact]

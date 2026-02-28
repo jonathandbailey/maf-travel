@@ -25,8 +25,8 @@ public class TravelWorkflowService(
         }
         finally
         {
-            var state = runner.State is WorkflowState.Suspended or WorkflowState.Completed
-                ? runner.State
+            var state = runner.Session.State is WorkflowState.Suspended or WorkflowState.Completed
+                ? runner.Session.State
                 : WorkflowState.Failed;
 
             try
@@ -34,7 +34,7 @@ public class TravelWorkflowService(
                 await sessionRepository.SaveAsync(new WorkflowSession(
                     request.ThreadId,
                     state,
-                    runner.LastCheckpoint));
+                    runner.Session.LastCheckpoint));
             }
             catch { /* swallow to avoid masking a stream exception */ }
         }
