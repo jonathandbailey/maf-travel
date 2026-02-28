@@ -10,7 +10,7 @@ public static class ApplicationExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IToolHandler, TravelWorkflowToolHandler>();
-        services.AddSingleton<IToolRegistry, ToolRegistry>();
+        services.AddSingleton<IToolRegistry>(sp => new ToolRegistry(sp.GetServices<IToolHandler>()));
         services.AddSingleton<IConversationAgentFactory, ConversationAgentFactory>();
 
         return services;
