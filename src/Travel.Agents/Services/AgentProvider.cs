@@ -21,34 +21,22 @@ public class AgentProvider(
         { AgentType.Extracting, "extracting.yaml" }
     };
 
-    public async Task<AIAgent> CreateAsync(AgentType agentType)
+    public Task<AIAgent> CreateAsync(AgentType agentType) =>
+        CreateInternalAsync(agentType, (template, tools) => agentFactory.Create(template, tools));
+
+    public Task<AIAgent> CreateAsync(AgentType agentType, IChatClient chatClient) =>
+        CreateInternalAsync(agentType, (template, tools) => agentFactory.Create(chatClient, template, tools));
+
+    private async Task<AIAgent> CreateInternalAsync(AgentType agentType, Func<string, List<AITool>, Task<AIAgent>> factory)
     {
         var templateName = _agentTemplates.TryGetValue(agentType, out var template)
             ? template
             : throw new ArgumentException($"Unknown agent type: {agentType}", nameof(agentType));
 
         var agentTemplate = await agentTemplateRepository.LoadAsync(templateName);
-
         var tools = GetToolsForAgentType(agentType);
 
-        var agent = await agentFactory.Create(agentTemplate, tools);
-
-        return agent;
-    }
-
-    public async Task<AIAgent> CreateAsync(AgentType agentType, IChatClient chatClient)
-    {
-        var templateName = _agentTemplates.TryGetValue(agentType, out var template)
-            ? template
-            : throw new ArgumentException($"Unknown agent type: {agentType}", nameof(agentType));
-
-        var agentTemplate = await agentTemplateRepository.LoadAsync(templateName);
-
-        var tools = GetToolsForAgentType(agentType);
-
-        var agent = await agentFactory.Create(chatClient, agentTemplate, tools);
-
-        return agent;
+        return await factory(agentTemplate, tools);
     }
 
     private static List<AITool> GetToolsForAgentType(AgentType agentType) => agentType switch

@@ -41,17 +41,12 @@ public class TravelWorkflowBuilder
 
         builder.AddEdge(executionNode, requestInformationNode);
 
-      
-            
-
         builder.AddEdge(requestInformationNode, requestInformationPort);
         builder.AddEdge(requestInformationPort, informationResponseNode);
 
         builder.AddEdge(informationResponseNode, extractingNode);
 
         var workflow = builder.Build();
-
-    
 
         return workflow;
     }

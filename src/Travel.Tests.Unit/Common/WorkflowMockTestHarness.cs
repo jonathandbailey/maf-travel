@@ -1,5 +1,6 @@
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
@@ -45,7 +46,7 @@ public class WorkflowMockTestHarness
                 .ReturnsAsync(agent);
         }
 
-        var workflowService = new TravelWorkflowService(_checkpointRepository, _sessionRepository, agentProvider.Object);
+        var workflowService = new TravelWorkflowService(_checkpointRepository, _sessionRepository, agentProvider.Object, NullLogger<TravelWorkflowService>.Instance);
 
         return workflowService;
     }

@@ -28,6 +28,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public void State_ShouldBe_Created_OnInitialization()
     {
         var (runner, _) = SetupRunner(new CompletingNode());
@@ -36,6 +38,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public void LastCheckpoint_ShouldBe_Null_WhenSessionHasNoCheckpoint()
     {
         var (runner, _) = SetupRunner(new CompletingNode());
@@ -44,6 +48,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldYield_TravelPlanningCompleteEvent()
     {
         var (runner, request) = SetupRunner(new CompletingNode());
@@ -56,6 +62,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldSetState_Completed_AfterTravelPlanningCompleteEvent()
     {
         var (runner, request) = SetupRunner(new CompletingNode());
@@ -66,6 +74,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldYield_TravelPlanStatusUpdateEvent()
     {
         var (runner, request) = SetupRunner(new StatusUpdateNode());
@@ -78,6 +88,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldYield_TravelPlanUpdateEvent()
     {
         var (runner, request) = SetupRunner(new PlanUpdateNode());
@@ -90,6 +102,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldYield_RequestInfoEvent_AndSetState_Suspended_WhenExecuting()
     {
         var suspendNode = new SuspendNode();
@@ -114,6 +128,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldThrow_WorkflowException_WhenState_IsFailed()
     {
         var (runner, request) = SetupRunner(new CompletingNode(), WorkflowState.Failed);
@@ -127,6 +143,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldThrow_WorkflowException_WhenState_IsExecuting()
     {
         var (runner, request) = SetupRunner(new CompletingNode(), WorkflowState.Executing);
@@ -140,6 +158,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldThrow_WorkflowException_WhenState_IsCompleted()
     {
         var (runner, request) = SetupRunner(new CompletingNode(), WorkflowState.Completed);
@@ -153,6 +173,8 @@ public class TravelPlannerRunnerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
+
     public async Task WatchStreamAsync_ShouldThrow_WorkflowException_WhenSuspended_WithNullCheckpoint()
     {
         var (runner, request) = SetupRunner(new CompletingNode(), WorkflowState.Suspended, checkpoint: null);

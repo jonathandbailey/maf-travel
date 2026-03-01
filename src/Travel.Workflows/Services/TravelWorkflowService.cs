@@ -1,5 +1,6 @@
 using Infrastructure.Repository;
 using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.Logging;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
@@ -10,7 +11,8 @@ namespace Travel.Workflows.Services;
 public class TravelWorkflowService(
     ICheckpointRepository checkpointRepository,
     IWorkflowSessionRepository sessionRepository,
-    IAgentProvider agentProvider) 
+    IAgentProvider agentProvider,
+    ILogger<TravelWorkflowService> logger)
 {
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
     {
@@ -36,15 +38,16 @@ public class TravelWorkflowService(
                     state,
                     runner.Session.LastCheckpoint));
             }
-            catch { /* swallow to avoid masking a stream exception */ }
+            catch (Exception ex) { logger.LogWarning(ex, "Failed to save session state for thread {ThreadId}.", request.ThreadId); }
         }
     }
 
     private async Task<TravelPlanningRunner> CreateRunnerAsync(TravelWorkflowRequest request)
     {
-        var session = await sessionRepository.ExistsAsync(request.ThreadId)
+        var loaded = await sessionRepository.ExistsAsync(request.ThreadId)
             ? await sessionRepository.LoadAsync(request.ThreadId)
-            : new WorkflowSession(request.ThreadId, WorkflowState.Created, null);
+            : null;
+        var session = loaded ?? new WorkflowSession(request.ThreadId, WorkflowState.Created, null);
 
         var planningTask = agentProvider.CreateAsync(AgentType.Planning);
         var extractingTask = agentProvider.CreateAsync(AgentType.Extracting);

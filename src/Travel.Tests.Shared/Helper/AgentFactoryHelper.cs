@@ -4,6 +4,7 @@ using Infrastructure.Settings;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Travel.Agents.Dto;
@@ -32,7 +33,7 @@ public static  class AgentFactoryHelper
             AgentHelper.CreateAgentTemplateRepository());
 
         mockFactory.Setup(x => x.Create())
-            .ReturnsAsync(() => new TravelWorkflowService(repo, sessionRepo, agentProvider));
+            .ReturnsAsync(() => new TravelWorkflowService(repo, sessionRepo, agentProvider, NullLogger<TravelWorkflowService>.Instance));
 
         return mockFactory.Object;
     }
@@ -79,7 +80,7 @@ public static  class AgentFactoryHelper
             AgentHelper.CreateAgentTemplateRepository());
 
         mockFactory.Setup(x => x.Create())
-            .ReturnsAsync(() => new TravelWorkflowService(checkpointRepo, sessionRepo, agentProvider));
+            .ReturnsAsync(() => new TravelWorkflowService(checkpointRepo, sessionRepo, agentProvider, NullLogger<TravelWorkflowService>.Instance));
 
         return mockFactory.Object;
     }

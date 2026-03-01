@@ -14,6 +14,11 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
 
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
     {
+        if (string.IsNullOrEmpty(request.Message.Text))
+        {
+            throw new WorkflowException("The request message is empty. This workflow cannot process an empty message");
+        }
+        
         var run = await CreateWorkflowRun(request);
 
         await foreach (var evt in run.WatchStreamAsync())
@@ -55,7 +60,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
 
     private void HandleSuperStepCompletedEvent(SuperStepCompletedEvent superStepCompletedEvt)
     {
-        var checkpoint = superStepCompletedEvt.CompletionInfo!.Checkpoint;
+        var checkpoint = superStepCompletedEvt.CompletionInfo?.Checkpoint;
 
         if (checkpoint != null)
         {
