@@ -1,5 +1,6 @@
 import { Menu } from 'antd';
 import { useTravelPlanStore } from '../../features/travel/store/travelPlanStore';
+import './layout.css';
 
 const RootNavigationMenu = () => {
     const createPlan = useTravelPlanStore((s) => s.createPlan);
@@ -8,7 +9,7 @@ const RootNavigationMenu = () => {
         <Menu
             mode="inline"
             defaultSelectedKeys={['chat']}
-            style={{ height: '100%', borderRight: 0, background: 'transparent' }}
+            className="nav-menu"
             items={[
 
                 {

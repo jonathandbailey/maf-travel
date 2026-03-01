@@ -1,20 +1,16 @@
-import { Flex, Typography } from "antd";
+import { Typography } from "antd";
 import TravelIcon from '../../assets/fly.png';
-
+import './layout.css';
 
 const { Title } = Typography;
 
 const RootHeader = () => {
-    return (<>
-        <Flex justify="start" align="center" style={{ height: "100%" }}>
-            <img
-                src={TravelIcon}
-                alt="Travel App Logo"
-                style={{ height: '60px', width: 'auto', marginRight: '0px' }}
-            />
-            <Title level={4} style={{ marginLeft: "2px", marginBottom: 0, marginTop: 0 }}>Travel</Title>
-        </Flex>
-    </>);
+    return (
+        <div className="header-container">
+            <img src={TravelIcon} alt="Travel App Logo" className="header-logo" />
+            <Title level={4} className="header-title">Travel</Title>
+        </div>
+    );
 }
 
 export default RootHeader;
