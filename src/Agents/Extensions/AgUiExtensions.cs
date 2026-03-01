@@ -23,7 +23,7 @@ public static class AgUiExtensions
 
         if (additionalProperty is not Guid threadId)
         {
-            throw new ArgumentException("The provided ChatClientAgentRunOptions must have ChatOptions.AdditionalProperties['agent_thread_id'] not empty.");
+            throw new ArgumentException($"The provided ChatClientAgentRunOptions must have ChatOptions.AdditionalProperties['agent_thread_id'] of type Guid, but got {additionalProperty.GetType()}.");
         }
 
         return threadId;

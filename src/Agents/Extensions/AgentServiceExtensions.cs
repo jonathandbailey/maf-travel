@@ -11,8 +11,11 @@ public static  class AgentServiceExtensions
 {
     public static IServiceCollection AddAgentServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<LanguageModelSettings>(settings =>
-            configuration.GetSection("LanguageModelSettings").Bind(settings));
+        services.AddOptions<LanguageModelSettings>()
+            .Configure(settings => configuration.GetSection("LanguageModelSettings").Bind(settings))
+            .Validate(s => !string.IsNullOrEmpty(s.DeploymentName), "LanguageModelSettings.DeploymentName is required.")
+            .Validate(s => !string.IsNullOrEmpty(s.EndPoint), "LanguageModelSettings.EndPoint is required.")
+            .ValidateOnStart();
 
 
         services.AddSingleton<IAgentThreadMiddleware, AgentThreadMiddleware>();

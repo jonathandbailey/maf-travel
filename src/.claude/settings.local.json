@@ -6,7 +6,10 @@
       "Bash(powershell -File:*)",
       "Bash(dotnet build src/Travel.Tests.Unit/Travel.Tests.Unit.csproj)",
       "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"ConversationAgentTests\" --no-build)",
-      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --no-build)"
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --no-build)",
+      "Bash(dotnet build src/Agents/Agents.csproj --no-restore -v q)",
+      "Bash(dotnet build \"c:/source/github/maf-travel/src/Agents/Agents.csproj\" --no-restore -v q)",
+      "Bash(dotnet build \"c:/source/github/maf-travel/src/Infrastructure/Infrastructure.csproj\" --no-restore -v q)"
     ]
   }
 }

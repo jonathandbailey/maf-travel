@@ -10,8 +10,8 @@ public class AgentMiddlewareFactory : IAgentMiddlewareFactory
     public AgentMiddlewareFactory(IAgentThreadMiddleware agentMiddleware,
         IAgentAgUiMiddleware agentAgUiMiddleware)
     {
-        AddMiddleware((IAgentMiddleware) agentMiddleware);
-        AddMiddleware((IAgentMiddleware) agentAgUiMiddleware);
+        AddMiddleware(agentMiddleware);
+        AddMiddleware(agentAgUiMiddleware);
     }
 
     private void AddMiddleware(IAgentMiddleware middleware)
