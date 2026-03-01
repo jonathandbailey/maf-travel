@@ -1,7 +1,7 @@
 import AssistantMessage from "./AssistantMessage";
 import Error from "./Error";
 
-import ThoughtProcess from "./ThoughProcess";
+import ThoughtProcess from "./ThoughtProcess";
 import type { StatusUpdate } from "../domain/StatusUpdate";
 import UserMessage from "./UserMessage";
 import Status from "./Status";

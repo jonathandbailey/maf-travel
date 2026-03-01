@@ -13,6 +13,7 @@ const ChatPage = () => {
     useTravelPlan(client);
 
     const submitMessage = () => {
+        if (!inputValue.trim()) return;
         const text = inputValue;
         setInputValue("");
         sendMessage(text);
