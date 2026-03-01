@@ -1,7 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { EventType, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import type { StatusUpdate } from "../domain/StatusUpdate";
 import { ChatAgentClient, type ChatAgentCallbacks } from "../services/ChatAgentClient";
+import { useTravelPlanStore } from "../../travel/store/travelPlanStore";
 
 export interface ExchangeItem {
     id: string;
@@ -90,6 +91,14 @@ export function useChatAgent() {
         });
     }
 
+    const planVersion = useTravelPlanStore((s) => s.planVersion);
+    const isFirstRender = useRef(true);
+    useEffect(() => {
+        if (isFirstRender.current) { isFirstRender.current = false; return; }
+        setExchanges([]);
+        clientRef.current!.setThreadId(randomUUID());
+    }, [planVersion]);
+
     const sendMessage = (text: string) => {
         if (!text.trim()) return;
         clientRef.current!.sendMessage(text);
@@ -99,10 +108,5 @@ export function useChatAgent() {
         clientRef.current!.cancel();
     };
 
-    const handleNewPlan = () => {
-        setExchanges([]);
-        clientRef.current!.setThreadId(randomUUID());
-    };
-
-    return { exchanges, isStreaming, sendMessage, handleCancel, handleNewPlan, client: clientRef.current };
+    return { exchanges, isStreaming, sendMessage, handleCancel, client: clientRef.current };
 }

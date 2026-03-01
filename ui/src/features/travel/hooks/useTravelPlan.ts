@@ -4,7 +4,7 @@ import { useTravelPlanStore } from "../store/travelPlanStore";
 import type { ChatAgentClient } from "../../chat/services/ChatAgentClient";
 
 export function useTravelPlan(client: ChatAgentClient) {
-    const { updatePlan, createPlan } = useTravelPlanStore();
+    const { updatePlan } = useTravelPlanStore();
     const clientRef = useRef(client);
     clientRef.current = client;
 
@@ -32,7 +32,4 @@ export function useTravelPlan(client: ChatAgentClient) {
         return () => clientRef.current.removeEventHandler(handleEvent);
     }, [updatePlan]);
 
-    const resetPlan = () => createPlan();
-
-    return { resetPlan };
 }
