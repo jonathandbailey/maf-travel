@@ -1,0 +1,42 @@
+[
+  {
+    "ScenarioName": "IncompletePlanProvided",
+    "ExpectedTravelPlan": {
+      "Origin": "Zurich",
+      "Destination": "Paris",
+      "StartDate": "2026-05-01T00:00:00",
+      "EndDate": null,
+      "NumberOfTravelers": 2
+    },
+    "Runs": [
+      {
+        "Message": "I want to plan a trip from Zurich to Paris on the 01.05.2026, for 2 people.",
+        "ConversationAgentMeta": {
+          "Name": "travel_booking_details",
+          "ArgumentsKey": "request",
+          "Arguments": "I want to plan a trip from Zurich to Paris on the 01.05.2026, for 2 people."
+        },
+        "ToolHandlerResults": [
+          {
+            "Type": "ToolStateSnapshotUpdate",
+            "SnapshotType": "TravelPlanUpdate",
+            "Data": {
+              "Origin": "Zurich",
+              "Destination": "Paris",
+              "StartDate": "2026-05-01T00:00:00",
+              "EndDate": null,
+              "NumberOfTravelers": 2
+            }
+          },
+          {
+            "Type": "ToolResultUpdate",
+            "Data": {
+              "query": "What is the return date for your trip?",
+              "reason": "The return date is required to complete the travel plan."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -63,12 +63,18 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
             await foreach (var update in handler.ExecuteAsync(
                 call, new ToolHandlerContext(threadId), cancellationToken))
             {
-                if (update is ToolStatusUpdate statusUpdate)
-                    yield return statusUpdate.Message.ToAgentResponseStatusMessage(statusUpdate.Thought, statusUpdate.Source);
-                else if (update is ToolStateSnapshotUpdate snapshotUpdate)
-                    yield return snapshotUpdate.Data.ToAgentResponseStateSnapshot(snapshotUpdate.Type);
-                else if (update is ToolResultUpdate resultUpdate)
-                    toolResults.Add(resultUpdate.Result);
+                switch (update)
+                {
+                    case ToolStatusUpdate statusUpdate:
+                        yield return statusUpdate.Message.ToAgentResponseStatusMessage(statusUpdate.Thought, statusUpdate.Source);
+                        break;
+                    case ToolStateSnapshotUpdate snapshotUpdate:
+                        yield return snapshotUpdate.Data.ToAgentResponseStateSnapshot(snapshotUpdate.Type);
+                        break;
+                    case ToolResultUpdate resultUpdate:
+                        toolResults.Add(resultUpdate.Result);
+                        break;
+                }
             }
         }
 

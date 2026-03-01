@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"[Reflection.Assembly]::LoadFile\\(''C:\\\\Users\\\\jonat\\\\.nuget\\\\packages\\\\microsoft.extensions.ai\\\\10.3.0\\\\lib\\\\net10.0\\\\Microsoft.Extensions.AI.dll''\\) | Out-Null; [Microsoft.Extensions.AI.IChatClient].GetMethods\\(\\) | ForEach-Object { $_.ToString\\(\\) }\")",
+      "Bash(powershell -Command \"[Reflection.Assembly]::LoadFile\\(''C:\\\\Users\\\\jonat\\\\.nuget\\\\packages\\\\microsoft.extensions.ai\\\\10.3.0\\\\lib\\\\net10.0\\\\Microsoft.Extensions.AI.dll''\\) | Out-Null; [Microsoft.Extensions.AI.IChatClient].GetMethods\\(\\) | %{ Write-Host $_ToString\\(\\) }\")",
+      "Bash(powershell -File:*)",
+      "Bash(dotnet build src/Travel.Tests.Unit/Travel.Tests.Unit.csproj)",
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"ConversationAgentTests\" --no-build)",
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --no-build)"
+    ]
+  }
+}

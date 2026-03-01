@@ -3,28 +3,16 @@ using System.Diagnostics;
 using FluentAssertions;
 using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
-using Travel.Tests.Shared.Settings;
+using Travel.Tests.Unit.Common;
+using Travel.Tests.Unit.TestData;
 using Travel.Workflows.Events;
+using PlanningWorkflowScenario = Travel.Tests.Unit.TestData.PlanningWorkflowScenario;
 
 namespace Travel.Tests.Unit;
 
-public class PlanningWorkflowTests : IDisposable
+public class TravelBookingDetailsWorkflowTests : IClassFixture<TelemetryFixture>
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
-
-    public static IEnumerable<object[]> TravelPlanningScenarios()
-    {
-        var scenarios = ScenarioLoader.LoadPlanningWorkflowScenarios();
-        foreach (var scenario in scenarios)
-        {
-            yield return [scenario];
-        }
-    }
-
-    public PlanningWorkflowTests()
-    {
-        TelemetryHelper.Initialize(SettingsHelper.GetAspireDashboardSettings());
-    }
 
 
     [Theory]
@@ -33,7 +21,7 @@ public class PlanningWorkflowTests : IDisposable
     {
         using var testActivity = TestActivitySource.StartActivity($"TestCase: {scenario.ScenarioName}");
 
-        var harness = new WorkflowMockTestHarness2();
+        var harness = new WorkflowMockTestHarness();
 
         var runIndex = 0;
         foreach (var run in scenario.Runs)
@@ -55,10 +43,13 @@ public class PlanningWorkflowTests : IDisposable
 
     }
 
-    public void Dispose()
+    public static IEnumerable<object[]> TravelPlanningScenarios()
     {
-        TelemetryHelper.Dispose();
+        var scenarios = UnitTestsScenarioLoader.LoadPlanningWorkflowScenarios();
+        foreach (var scenario in scenarios)
+        {
+            yield return [scenario];
+        }
     }
-
 }
 

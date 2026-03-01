@@ -37,6 +37,23 @@ public static  class AgentFactoryHelper
         return mockFactory.Object;
     }
 
+    public static IWorkflowFactory Create(TravelWorkflowService travelWorkflowService)
+    {
+        var mockFactory = new Mock<IWorkflowFactory>();
+
+        var repo = new InMemoryCheckpointRepository();
+        var sessionRepo = new InMemoryWorkflowSessionRepository();
+
+        var agentProvider = new AgentProvider(
+            AgentHelper.CreateAgentFactory(),
+            AgentHelper.CreateAgentTemplateRepository());
+
+        mockFactory.Setup(x => x.Create())
+            .ReturnsAsync(() => travelWorkflowService);
+
+        return mockFactory.Object;
+    }
+
     public static IWorkflowFactory CreateWithFileRepositories()
     {
         var mockFactory = new Mock<IWorkflowFactory>();

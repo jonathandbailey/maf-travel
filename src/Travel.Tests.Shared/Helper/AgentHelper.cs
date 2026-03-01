@@ -28,6 +28,14 @@ public static class AgentHelper
         return agent;
     }
 
+    public static async Task<AIAgent> Create(string templateName, List<AITool>? tools, IChatClient chatClient)
+    {
+        var templateRepository = CreateAgentTemplateRepository();
+        var agentTemplate = await templateRepository.LoadAsync(templateName);
+        var agentFactory = CreateAgentFactory();
+        return await agentFactory.Create(chatClient, agentTemplate, tools);
+    }
+
     public static IAgentTemplateRepository CreateAgentTemplateRepository()
     {
         var fileStorageSettings = Options.Create(new FileStorageSettings
