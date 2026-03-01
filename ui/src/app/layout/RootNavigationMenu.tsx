@@ -1,4 +1,5 @@
 import { Menu } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useTravelPlanStore } from '../../features/travel/store/travelPlanStore';
 import './layout.css';
 
@@ -15,6 +16,7 @@ const RootNavigationMenu = () => {
                 {
                     key: 'new-travel-plan',
                     label: 'New Travel Plan',
+                    icon: <PlusOutlined />,
                     onClick: createPlan,
                 },
             ]}
