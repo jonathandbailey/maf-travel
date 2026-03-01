@@ -2,6 +2,7 @@ using Agents;
 using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Agents.Tools;
 using Travel.Experience.Application.Extensions;
@@ -81,14 +82,25 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
             }
         }
 
+        agentActivity.SetToolResultCount(toolResults.Count);
+
         if (toolResults.Count == 0)
             yield break;
-   
-        var message = new ChatMessage(ChatRole.Tool, toolResults);
 
-        await foreach (var update in InnerAgent.RunStreamingAsync([message], localThread, options, cancellationToken))
+        var message = new ChatMessage(ChatRole.Tool, toolResults);
+        agentActivity.RecordToolResponseMessage(message);
+
+        var streamCompleted = false;
+        try
         {
-            yield return update;
+            await foreach (var update in InnerAgent.RunStreamingAsync([message], localThread, options, cancellationToken))
+                yield return update;
+            streamCompleted = true;
+        }
+        finally
+        {
+            if (!streamCompleted)
+                agentActivity?.SetStatus(ActivityStatusCode.Error, "Streaming response did not complete");
         }
     }
 }

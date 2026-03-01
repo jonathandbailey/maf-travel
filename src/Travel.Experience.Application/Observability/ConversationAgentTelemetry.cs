@@ -125,6 +125,23 @@ public static class ConversationAgentTelemetry
     public static void SetToolCallCount(this Activity? activity, int count) =>
         activity?.SetTag("gen_ai.tool.call_count", count);
 
+    public static void SetToolResultCount(this Activity? activity, int count) =>
+        activity?.SetTag("gen_ai.tool.result_count", count);
+
+    public static void RecordToolResponseMessage(this Activity? activity, ChatMessage message) =>
+        activity?.AddEvent(new ActivityEvent("tool.response_message",
+            tags: new ActivityTagsCollection
+            {
+                { "gen_ai.message.role", message.Role.Value },
+                { "gen_ai.message.content_count", message.Contents.Count },
+            }));
+
+    public static void SetError(this Activity? activity, Exception ex)
+    {
+        activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+        activity?.SetTag("error.type", ex.GetType().Name);
+    }
+
     public static void AddEvent(this Activity? activity, ToolStatusUpdate update) =>
         activity?.AddEvent(new ActivityEvent("tool.status",
             tags: new ActivityTagsCollection
