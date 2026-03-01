@@ -21,7 +21,7 @@ builder.Services.AddTravelAgentServices();
 
 builder.Services.AddWorkflowServices();
 
-builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddApplicationServices();
 
 builder.Services.AddSwaggerGen();
 

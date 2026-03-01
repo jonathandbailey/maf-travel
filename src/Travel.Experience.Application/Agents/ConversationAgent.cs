@@ -61,23 +61,36 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
             var handler = registry.GetHandler(toolName);
             if (handler is null) continue;
 
-            await foreach (var update in handler.ExecuteAsync(
-                call, new ToolHandlerContext(threadId), cancellationToken))
+            var toolCompleted = false;
+            try
             {
-                switch (update)
+                await foreach (var update in handler.ExecuteAsync(
+                    call, new ToolHandlerContext(threadId), cancellationToken))
                 {
-                    case ToolStatusUpdate statusUpdate:
-                        toolActivity.AddEvent(statusUpdate);
-                        yield return statusUpdate.Message.ToAgentResponseStatusMessage(statusUpdate.Thought, statusUpdate.Source);
-                        break;
-                    case ToolStateSnapshotUpdate snapshotUpdate:
-                        toolActivity.AddEvent(snapshotUpdate);
-                        yield return snapshotUpdate.Data.ToAgentResponseStateSnapshot(snapshotUpdate.Type);
-                        break;
-                    case ToolResultUpdate resultUpdate:
-                        toolActivity.AddEvent(resultUpdate);
-                        toolResults.Add(resultUpdate.Result);
-                        break;
+                    switch (update)
+                    {
+                        case ToolStatusUpdate statusUpdate:
+                            toolActivity.AddEvent(statusUpdate);
+                            yield return statusUpdate.Message.ToAgentResponseStatusMessage(statusUpdate.Thought, statusUpdate.Source);
+                            break;
+                        case ToolStateSnapshotUpdate snapshotUpdate:
+                            toolActivity.AddEvent(snapshotUpdate);
+                            yield return snapshotUpdate.Data.ToAgentResponseStateSnapshot(snapshotUpdate.Type);
+                            break;
+                        case ToolResultUpdate resultUpdate:
+                            toolActivity.AddEvent(resultUpdate);
+                            toolResults.Add(resultUpdate.Result);
+                            break;
+                    }
+                }
+                toolCompleted = true;
+            }
+            finally
+            {
+                if (!toolCompleted)
+                {
+                    toolActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
+                    agentActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
                 }
             }
         }

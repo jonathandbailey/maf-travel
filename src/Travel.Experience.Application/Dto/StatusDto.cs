@@ -16,10 +16,3 @@ public class StatusUpdate(string type, string source, string status, string deta
 
     public string Details { get; } = details;
 }
-
-public class ArtifactCreated(string type, Guid id, string key)
-{
-    public Guid Id { get; } = id;
-    public string Key { get; } = key;
-    public string Type { get; } = type;
-}
