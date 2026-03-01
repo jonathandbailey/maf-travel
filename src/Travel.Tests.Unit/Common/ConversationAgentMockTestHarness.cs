@@ -50,13 +50,9 @@ public class ConversationAgentMockTestHarness
 
     private static async Task<(ConversationAgent agent, AgentSession session)> BuildAsync(ConversationAgentRun run)
     {
-        // 1. Get declaration-only tools from TravelWorkflowToolHandler (uses static registry, workflow factory not invoked)
         var mockWorkflowFactory = new Mock<IWorkflowFactory>();
         var declarationOnlyTools = new TravelWorkflowToolHandler(mockWorkflowFactory.Object).GetDeclarationOnlyTools();
 
-        // 2. Build mock IChatClient for the inner conversation AIAgent
-        //    First call (GetResponseAsync) returns the scripted tool call.
-        //    Second call (GetStreamingResponseAsync) returns an empty stream (agent's final reply after tool results).
         var mockChatClient = new Mock<IChatClient>();
 
         var arguments = new Dictionary<string, object?>();
@@ -82,10 +78,9 @@ public class ConversationAgentMockTestHarness
                 It.IsAny<CancellationToken>()))
             .Returns(EmptyStreamAsync());
 
-        // 3. Create the inner AIAgent with the mock chat client and declaration-only tools
+
         var innerAgent = await AgentHelper.Create("conversation.yaml", declarationOnlyTools, mockChatClient.Object);
 
-        // 4. Mock IToolHandler to yield scripted ToolHandlerUpdate items
         var mockHandler = new Mock<IToolHandler>();
         mockHandler.Setup(h => h.ToolName).Returns(TravelWorkflowToolHandler.RequestInformationToolName);
         mockHandler.Setup(h => h.GetDeclarationOnlyTools()).Returns(declarationOnlyTools);
@@ -97,7 +92,6 @@ public class ConversationAgentMockTestHarness
             .Returns((FunctionCallContent call, ToolHandlerContext _, CancellationToken ct) =>
                 BuildUpdatesStream(call, run.ToolHandlerResults, ct));
 
-        // 5. Wire into ConversationAgent
         var registry = new ToolRegistry([mockHandler.Object]);
         var conversationAgent = new ConversationAgent(innerAgent, registry);
         var session = await conversationAgent.CreateSessionAsync();

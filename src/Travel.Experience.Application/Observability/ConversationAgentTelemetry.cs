@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using A2A;
+using Agents.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.AI;
 
 namespace Travel.Experience.Application.Observability;
 
@@ -22,6 +25,39 @@ public static class ConversationAgentTelemetry
 
         var source = Source.StartActivity($"invoke_agent {Name}", ActivityKind.Internal, null, tags);
      
+        return source;
+    }
+
+    public static Activity? StartTool(string key, IDictionary<string,object?> arguments, Activity? parent)
+    {
+        var tags = new ActivityTagsCollection
+        {
+            { "gen_ai.tool.name", key },
+            { "gen_ai.tool.parameters", arguments }
+        };
+
+        var source = Source.StartActivity($"execute_tool {key}", ActivityKind.Internal, parent?.Id, tags);
+
+        return source;
+    }
+
+    public static Activity? StartTool(string key, FunctionCallContent functionCallContent, Activity? parent)
+    {
+        var arguments = "No Arguments in Function Call";
+
+        if (functionCallContent.Arguments != null)
+        {
+            arguments = JsonSerializer.Serialize(functionCallContent.Arguments);
+        }
+
+        var tags = new ActivityTagsCollection
+        {
+            { "gen_ai.tool.name", key },
+            { "gen_ai.tool.parameters", arguments }
+        };
+
+        var source = Source.StartActivity($"execute_tool {key}", ActivityKind.Internal, parent?.Id, tags);
+
         return source;
     }
 
@@ -79,10 +115,37 @@ public static class ConversationAgentTelemetry
             tags: new ActivityTagsCollection
             {
                 { "gen_ai.content.part", content },
-             
+
                 { "gen_ai.event.type", updateType },
             }));
 
         return activity;
     }
+
+    public static void SetToolCallCount(this Activity? activity, int count) =>
+        activity?.SetTag("gen_ai.tool.call_count", count);
+
+    public static void AddEvent(this Activity? activity, ToolStatusUpdate update) =>
+        activity?.AddEvent(new ActivityEvent("tool.status",
+            tags: new ActivityTagsCollection
+            {
+                { "tool.status.message", update.Message },
+                { "tool.status.thought", update.Thought },
+                { "tool.status.source", update.Source },
+            }));
+
+    public static void AddEvent(this Activity? activity, ToolStateSnapshotUpdate update) =>
+        activity?.AddEvent(new ActivityEvent("tool.state_snapshot",
+            tags: new ActivityTagsCollection
+            {
+                { "tool.snapshot.type", update.Type },
+                { "tool.snapshot.data", JsonSerializer.Serialize(update.Data) },
+            }));
+
+    public static void AddEvent(this Activity? activity, ToolResultUpdate update) =>
+        activity?.AddEvent(new ActivityEvent("tool.result",
+            tags: new ActivityTagsCollection
+            {
+                { "tool.result.call_id", update.Result.CallId },
+            }));
 }

@@ -46,6 +46,7 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
             }
         }
 
+        agentActivity.SetToolCallCount(tools.Count);
 
         if (tools.Count == 0)
             yield break;
@@ -54,8 +55,7 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
 
         foreach (var (toolName, call) in tools)
         {
-            using var toolActivity = ConversationAgentTelemetry.StartTool(
-                toolName, call.Arguments?.ToString() ?? string.Empty, agentActivity);
+            using var toolActivity = ConversationAgentTelemetry.StartTool(toolName, call, agentActivity);
 
             var handler = registry.GetHandler(toolName);
             if (handler is null) continue;
@@ -66,12 +66,15 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
                 switch (update)
                 {
                     case ToolStatusUpdate statusUpdate:
+                        toolActivity.AddEvent(statusUpdate);
                         yield return statusUpdate.Message.ToAgentResponseStatusMessage(statusUpdate.Thought, statusUpdate.Source);
                         break;
                     case ToolStateSnapshotUpdate snapshotUpdate:
+                        toolActivity.AddEvent(snapshotUpdate);
                         yield return snapshotUpdate.Data.ToAgentResponseStateSnapshot(snapshotUpdate.Type);
                         break;
                     case ToolResultUpdate resultUpdate:
+                        toolActivity.AddEvent(resultUpdate);
                         toolResults.Add(resultUpdate.Result);
                         break;
                 }

@@ -1,11 +1,12 @@
-using System.Diagnostics;
 using FluentAssertions;
+using System.Diagnostics;
+using Travel.Tests.Shared;
 using Travel.Tests.Unit.Common;
 using Travel.Tests.Unit.TestData;
 
 namespace Travel.Tests.Unit;
 
-public class ConversationAgentTests
+public class ConversationAgentTests : IClassFixture<TelemetryFixture>
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
 
