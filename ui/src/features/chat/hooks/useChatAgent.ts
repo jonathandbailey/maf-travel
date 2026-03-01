@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { EventType, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import type { StatusUpdate } from "../domain/StatusUpdate";
-import type { TravelPlan } from "../../travel/domain/TravelPlan";
 import { ChatAgentClient, type ChatAgentCallbacks } from "../services/ChatAgentClient";
 
 export interface ExchangeItem {
@@ -14,18 +13,9 @@ export interface ExchangeItem {
 
 const AGENT_URL = `${import.meta.env.VITE_API_BASE_URL}/ag-ui`;
 
-const EMPTY_TRAVEL_PLAN: TravelPlan = {
-    origin: null,
-    destination: null,
-    startDate: null,
-    endDate: null,
-    numberOfTravelers: null,
-};
-
 export function useChatAgent() {
     const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
     const [isStreaming, setIsStreaming] = useState(false);
-    const [travelPlan, setTravelPlan] = useState<TravelPlan>(EMPTY_TRAVEL_PLAN);
 
     const callbacksRef = useRef<ChatAgentCallbacks>({
         onRunStarted: () => {},
@@ -59,26 +49,12 @@ export function useChatAgent() {
         );
     };
 
-    const handleTravelPlanUpdate = (payload: any) => {
-        console.log("Received TravelPlanUpdate payload:", payload);
-        setTravelPlan({
-            origin: payload.Origin ?? null,
-            destination: payload.Destination ?? null,
-            startDate: payload.StartDate ?? null,
-            endDate: payload.EndDate ?? null,
-            numberOfTravelers: payload.NumberOfTravelers ?? null,
-        });
-    };
-
     const handleStateSnapshot = (event: BaseEvent, exchangeId: string) => {
         const snapshot = (event as StateSnapshotEvent).snapshot;
         if (typeof snapshot !== 'object' || snapshot === null || !('Type' in snapshot)) return;
 
         if (snapshot.Type === 'StatusUpdate' && (snapshot as any).Payload)
             handleStatusUpdate((snapshot as any).Payload, exchangeId);
-
-        if (snapshot.Type === 'TravelPlanUpdate' && (snapshot as any).Payload)
-            handleTravelPlanUpdate((snapshot as any).Payload);
     };
 
     callbacksRef.current = {
@@ -125,9 +101,8 @@ export function useChatAgent() {
 
     const handleNewPlan = () => {
         setExchanges([]);
-        setTravelPlan(EMPTY_TRAVEL_PLAN);
         clientRef.current!.setThreadId(randomUUID());
     };
 
-    return { exchanges, travelPlan, isStreaming, sendMessage, handleCancel, handleNewPlan };
+    return { exchanges, isStreaming, sendMessage, handleCancel, handleNewPlan, client: clientRef.current };
 }

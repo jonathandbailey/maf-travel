@@ -7,16 +7,27 @@ export interface ChatAgentCallbacks {
     onRunCompleted: (exchangeId: string) => void;
 }
 
+export type EventHandler = (event: BaseEvent, exchangeId: string) => void;
+
 export class ChatAgentClient {
     private readonly url: string;
     private readonly callbacks: ChatAgentCallbacks;
     private agent: InstanceType<typeof HttpAgent> | null = null;
     private threadId: string;
+    private readonly eventHandlers = new Set<EventHandler>();
 
     constructor(url: string, threadId: string, callbacks: ChatAgentCallbacks) {
         this.url = url;
         this.threadId = threadId;
         this.callbacks = callbacks;
+    }
+
+    addEventHandler(handler: EventHandler): void {
+        this.eventHandlers.add(handler);
+    }
+
+    removeEventHandler(handler: EventHandler): void {
+        this.eventHandlers.delete(handler);
     }
 
     setThreadId(id: string): void {
@@ -38,7 +49,10 @@ export class ChatAgentClient {
 
         agent.subscribe({
             onRunFailed: ({ error }) => this.callbacks.onRunFailed(exchangeId, error),
-            onEvent: ({ event }: { event: BaseEvent }) => this.callbacks.onEvent(event, exchangeId),
+            onEvent: ({ event }: { event: BaseEvent }) => {
+                    this.callbacks.onEvent(event, exchangeId);
+                    this.eventHandlers.forEach((h) => h(event, exchangeId));
+                },
         });
 
         try {

@@ -5,11 +5,13 @@ import Welcome from "../features/travel/components/Welcome";
 import { useState } from "react";
 import { Button } from "antd";
 import { useChatAgent } from "../features/chat/hooks/useChatAgent";
+import { useTravelPlan } from "../features/travel/hooks/useTravelPlan";
 import "./ChatPage.css";
 
 const ChatPage = () => {
     const [inputValue, setInputValue] = useState("");
-    const { exchanges, travelPlan, isStreaming, sendMessage, handleCancel, handleNewPlan } = useChatAgent();
+    const { exchanges, isStreaming, sendMessage, handleCancel, handleNewPlan, client } = useChatAgent();
+    const { resetPlan } = useTravelPlan(client);
 
     const submitMessage = () => {
         const text = inputValue;
@@ -22,6 +24,11 @@ const ChatPage = () => {
     };
 
     const handleSubmit = () => submitMessage();
+
+    const onNewPlan = () => {
+        handleNewPlan();
+        resetPlan();
+    };
 
     return (
         <div className="chat-page">
@@ -44,8 +51,8 @@ const ChatPage = () => {
                 />
             </div>
             <div className="chat-sidebar">
-                <Button type="primary" block onClick={handleNewPlan}>New Travel Plan</Button>
-                <TravelPlan travelPlan={travelPlan} />
+                <Button type="primary" block onClick={onNewPlan}>New Travel Plan</Button>
+                <TravelPlan />
             </div>
         </div>
     )
