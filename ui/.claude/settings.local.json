@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /c/source/github/maf-travel/ui/.env*)",
+      "Bash(npm run build)",
+      "Bash(npm audit)",
+      "Bash(npx eslint src --format=compact)",
+      "Bash(npx eslint src)"
+    ]
+  }
+}

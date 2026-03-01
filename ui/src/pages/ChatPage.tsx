@@ -3,16 +3,13 @@ import ChatInput from "../features/chat/components/ChatInput";
 import TravelPlan from "../features/travel/components/TravelPlan";
 import Welcome from "../features/travel/components/Welcome";
 import { useState } from "react";
-import { Button } from "antd";
 import { useChatAgent } from "../features/chat/hooks/useChatAgent";
 import { useTravelPlan } from "../features/travel/hooks/useTravelPlan";
-import { useTravelPlanStore } from "../features/travel/store/travelPlanStore";
 import "./ChatPage.css";
 
 const ChatPage = () => {
     const [inputValue, setInputValue] = useState("");
     const { exchanges, isStreaming, sendMessage, handleCancel, client } = useChatAgent();
-    const createPlan = useTravelPlanStore((s) => s.createPlan);
     useTravelPlan(client);
 
     const submitMessage = () => {

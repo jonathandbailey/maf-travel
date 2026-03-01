@@ -1,22 +1,33 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { EventType, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 import { useTravelPlanStore } from "../store/travelPlanStore";
 import type { ChatAgentClient } from "../../chat/services/ChatAgentClient";
 
+interface TravelPlanUpdatePayload {
+    Origin: string | null;
+    Destination: string | null;
+    StartDate: string | null;
+    EndDate: string | null;
+    NumberOfTravelers: number | null;
+}
+
+interface TravelPlanSnapshot {
+    Type: string;
+    Payload?: TravelPlanUpdatePayload;
+}
+
 export function useTravelPlan(client: ChatAgentClient) {
     const { updatePlan } = useTravelPlanStore();
-    const clientRef = useRef(client);
-    clientRef.current = client;
 
     useEffect(() => {
-        const handleEvent = (event: BaseEvent, _exchangeId: string) => {
+        const handleEvent = (event: BaseEvent) => {
             if (event.type !== EventType.STATE_SNAPSHOT) return;
 
-            const snapshot = (event as StateSnapshotEvent).snapshot;
+            const snapshot = (event as StateSnapshotEvent).snapshot as TravelPlanSnapshot;
             if (typeof snapshot !== 'object' || snapshot === null || !('Type' in snapshot)) return;
             if (snapshot.Type !== 'TravelPlanUpdate') return;
 
-            const payload = (snapshot as any).Payload;
+            const payload = snapshot.Payload;
             if (!payload) return;
 
             updatePlan({
@@ -28,8 +39,8 @@ export function useTravelPlan(client: ChatAgentClient) {
             });
         };
 
-        clientRef.current.addEventHandler(handleEvent);
-        return () => clientRef.current.removeEventHandler(handleEvent);
-    }, [updatePlan]);
+        client.addEventHandler(handleEvent);
+        return () => client.removeEventHandler(handleEvent);
+    }, [client, updatePlan]);
 
 }
