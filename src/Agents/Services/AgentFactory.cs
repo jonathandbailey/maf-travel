@@ -5,7 +5,6 @@ using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using OpenAI.Chat;
-using ChatResponseFormat = Microsoft.Extensions.AI.ChatResponseFormat;
 
 
 namespace Agents.Services;
@@ -14,8 +13,6 @@ public class AgentFactory : IAgentFactory
 {
     private readonly IAgentMiddlewareFactory _agentMiddlewareFactory;
     private readonly ChatClient _chatClient;
-
-    public AgentFactory() {}
 
     public AgentFactory(IOptions<LanguageModelSettings> settings, IAgentMiddlewareFactory agentMiddlewareFactory)
     {
@@ -30,36 +27,6 @@ public class AgentFactory : IAgentFactory
 
         _chatClient = new AzureOpenAIClient(new Uri(settings.Value.EndPoint), credential)
             .GetChatClient(settings.Value.DeploymentName);
-    }
-
-    public AIAgent Create(
-        string name,
-        string template,
-        ChatResponseFormat? chatResponseFormat = null,
-        List<AITool>? tools = null)
-    {
-        ArgumentNullException.ThrowIfNull(_chatClient, "ChatClient has not been created.");
-
-
-        ChatOptions chatOptions = new()
-        {
-            ResponseFormat = chatResponseFormat,
-            Instructions = template,
-            Tools = tools
-        };
-
-        var clientChatOptions = new ChatClientAgentOptions
-        {
-            Name = name,
-
-            ChatOptions = chatOptions
-        };
-
-        var agent = _chatClient.AsIChatClient()
-            .AsBuilder()
-            .BuildAIAgent(options: clientChatOptions);
-
-        return agent;
     }
 
     public async Task<AIAgent> Create(string template, List<AITool>? tools = null)
@@ -96,12 +63,6 @@ public class AgentFactory : IAgentFactory
 public interface IAgentFactory
 {
     AIAgent UseMiddleware(AIAgent agent, string name);
-
-    AIAgent Create(
-        string name,
-        string template,
-        ChatResponseFormat? chatResponseFormat = null,
-        List<AITool>? tools = null);
 
     Task<AIAgent> Create(string template, List<AITool>? tools = null);
     Task<AIAgent> Create(IChatClient chatClient, string template, List<AITool>? tools = null);

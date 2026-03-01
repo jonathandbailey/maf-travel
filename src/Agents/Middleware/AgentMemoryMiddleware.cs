@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Agents.Middleware;
 
-public class AgentThreadMiddleware(IAgentThreadRepository repository, ILogger<IAgentAgUiMiddleware> logger) : IAgentThreadMiddleware, IAgentMiddleware
+public class AgentThreadMiddleware(IAgentThreadRepository repository, ILogger<AgentThreadMiddleware> logger) : IAgentThreadMiddleware, IAgentMiddleware
 {
     private static readonly ActivitySource ActivitySource = new("Agents.Middleware", "1.0.0");
 

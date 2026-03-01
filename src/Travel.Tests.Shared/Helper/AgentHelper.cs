@@ -77,7 +77,7 @@ public static class AgentHelper
         var mockThreadRepoLogger = new Mock<ILogger<AgentThreadRepository>>();
         var agentThreadRepository = new AgentThreadRepository(fileRepository, fileStorageSettings, mockThreadRepoLogger.Object);
 
-        var mockThreadLogger = new Mock<ILogger<IAgentAgUiMiddleware>>();
+        var mockThreadLogger = new Mock<ILogger<AgentThreadMiddleware>>();
         var agentThreadMiddleware = new AgentThreadMiddleware(agentThreadRepository, mockThreadLogger.Object);
 
         var agentWithFileThread = agent.AsBuilder()
