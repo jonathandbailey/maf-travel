@@ -26,12 +26,14 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.0.x
-        cache: true # Now this will work perfectly!
-        cache-dependency-path: '**/packages.lock.json'
+        cache: true 
+        cache-dependency-path: |
+          **/Directory.Packages.props
+          **/*.csproj
   
 
     - name: Restore dependencies
-      run: dotnet restore --locked-mode
+      run: dotnet restore
 
     - name: Build
       # Added --no-incremental to ensure a clean build in CI
