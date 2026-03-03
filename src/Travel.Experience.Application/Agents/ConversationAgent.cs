@@ -2,7 +2,6 @@ using Agents;
 using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Agents.Tools;
 using Travel.Experience.Application.Extensions;
@@ -30,12 +29,14 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
         options = options.AddThreadId(threadId);
 
         using var agentActivity = ConversationAgentTelemetry.Start(localMessages.First().Text, threadId);
-      
-        var tools = new Dictionary<string, FunctionCallContent>();
 
-        var localThread = await InnerAgent.CreateSessionAsync(cancellationToken);
+        try
+        {
+            var tools = new Dictionary<string, FunctionCallContent>();
 
-        var response = await InnerAgent.RunAsync(localMessages, localThread, options, cancellationToken);
+            var localThread = await InnerAgent.CreateSessionAsync(cancellationToken);
+
+            var response = await InnerAgent.RunAsync(localMessages, localThread, options, cancellationToken);
 
         foreach (var responseMessage in response.Messages)
         {
@@ -81,6 +82,13 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
                             toolActivity.AddEvent(resultUpdate);
                             toolResults.Add(resultUpdate.Result);
                             break;
+                        case ToolErrorUpdate errorUpdate:
+                            toolActivity.AddEvent(errorUpdate);
+                            toolActivity?.SetError(errorUpdate.Message);
+                            agentActivity?.SetError(errorUpdate.Message);
+                            yield return errorUpdate.Message.ToAgentResponseStatusMessage(source: "TravelWorkflow");
+                            yield return errorUpdate.Message.ToAgentResponseRunError();
+                            break;
                     }
                 }
                 toolCompleted = true;
@@ -89,31 +97,50 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
             {
                 if (!toolCompleted)
                 {
-                    toolActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
-                    agentActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        toolActivity?.SetCancelled("Tool execution");
+                        agentActivity?.SetCancelled("Tool execution");
+                    }
+                    else
+                    {
+                        toolActivity?.SetIncomplete("Tool execution");
+                        agentActivity?.SetIncomplete("Tool execution");
+                    }
                 }
             }
         }
 
-        agentActivity.SetToolResultCount(toolResults.Count);
+            agentActivity.SetToolResultCount(toolResults.Count);
 
-        if (toolResults.Count == 0)
-            yield break;
+            if (toolResults.Count == 0)
+                yield break;
 
-        var message = new ChatMessage(ChatRole.Tool, toolResults);
-        agentActivity.RecordToolResponseMessage(message);
+            var message = new ChatMessage(ChatRole.Tool, toolResults);
+            agentActivity.RecordToolResponseMessage(message);
 
-        var streamCompleted = false;
-        try
-        {
-            await foreach (var update in InnerAgent.RunStreamingAsync([message], localThread, options, cancellationToken))
-                yield return update;
-            streamCompleted = true;
+            var streamCompleted = false;
+            try
+            {
+                await foreach (var update in InnerAgent.RunStreamingAsync([message], localThread, options, cancellationToken))
+                    yield return update;
+                streamCompleted = true;
+            }
+            finally
+            {
+                if (!streamCompleted)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        agentActivity?.SetCancelled("Streaming response");
+                    else
+                        agentActivity?.SetIncomplete("Streaming response");
+                }
+            }
         }
         finally
         {
-            if (!streamCompleted)
-                agentActivity?.SetStatus(ActivityStatusCode.Error, "Streaming response did not complete");
+            if (cancellationToken.IsCancellationRequested)
+                agentActivity?.SetCancelled("Agent execution");
         }
     }
 }

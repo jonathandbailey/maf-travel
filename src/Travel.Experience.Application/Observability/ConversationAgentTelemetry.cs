@@ -165,4 +165,23 @@ public static class ConversationAgentTelemetry
             {
                 { "tool.result.call_id", update.Result.CallId },
             }));
+
+    public static void AddEvent(this Activity? activity, ToolErrorUpdate update) =>
+        activity?.AddEvent(new ActivityEvent("tool.error",
+            tags: new ActivityTagsCollection
+            {
+                { "tool.error.message", update.Message },
+            }));
+
+    public static void SetCancelled(this Activity? activity, string operationName)
+    {
+        activity?.SetStatus(ActivityStatusCode.Error, $"{operationName} was cancelled");
+        activity?.SetTag("cancellation.requested", true);
+    }
+
+    public static void SetIncomplete(this Activity? activity, string operationName) =>
+        activity?.SetStatus(ActivityStatusCode.Error, $"{operationName} did not complete");
+
+    public static void SetError(this Activity? activity, string message) =>
+        activity?.SetStatus(ActivityStatusCode.Error, message);
 }

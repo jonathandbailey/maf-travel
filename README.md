@@ -1,4 +1,4 @@
-[![Build](https://github.com/jonathandbailey/maf-stateless-worflow-checkpoints/actions/workflows/dotnet.yml/badge.svg)](https://github.com/jonathandbailey/maf-stateless-worflow-checkpoints/actions/workflows/dotnet.yml)
+[![Build & Unit Test](https://github.com/jonathandbailey/maf-travel/actions/workflows/dotnet.yml/badge.svg)](https://github.com/jonathandbailey/maf-travel/actions/workflows/dotnet.yml)
 
 # MAF Travel — Alpha Release
 

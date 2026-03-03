@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.Agents.AI.Workflows;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
@@ -12,7 +13,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
 
     public WorkflowSession Session => _session;
 
-    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
+    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.Message.Text))
         {
@@ -21,7 +22,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
         
         var run = await CreateWorkflowRun(request);
 
-        await foreach (var evt in run.WatchStreamAsync())
+        await foreach (var evt in run.WatchStreamAsync(cancellationToken))
         {
             switch (evt)
             {
@@ -48,6 +49,11 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
 
                 case TravelPlanningCompleteEvent:
                     TransitionTo(WorkflowState.Completed);
+                    yield return evt;
+                    break;
+                case WorkflowErrorEvent:
+                case ExecutorFailedEvent:
+                    TransitionTo(WorkflowState.Failed);
                     yield return evt;
                     break;
             }

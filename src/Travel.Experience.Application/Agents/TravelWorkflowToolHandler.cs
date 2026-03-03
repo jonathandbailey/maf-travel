@@ -56,7 +56,7 @@ public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) 
             threadId,
             new TravelPlanDto());
 
-        await foreach (var evt in workflow.WatchStreamAsync(request).WithCancellation(cancellationToken))
+        await foreach (var evt in workflow.WatchStreamAsync(request, cancellationToken))
         {
             if (evt is RequestInfoEvent requestInfoEvent)
             {
@@ -82,6 +82,12 @@ public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) 
             if (evt is TravelPlanUpdateEvent travelPlanUpdateEvent)
             {
                 yield return new ToolStateSnapshotUpdate("TravelPlanUpdate", travelPlanUpdateEvent.TravelPlanDto);
+            }
+
+            if (evt is ExecutorFailedEvent or WorkflowErrorEvent)
+            {
+                yield return new ToolErrorUpdate("Something went wrong while planning your trip. Please try again.");
+                yield break;
             }
         }
     }
