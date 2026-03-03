@@ -29,13 +29,6 @@ jobs:
         cache: true # Now this will work perfectly!
         cache-dependency-path: '**/packages.lock.json'
   
-    - name: Cache NuGet packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
       run: dotnet restore --locked-mode
