@@ -2,7 +2,6 @@ using Agents;
 using Agents.Extensions;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Agents.Tools;
 using Travel.Experience.Application.Extensions;
@@ -85,8 +84,8 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
                             break;
                         case ToolErrorUpdate errorUpdate:
                             toolActivity.AddEvent(errorUpdate);
-                            toolActivity?.SetStatus(ActivityStatusCode.Error, errorUpdate.Message);
-                            agentActivity?.SetStatus(ActivityStatusCode.Error, errorUpdate.Message);
+                            toolActivity?.SetError(errorUpdate.Message);
+                            agentActivity?.SetError(errorUpdate.Message);
                             yield return errorUpdate.Message.ToAgentResponseStatusMessage(source: "TravelWorkflow");
                             yield return errorUpdate.Message.ToAgentResponseRunError();
                             break;
@@ -100,15 +99,13 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        toolActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution was cancelled");
-                        toolActivity?.SetTag("cancellation.requested", true);
-                        agentActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution was cancelled");
-                        agentActivity?.SetTag("cancellation.requested", true);
+                        toolActivity?.SetCancelled("Tool execution");
+                        agentActivity?.SetCancelled("Tool execution");
                     }
                     else
                     {
-                        toolActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
-                        agentActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
+                        toolActivity?.SetIncomplete("Tool execution");
+                        agentActivity?.SetIncomplete("Tool execution");
                     }
                 }
             }
@@ -134,22 +131,16 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
                 if (!streamCompleted)
                 {
                     if (cancellationToken.IsCancellationRequested)
-                    {
-                        agentActivity?.SetStatus(ActivityStatusCode.Error, "Streaming response was cancelled");
-                        agentActivity?.SetTag("cancellation.requested", true);
-                    }
+                        agentActivity?.SetCancelled("Streaming response");
                     else
-                        agentActivity?.SetStatus(ActivityStatusCode.Error, "Streaming response did not complete");
+                        agentActivity?.SetIncomplete("Streaming response");
                 }
             }
         }
         finally
         {
             if (cancellationToken.IsCancellationRequested)
-            {
-                agentActivity?.SetStatus(ActivityStatusCode.Error, "Agent execution was cancelled");
-                agentActivity?.SetTag("cancellation.requested", true);
-            }
+                agentActivity?.SetCancelled("Agent execution");
         }
     }
 }
