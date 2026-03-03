@@ -10,7 +10,7 @@ using PlanningWorkflowScenario = Travel.Tests.Unit.TestData.PlanningWorkflowScen
 
 namespace Travel.Tests.Unit;
 
-public class TravelBookingDetailsWorkflowTests : IClassFixture<TelemetryFixture>
+public class TravelBookingDetailsWorkflowTests 
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
 

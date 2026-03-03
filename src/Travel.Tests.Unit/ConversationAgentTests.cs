@@ -6,7 +6,7 @@ using Travel.Tests.Unit.TestData;
 
 namespace Travel.Tests.Unit;
 
-public class ConversationAgentTests : IClassFixture<TelemetryFixture>
+public class ConversationAgentTests 
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
 
