@@ -6,7 +6,11 @@
       "Bash(dotnet-script --version)",
       "Bash(dotnet build MafTravel.sln --no-restore)",
       "Bash(dotnet build src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --no-incremental -v q)",
-      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~TravelPlannerRunnerTests\" -v n)"
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~TravelPlannerRunnerTests\" -v n)",
+      "Bash(xargs grep -l \"class WorkflowErrorEvent\\\\|record WorkflowErrorEvent\\\\|class ExecutorFailedEvent\\\\|record ExecutorFailedEvent\")",
+      "Bash(xargs grep -l \"class WorkflowEvent\\\\|record WorkflowEvent\")",
+      "Bash(xargs grep -l \"WorkflowErrorEvent\\\\|ExecutorFailedEvent\")",
+      "Bash(dotnet decompile)"
     ]
   }
 }

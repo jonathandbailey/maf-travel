@@ -19,6 +19,8 @@ public partial class StartNode() : Executor(NodeNames.StartNodeName)
 
         activity?.AddNodeAgentInput(request.Message.Text);
 
+        throw new Exception();
+
         try
         {
             var travelPlan = request.TravelPlan;
