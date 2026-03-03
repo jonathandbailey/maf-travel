@@ -1,4 +1,4 @@
-import { HttpAgent, randomUUID, type BaseEvent } from "@ag-ui/client";
+import { EventType, HttpAgent, randomUUID, type BaseEvent, type StateSnapshotEvent } from "@ag-ui/client";
 
 export interface ChatAgentCallbacks {
     onRunStarted: (exchangeId: string, userText: string) => void;
@@ -50,9 +50,15 @@ export class ChatAgentClient {
         agent.subscribe({
             onRunFailed: ({ error }) => this.callbacks.onRunFailed(exchangeId, error),
             onEvent: ({ event }: { event: BaseEvent }) => {
-                    this.callbacks.onEvent(event, exchangeId);
-                    this.eventHandlers.forEach((h) => h(event, exchangeId));
-                },
+                this.callbacks.onEvent(event, exchangeId);
+                this.eventHandlers.forEach((h) => h(event, exchangeId));
+                if (event.type === EventType.STATE_SNAPSHOT) {
+                    const snapshot = (event as StateSnapshotEvent).snapshot as { Type?: string; Payload?: { Status?: string } };
+                    if (snapshot?.Type === "RunError") {
+                        this.callbacks.onRunFailed(exchangeId, new Error(snapshot.Payload?.Status ?? "An error occurred"));
+                    }
+                }
+            },
         });
 
         try {

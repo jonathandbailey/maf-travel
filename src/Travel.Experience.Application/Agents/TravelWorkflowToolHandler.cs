@@ -84,30 +84,10 @@ public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) 
                 yield return new ToolStateSnapshotUpdate("TravelPlanUpdate", travelPlanUpdateEvent.TravelPlanDto);
             }
 
-            if (evt is ExecutorFailedEvent executorFailed)
+            if (evt is ExecutorFailedEvent or WorkflowErrorEvent)
             {
-                yield return new ToolStatusUpdate(
-                    $"Workflow error in '{executorFailed.ExecutorId}': {executorFailed.Data?.Message}",
-                    Source: "TravelWorkflow");
-
-                yield return new ToolResultUpdate(
-                    new FunctionResultContent(call.CallId,
-                        $"The travel workflow encountered an error in executor '{executorFailed.ExecutorId}': " +
-                        $"{executorFailed.Data?.Message ?? "Unknown error"}. " +
-                        "Please apologise to the user and ask them to try again."));
-            }
-
-            if (evt is WorkflowErrorEvent workflowError)
-            {
-                yield return new ToolStatusUpdate(
-                    $"Workflow error: {workflowError.Exception?.Message ?? "Unknown error"}",
-                    Source: "TravelWorkflow");
-
-                yield return new ToolResultUpdate(
-                    new FunctionResultContent(call.CallId,
-                        $"The travel workflow encountered an unexpected error: " +
-                        $"{workflowError.Exception?.Message ?? "Unknown error"}. " +
-                        "Please apologise to the user and ask them to try again."));
+                yield return new ToolErrorUpdate("Something went wrong while planning your trip. Please try again.");
+                yield break;
             }
         }
     }

@@ -83,6 +83,13 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
                             toolActivity.AddEvent(resultUpdate);
                             toolResults.Add(resultUpdate.Result);
                             break;
+                        case ToolErrorUpdate errorUpdate:
+                            toolActivity.AddEvent(errorUpdate);
+                            toolActivity?.SetStatus(ActivityStatusCode.Error, errorUpdate.Message);
+                            agentActivity?.SetStatus(ActivityStatusCode.Error, errorUpdate.Message);
+                            yield return errorUpdate.Message.ToAgentResponseStatusMessage(source: "TravelWorkflow");
+                            yield return errorUpdate.Message.ToAgentResponseRunError();
+                            break;
                     }
                 }
                 toolCompleted = true;

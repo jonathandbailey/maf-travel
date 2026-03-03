@@ -32,4 +32,15 @@ public static class AgUiExtensions
             Contents = [new DataContent(stateBytes, ApplicationJsonMediaType)]
         };
     }
+
+    public static AgentResponseUpdate ToAgentResponseRunError(this string message)
+    {
+        var errorUpdate = new StatusUpdate("RunError", "TravelWorkflow", message, string.Empty);
+        var snapshot = new SnapShot<StatusUpdate>("RunError", errorUpdate);
+        var stateBytes = JsonSerializer.SerializeToUtf8Bytes(snapshot);
+        return new AgentResponseUpdate
+        {
+            Contents = [new DataContent(stateBytes, ApplicationJsonMediaType)]
+        };
+    }
 }

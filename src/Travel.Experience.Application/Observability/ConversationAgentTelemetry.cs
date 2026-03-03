@@ -165,4 +165,11 @@ public static class ConversationAgentTelemetry
             {
                 { "tool.result.call_id", update.Result.CallId },
             }));
+
+    public static void AddEvent(this Activity? activity, ToolErrorUpdate update) =>
+        activity?.AddEvent(new ActivityEvent("tool.error",
+            tags: new ActivityTagsCollection
+            {
+                { "tool.error.message", update.Message },
+            }));
 }

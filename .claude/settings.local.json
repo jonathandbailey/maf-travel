@@ -10,7 +10,11 @@
       "Bash(xargs grep -l \"class WorkflowErrorEvent\\\\|record WorkflowErrorEvent\\\\|class ExecutorFailedEvent\\\\|record ExecutorFailedEvent\")",
       "Bash(xargs grep -l \"class WorkflowEvent\\\\|record WorkflowEvent\")",
       "Bash(xargs grep -l \"WorkflowErrorEvent\\\\|ExecutorFailedEvent\")",
-      "Bash(dotnet decompile)"
+      "Bash(dotnet decompile)",
+      "Bash(xargs grep -l \"ToAgentResponse\\\\|RUN_ERROR\\\\|RUN_FINISHED\\\\|RUN_COMPLETED\")",
+      "Bash(xargs grep -l \"MapAGUI\\\\|MapAG-UI\")",
+      "Bash(xargs grep -l \"Microsoft.Agents\")",
+      "Bash(xargs grep -l \"SnapShot\\\\|StatusUpdate\")"
     ]
   }
 }
