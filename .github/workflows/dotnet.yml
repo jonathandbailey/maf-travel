@@ -8,6 +8,7 @@ on:
       - '**.csproj'
       - '**.sln'
       - '**/Directory.Packages.props' # Trigger on dependency changes too
+      - '.github/workflows/dotnet.yml' # Ensure workflow changes trigger CI
 
 jobs:
   build-and-test:
