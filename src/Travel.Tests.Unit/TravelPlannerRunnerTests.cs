@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Engine.ClientProtocol;
 using Travel.Agents.Dto;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
@@ -55,7 +56,7 @@ public class TravelPlannerRunnerTests
         var (runner, request) = SetupRunner(new CompletingNode());
         var events = new List<WorkflowEvent>();
 
-        await foreach (var evt in runner.WatchStreamAsync(request))
+        await foreach (var evt in runner.WatchStreamAsync(request, CancellationToken.None))
             events.Add(evt);
 
         events.Should().ContainSingle(e => e is TravelPlanningCompleteEvent);
@@ -68,7 +69,7 @@ public class TravelPlannerRunnerTests
     {
         var (runner, request) = SetupRunner(new CompletingNode());
 
-        await foreach (var _ in runner.WatchStreamAsync(request)) { }
+        await foreach (var _ in runner.WatchStreamAsync(request, CancellationToken.None)) { }
 
         runner.Session.State.Should().Be(WorkflowState.Completed);
     }
@@ -81,7 +82,7 @@ public class TravelPlannerRunnerTests
         var (runner, request) = SetupRunner(new StatusUpdateNode());
         var events = new List<WorkflowEvent>();
 
-        await foreach (var evt in runner.WatchStreamAsync(request))
+        await foreach (var evt in runner.WatchStreamAsync(request, CancellationToken.None))
             events.Add(evt);
 
         events.Should().ContainSingle(e => e is TravelPlanStatusUpdateEvent);
@@ -95,7 +96,7 @@ public class TravelPlannerRunnerTests
         var (runner, request) = SetupRunner(new PlanUpdateNode());
         var events = new List<WorkflowEvent>();
 
-        await foreach (var evt in runner.WatchStreamAsync(request))
+        await foreach (var evt in runner.WatchStreamAsync(request, CancellationToken.None))
             events.Add(evt);
 
         events.Should().ContainSingle(e => e is TravelPlanUpdateEvent);
@@ -120,7 +121,7 @@ public class TravelPlannerRunnerTests
         var request = CreateRequest(threadId);
 
         var events = new List<WorkflowEvent>();
-        await foreach (var evt in runner.WatchStreamAsync(request))
+        await foreach (var evt in runner.WatchStreamAsync(request, CancellationToken.None))
             events.Add(evt);
 
         events.Should().ContainSingle(e => e is RequestInfoEvent);
@@ -136,7 +137,7 @@ public class TravelPlannerRunnerTests
 
         var act = async () =>
         {
-            await foreach (var _ in runner.WatchStreamAsync(request)) { }
+            await foreach (var _ in runner.WatchStreamAsync(request, CancellationToken.None)) { }
         };
 
         await act.Should().ThrowAsync<WorkflowException>();
@@ -151,7 +152,7 @@ public class TravelPlannerRunnerTests
 
         var act = async () =>
         {
-            await foreach (var _ in runner.WatchStreamAsync(request)) { }
+            await foreach (var _ in runner.WatchStreamAsync(request, CancellationToken.None)) { }
         };
 
         await act.Should().ThrowAsync<WorkflowException>();
@@ -166,7 +167,7 @@ public class TravelPlannerRunnerTests
 
         var act = async () =>
         {
-            await foreach (var _ in runner.WatchStreamAsync(request)) { }
+            await foreach (var _ in runner.WatchStreamAsync(request, CancellationToken.None)) { }
         };
 
         await act.Should().ThrowAsync<WorkflowException>();
@@ -181,7 +182,7 @@ public class TravelPlannerRunnerTests
 
         var act = async () =>
         {
-            await foreach (var _ in runner.WatchStreamAsync(request)) { }
+            await foreach (var _ in runner.WatchStreamAsync(request, CancellationToken.None)) { }
         };
 
         await act.Should().ThrowAsync<WorkflowException>();

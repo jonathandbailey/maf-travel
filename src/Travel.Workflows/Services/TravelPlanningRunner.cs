@@ -12,7 +12,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
 
     public WorkflowSession Session => _session;
 
-    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
+    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.Message.Text))
         {
@@ -21,7 +21,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
         
         var run = await CreateWorkflowRun(request);
 
-        await foreach (var evt in run.WatchStreamAsync())
+        await foreach (var evt in run.WatchStreamAsync(cancellationToken))
         {
             switch (evt)
             {

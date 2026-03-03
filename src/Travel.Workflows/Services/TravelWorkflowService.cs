@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Infrastructure.Repository;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Logging;
@@ -14,13 +15,13 @@ public class TravelWorkflowService(
     IAgentProvider agentProvider,
     ILogger<TravelWorkflowService> logger)
 {
-    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request)
+    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var runner = await CreateRunnerAsync(request);
 
         try
         {
-            await foreach (var evt in runner.WatchStreamAsync(request))
+            await foreach (var evt in runner.WatchStreamAsync(request, cancellationToken))
             {
                 yield return evt;
             }

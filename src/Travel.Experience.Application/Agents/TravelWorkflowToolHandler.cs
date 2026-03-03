@@ -56,7 +56,7 @@ public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) 
             threadId,
             new TravelPlanDto());
 
-        await foreach (var evt in workflow.WatchStreamAsync(request).WithCancellation(cancellationToken))
+        await foreach (var evt in workflow.WatchStreamAsync(request, cancellationToken))
         {
             if (evt is RequestInfoEvent requestInfoEvent)
             {
