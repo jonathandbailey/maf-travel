@@ -30,12 +30,14 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
         options = options.AddThreadId(threadId);
 
         using var agentActivity = ConversationAgentTelemetry.Start(localMessages.First().Text, threadId);
-      
-        var tools = new Dictionary<string, FunctionCallContent>();
 
-        var localThread = await InnerAgent.CreateSessionAsync(cancellationToken);
+        try
+        {
+            var tools = new Dictionary<string, FunctionCallContent>();
 
-        var response = await InnerAgent.RunAsync(localMessages, localThread, options, cancellationToken);
+            var localThread = await InnerAgent.CreateSessionAsync(cancellationToken);
+
+            var response = await InnerAgent.RunAsync(localMessages, localThread, options, cancellationToken);
 
         foreach (var responseMessage in response.Messages)
         {
@@ -89,31 +91,58 @@ public class ConversationAgent(AIAgent agent, IToolRegistry registry) : Delegati
             {
                 if (!toolCompleted)
                 {
-                    toolActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
-                    agentActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        toolActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution was cancelled");
+                        toolActivity?.SetTag("cancellation.requested", true);
+                        agentActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution was cancelled");
+                        agentActivity?.SetTag("cancellation.requested", true);
+                    }
+                    else
+                    {
+                        toolActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
+                        agentActivity?.SetStatus(ActivityStatusCode.Error, "Tool execution did not complete");
+                    }
                 }
             }
         }
 
-        agentActivity.SetToolResultCount(toolResults.Count);
+            agentActivity.SetToolResultCount(toolResults.Count);
 
-        if (toolResults.Count == 0)
-            yield break;
+            if (toolResults.Count == 0)
+                yield break;
 
-        var message = new ChatMessage(ChatRole.Tool, toolResults);
-        agentActivity.RecordToolResponseMessage(message);
+            var message = new ChatMessage(ChatRole.Tool, toolResults);
+            agentActivity.RecordToolResponseMessage(message);
 
-        var streamCompleted = false;
-        try
-        {
-            await foreach (var update in InnerAgent.RunStreamingAsync([message], localThread, options, cancellationToken))
-                yield return update;
-            streamCompleted = true;
+            var streamCompleted = false;
+            try
+            {
+                await foreach (var update in InnerAgent.RunStreamingAsync([message], localThread, options, cancellationToken))
+                    yield return update;
+                streamCompleted = true;
+            }
+            finally
+            {
+                if (!streamCompleted)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        agentActivity?.SetStatus(ActivityStatusCode.Error, "Streaming response was cancelled");
+                        agentActivity?.SetTag("cancellation.requested", true);
+                    }
+                    else
+                        agentActivity?.SetStatus(ActivityStatusCode.Error, "Streaming response did not complete");
+                }
+            }
         }
         finally
         {
-            if (!streamCompleted)
-                agentActivity?.SetStatus(ActivityStatusCode.Error, "Streaming response did not complete");
+            if (cancellationToken.IsCancellationRequested)
+            {
+                agentActivity?.SetStatus(ActivityStatusCode.Error, "Agent execution was cancelled");
+                agentActivity?.SetTag("cancellation.requested", true);
+            }
         }
     }
 }
