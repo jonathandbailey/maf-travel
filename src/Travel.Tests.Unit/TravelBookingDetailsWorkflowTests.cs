@@ -10,12 +10,11 @@ using PlanningWorkflowScenario = Travel.Tests.Unit.TestData.PlanningWorkflowScen
 
 namespace Travel.Tests.Unit;
 
-public class TravelBookingDetailsWorkflowTests 
+public class TravelBookingDetailsWorkflowTests :  IClassFixture<TelemetryFixture>
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
 
     [Theory]
-    [Trait("Category", "Unit")]
     [MemberData(nameof(TravelPlanningScenarios))]
     public async Task PlanningWorkflow_ShouldUpdatePlanAndRequestionInformation_WhenIncompletePlanProvided(PlanningWorkflowScenario scenario)
     {

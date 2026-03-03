@@ -6,12 +6,12 @@ using Travel.Tests.Unit.TestData;
 
 namespace Travel.Tests.Unit;
 
-public class ConversationAgentTests 
+public class ConversationAgentTests : IClassFixture<TelemetryFixture>
 {
     private static readonly ActivitySource TestActivitySource = new("Travel.Tests", "1.0.0");
 
     [Theory]
-    [Trait("Category", "Unit")]
+  
     [MemberData(nameof(Scenarios))]
     public async Task ConversationAgent_ShouldForwardToolHandlerUpdates_WhenAgentInvokesTool(ConversationAgentScenario scenario)
     {
