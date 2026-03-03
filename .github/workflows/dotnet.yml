@@ -6,26 +6,45 @@ on:
     paths:
       - '**.cs'
       - '**.csproj'
+      - '**.sln'
+      - '**/Directory.Packages.props' # Trigger on dependency changes too
+      - '**/packages.lock.json'
+      - '.github/workflows/dotnet.yml' # Ensure workflow changes trigger CI
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 1
+        fetch-depth: 0 # Changed to 0 if you ever use tools like SonarQube or GitVersion
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 10.0.x
         cache: true 
+        cache-dependency-path: |
+          **/Directory.Packages.props
+          **/*.csproj
+  
 
-    - name: Restore
+    - name: Restore dependencies
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      # Added --no-incremental to ensure a clean build in CI
+      run: dotnet build --configuration Release --no-restore --no-incremental
 
     - name: Run Unit Tests
-      run: dotnet test --configuration Release --no-build --filter "Category=Unit"
+      # Added --logger "trx" to generate a report file
+      run: dotnet test --configuration Release --no-build --filter "Category=Unit" --logger "trx;LogFileName=test-results.trx"
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always() # Run even if tests fail so you can see WHICH ones failed
+      with:
+        files: "**/*.trx"
