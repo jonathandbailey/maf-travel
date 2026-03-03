@@ -15,6 +15,7 @@ export class ChatAgentClient {
     private agent: InstanceType<typeof HttpAgent> | null = null;
     private threadId: string;
     private readonly eventHandlers = new Set<EventHandler>();
+    private currentExchangeId: string | null = null;
 
     constructor(url: string, threadId: string, callbacks: ChatAgentCallbacks) {
         this.url = url;
@@ -38,6 +39,7 @@ export class ChatAgentClient {
 
     async sendMessage(text: string): Promise<void> {
         const exchangeId = randomUUID();
+        this.currentExchangeId = exchangeId;
         this.callbacks.onRunStarted(exchangeId, text);
 
         const agent = new HttpAgent({
@@ -64,12 +66,16 @@ export class ChatAgentClient {
         try {
             await agent.runAgent({ runId: randomUUID() });
         } finally {
+            this.currentExchangeId = null;
             this.callbacks.onRunCompleted(exchangeId);
             this.agent = null;
         }
     }
 
     cancel(): void {
+        if (this.currentExchangeId) {
+            this.callbacks.onRunFailed(this.currentExchangeId, new Error("Your request was cancelled."));
+        }
         this.agent?.abortRun();
     }
 }
