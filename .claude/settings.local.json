@@ -25,7 +25,11 @@
       "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~TravelBookingDetails\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); pkgs=[k for k in d.get\\(''libraries'',{}\\) if ''Microsoft.Agents.AI.Declarative'' in k]; print\\(pkgs\\)\")",
       "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~ExtractionNodeTests\")",
-      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~StartNodeTests|FullyQualifiedName~ExtractionNodeTests\")"
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~StartNodeTests|FullyQualifiedName~ExtractionNodeTests\")",
+      "Bash(xargs grep -l \"class CheckpointManager\")",
+      "Bash(xargs grep -l \"CheckpointManager\")",
+      "Bash(xargs grep -l \"static.*CheckpointManager.*Default\")",
+      "Bash(xargs grep -l \"CheckpointManager\\\\|external\\\\|in-memory\")"
     ]
   }
 }

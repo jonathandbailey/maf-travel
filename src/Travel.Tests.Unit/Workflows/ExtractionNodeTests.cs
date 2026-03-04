@@ -6,7 +6,7 @@ using Microsoft.Extensions.AI;
 using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
-using Travel.Tests.Shared.Helper;
+using Travel.Tests.Unit.Common;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
@@ -78,11 +78,9 @@ public class ExtractionNodeTests
 
     private static async Task<ExtractionNode> CreateExtractionNode(IChatClient chatClient)
     {
-        var templateRepository = InfrastructureHelper.Create();
-        var template = await templateRepository.LoadAsync("extracting.yaml");
         var agentFactory = new CustomPromptAgentFactory(chatClient, tools: ExtractingTools.GetDeclarationOnlyTools());
-        var agent = await agentFactory.CreateFromYamlAsync(template);
-        return new ExtractionNode(agent!);
+        var agent = await agentFactory.CreateFromYamlAsync(StubAgentTemplate.Yaml);
+        return new ExtractionNode(agent);
     }
 
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(
