@@ -24,7 +24,7 @@ public class AgentTests
     {
         var threadId = Guid.NewGuid();
 
-        var agent = await AgentHelper.Create("planning.yaml",PlanningTools.GetDeclarationOnlyTools());
+        var agent = await AgentHelper.Create("planning.yaml", new PlanningToolsHandler().GetDeclarationOnlyTools());
 
         var message = MessageHelper.CreateTravelPlanMessage(new TravelPlanDto(Origin, Destination, DepartureDate, ReturnDate, NumberOfTravelers));
 
@@ -46,7 +46,7 @@ public class AgentTests
     {
         var threadId = Guid.NewGuid();
 
-        var agent = await AgentHelper.Create("planning.yaml", PlanningTools.GetDeclarationOnlyTools());
+        var agent = await AgentHelper.Create("planning.yaml", new PlanningToolsHandler().GetDeclarationOnlyTools());
 
         var message = MessageHelper.CreateTravelPlanMessage(new TravelPlanDto(null, "Paris", new DateTime(2026, 5, 1)));
 
@@ -74,7 +74,7 @@ public class AgentTests
 
         var threadId = Guid.NewGuid();
 
-        var agent = await AgentHelper.Create("conversation.yaml", new TravelWorkflowToolHandler(AgentFactoryHelper.Create()).GetDeclarationOnlyTools());
+        var agent = await AgentHelper.Create("conversation.yaml", new TravelWorkflowToolHandler(AgentFactoryHelper.Create).GetDeclarationOnlyTools());
 
         var message = new ChatMessage(ChatRole.User, "I want to plan a trip from Zurich to Paris on the 1st of May, 2026, for 2 people.");
 
@@ -95,7 +95,7 @@ public class AgentTests
     {
         var threadId = Guid.NewGuid();
 
-        var agent = await AgentHelper.Create("extracting.yaml", ExtractingTools.GetDeclarationOnlyTools());
+        var agent = await AgentHelper.Create("extracting.yaml", new ExtractingToolsHandler().GetDeclarationOnlyTools());
 
         var message = new ChatMessage(ChatRole.User, "I want to plan a trip from Zurich to Paris on the 1st of May, 2026, for 2 people.");
 
@@ -107,7 +107,7 @@ public class AgentTests
 
         ResponseHelper.ValidateFunctionCalls(response)
             .ShouldHaveCallCount(1)
-            .ShouldContainCall(ExtractingTools.UpdateTravelPlanToolName)
+            .ShouldContainCall(ExtractingToolsHandler.UpdateTravelPlanToolName)
             .WithDestination("Paris")
             .WithOrigin("Zurich")
             .WithNumberOfTravelers(2)

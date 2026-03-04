@@ -1,4 +1,5 @@
 using Agents.Services;
+using Agents.Tools;
 using Infrastructure.Repository;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
@@ -13,7 +14,8 @@ public interface IAgentProvider
 
 public class AgentProvider(
     IAgentFactory agentFactory,
-    IAgentTemplateRepository agentTemplateRepository) : IAgentProvider
+    IAgentTemplateRepository agentTemplateRepository,
+    IToolRegistry toolRegistry) : IAgentProvider
 {
     private readonly Dictionary<AgentType, string> _agentTemplates = new()
     {
@@ -39,10 +41,10 @@ public class AgentProvider(
         return await factory(agentTemplate, tools);
     }
 
-    private static List<AITool> GetToolsForAgentType(AgentType agentType) => agentType switch
+    private List<AITool> GetToolsForAgentType(AgentType agentType) => agentType switch
     {
-        AgentType.Planning => PlanningTools.GetDeclarationOnlyTools(),
-        AgentType.Extracting => ExtractingTools.GetDeclarationOnlyTools(),
+        AgentType.Planning => toolRegistry.GetDeclarationOnlyTools("planning"),
+        AgentType.Extracting => toolRegistry.GetDeclarationOnlyTools("extracting"),
         _ => throw new ArgumentException($"No tools configured for agent type: {agentType}", nameof(agentType))
     };
 }

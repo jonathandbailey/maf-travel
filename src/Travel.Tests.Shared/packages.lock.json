@@ -654,6 +654,7 @@
           "Microsoft.Extensions.AI": "[10.3.0, )",
           "Microsoft.Extensions.AI.OpenAI": "[10.3.0, )",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "[1.23.0, )",
+          "Travel.Agents": "[1.0.0, )",
           "Travel.Workflows": "[1.0.0, )"
         }
       },

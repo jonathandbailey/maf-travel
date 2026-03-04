@@ -1,4 +1,5 @@
 ﻿
+using Agents.Tools;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
@@ -30,7 +31,12 @@ public class TravelWorkflowTestHarness
 
         _agentProvider = new AgentProvider(
             AgentHelper.CreateAgentFactory(),
-            AgentHelper.CreateAgentTemplateRepository());
+            AgentHelper.CreateAgentTemplateRepository(),
+            new ToolRegistry(
+            [
+                new ToolHandlerRegistration(new PlanningToolsHandler(), ["planning"]),
+                new ToolHandlerRegistration(new ExtractingToolsHandler(), ["extracting"])
+            ]));
     }
 
     public async Task<List<WorkflowEvent>> WatchStreamAsync(string message)

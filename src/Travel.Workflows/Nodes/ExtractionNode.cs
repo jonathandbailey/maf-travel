@@ -51,7 +51,7 @@ public partial class ExtractionNode(AIAgent agent) : Executor(NodeNames.Extracti
         response.TraceToolCalls(activity);
 
         var updateCall = response.ExtractToolCalls()
-            .FirstOrDefault(c => c.Name == ExtractingTools.UpdateTravelPlanToolName);
+            .FirstOrDefault(c => c.Name == ExtractingToolsHandler.UpdateTravelPlanToolName);
 
         if (updateCall == null || !updateCall.TryGetArgument<TravelPlanDto>(WorkflowConstants.ExtractingNodeUpdatePlanFunctionName, out var details, Json.FunctionCallSerializerOptions))
         {

@@ -51,7 +51,7 @@ public class ConversationAgentMockTestHarness
     private static async Task<(ConversationAgent agent, AgentSession session)> BuildAsync(ConversationAgentRun run)
     {
         var mockWorkflowFactory = new Mock<IWorkflowFactory>();
-        var declarationOnlyTools = new TravelWorkflowToolHandler(mockWorkflowFactory.Object).GetDeclarationOnlyTools();
+        var declarationOnlyTools = new TravelWorkflowToolHandler(() => mockWorkflowFactory.Object).GetDeclarationOnlyTools();
 
         var mockChatClient = new Mock<IChatClient>();
 

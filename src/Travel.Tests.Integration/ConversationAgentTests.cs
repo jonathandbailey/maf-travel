@@ -22,7 +22,7 @@ public class ConversationAgentTests : IClassFixture<TelemetryFixture>
         var threadId = Guid.NewGuid();
 
         var workflowFactory = AgentFactoryHelper.Create();
-        var handler = new TravelWorkflowToolHandler(workflowFactory);
+        var handler = new TravelWorkflowToolHandler(() => workflowFactory);
 
         var agent = await AgentHelper.Create("conversation.yaml", handler.GetDeclarationOnlyTools());
 
@@ -58,7 +58,7 @@ public class ConversationAgentTests : IClassFixture<TelemetryFixture>
         var threadId = Guid.NewGuid();
 
         var workflowFactory = AgentFactoryHelper.CreateWithFileRepositories();
-        var handler = new TravelWorkflowToolHandler(workflowFactory);
+        var handler = new TravelWorkflowToolHandler(() => workflowFactory);
 
         var agent = await AgentHelper.CreateWithFileThread("conversation.yaml", handler.GetDeclarationOnlyTools());
 
