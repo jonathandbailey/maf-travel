@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Travel.Experience.Api\Travel.Experience.Api.csproj" />
+    <ProjectReference Include="..\Travel.Storage.Init\Travel.Storage.Init.csproj" />
   </ItemGroup>
 
 </Project>
