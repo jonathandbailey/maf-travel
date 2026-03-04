@@ -18,7 +18,10 @@
       "Bash(xargs grep -l \"ToolStatusUpdate\\\\|ToolStateSnapshotUpdate\\\\|ToolResultUpdate\\\\|ToolErrorUpdate\")",
       "Bash(xargs grep -l \"SetStatus\\\\|AddEvent\\\\|SetTag\")",
       "Bash(xargs grep -n \"\\\\.SetStatus\\\\|\\\\.AddEvent\\\\|\\\\.SetTag\")",
-      "Bash(dotnet build src/Travel.Experience.Application/Travel.Experience.Application.csproj --no-restore -v quiet)"
+      "Bash(dotnet build src/Travel.Experience.Application/Travel.Experience.Application.csproj --no-restore -v quiet)",
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~StartNodeTests\" --no-build)",
+      "Bash(dotnet build src/Travel.Tests.Unit/Travel.Tests.Unit.csproj)",
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~StartNodeTests\")"
     ]
   }
 }
