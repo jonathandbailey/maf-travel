@@ -20,7 +20,7 @@ public static class InfrastructureExtensions
             azure.AddBlobServiceClient(configuration.GetConnectionString("blobs"));
         });
 
-        services.AddSingleton<ICheckpointRepository, CheckpointRepository>();
+        services.AddSingleton<ICheckpointRepository, AzureStorageCheckpointRepository>();
         services.AddSingleton<IFileRepository, FileRepository>();
         services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
         services.AddSingleton<IAgentThreadRepository, AzureStorageAgentThreadRepository>();
