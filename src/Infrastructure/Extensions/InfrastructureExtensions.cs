@@ -13,6 +13,7 @@ public static class InfrastructureExtensions
     {
   
         services.Configure<FileStorageSettings>(options => configuration.GetSection("FileStorageSettings").Bind(options));
+        services.Configure<AzureStorageSettings>(options => configuration.GetSection("AzureStorageSettings").Bind(options));
 
         services.AddAzureClients(azure =>
         {
@@ -22,7 +23,7 @@ public static class InfrastructureExtensions
         services.AddSingleton<ICheckpointRepository, CheckpointRepository>();
         services.AddSingleton<IFileRepository, FileRepository>();
         services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
-        services.AddSingleton<IAgentThreadRepository, AgentThreadRepository>();
+        services.AddSingleton<IAgentThreadRepository, AzureStorageAgentThreadRepository>();
         services.AddSingleton<IAzureStorageRepository, AzureStorageRepository>();
 
         return services;
