@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Agents.Extensions;
+using Agents.Services;
 using Agents.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
@@ -8,7 +9,6 @@ using Moq;
 using Travel.Agents.Dto;
 using Travel.Experience.Application.Agents;
 using Travel.Experience.Application.Dto;
-using Travel.Tests.Shared.Helper;
 using Travel.Tests.Unit.TestData;
 using Travel.Workflows.Interfaces;
 
@@ -79,7 +79,8 @@ public class ConversationAgentMockTestHarness
             .Returns(EmptyStreamAsync());
 
 
-        var innerAgent = await AgentHelper.Create("conversation.yaml", declarationOnlyTools, mockChatClient.Object);
+        var agentFactory = new CustomPromptAgentFactory(mockChatClient.Object, tools: declarationOnlyTools);
+        var innerAgent = await agentFactory.CreateFromYamlAsync(StubAgentTemplate.Yaml);
 
         var mockHandler = new Mock<IToolHandler>();
         mockHandler.Setup(h => h.ToolName).Returns(TravelWorkflowToolHandler.RequestInformationToolName);

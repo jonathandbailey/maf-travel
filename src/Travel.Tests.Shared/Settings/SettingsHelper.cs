@@ -11,7 +11,7 @@ public static class SettingsHelper
 
     private static IConfiguration BuildConfiguration() =>
         new ConfigurationBuilder()
-            .AddJsonFile("settings\\appsettings.json")
+            .AddJsonFile("settings\\appsettings.json", optional: true)
             .AddUserSecrets<AspireDashboardSettings>()
             .Build();
 
@@ -36,7 +36,7 @@ public static class SettingsHelper
         return languageModelSettings;
     }
 
-    public static IOptions<AspireDashboardSettings> GetAspireDashboardSettings()
+    public static IOptions<AspireDashboardSettings>? GetAspireDashboardSettings()
     {
         var configuration = BuildConfiguration();
 
@@ -45,8 +45,8 @@ public static class SettingsHelper
         var otlpEndpoint = section["OtlpEndpoint"];
         var otlpApiKey = section["OtlpApiKey"];
 
-        ArgumentException.ThrowIfNullOrEmpty(otlpEndpoint, "AspireDashboard:OtlpEndpoint");
-        ArgumentException.ThrowIfNullOrEmpty(otlpApiKey, "AspireDashboard:OtlpApiKey");
+        if (string.IsNullOrEmpty(otlpEndpoint) || string.IsNullOrEmpty(otlpApiKey))
+            return null;
 
         return Options.Create(new AspireDashboardSettings
         {
