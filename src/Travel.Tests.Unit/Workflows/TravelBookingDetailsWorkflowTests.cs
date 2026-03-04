@@ -8,7 +8,7 @@ using Travel.Tests.Unit.TestData;
 using Travel.Workflows.Events;
 using PlanningWorkflowScenario = Travel.Tests.Unit.TestData.PlanningWorkflowScenario;
 
-namespace Travel.Tests.Unit;
+namespace Travel.Tests.Unit.Workflows;
 
 public class TravelBookingDetailsWorkflowTests :  IClassFixture<TelemetryFixture>
 {

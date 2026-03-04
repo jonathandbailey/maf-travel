@@ -8,7 +8,7 @@ using Travel.Workflows.Events;
 using Travel.Workflows.Exceptions;
 using Travel.Workflows.Services;
 
-namespace Travel.Tests.Unit;
+namespace Travel.Tests.Unit.Workflows;
 
 public class TravelPlannerRunnerTests
 {

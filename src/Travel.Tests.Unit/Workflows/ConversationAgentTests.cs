@@ -4,7 +4,7 @@ using Travel.Tests.Shared;
 using Travel.Tests.Unit.Common;
 using Travel.Tests.Unit.TestData;
 
-namespace Travel.Tests.Unit;
+namespace Travel.Tests.Unit.Workflows;
 
 public class ConversationAgentTests : IClassFixture<TelemetryFixture>
 {
