@@ -29,7 +29,9 @@
       "Bash(xargs grep -l \"class CheckpointManager\")",
       "Bash(xargs grep -l \"CheckpointManager\")",
       "Bash(xargs grep -l \"static.*CheckpointManager.*Default\")",
-      "Bash(xargs grep -l \"CheckpointManager\\\\|external\\\\|in-memory\")"
+      "Bash(xargs grep -l \"CheckpointManager\\\\|external\\\\|in-memory\")",
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~UpdateNode\" --no-build)",
+      "Bash(dotnet test src/Travel.Tests.Unit/Travel.Tests.Unit.csproj --filter \"FullyQualifiedName~UpdateNode\")"
     ]
   }
 }
