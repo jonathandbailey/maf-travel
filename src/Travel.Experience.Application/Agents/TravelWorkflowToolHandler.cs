@@ -12,7 +12,7 @@ using Travel.Workflows.Interfaces;
 
 namespace Travel.Experience.Application.Agents;
 
-public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) : IToolHandler
+public sealed class TravelWorkflowToolHandler(Func<IWorkflowFactory> workflowFactoryProvider) : IToolHandler
 {
     public const string RequestInformationToolName = "travel_booking_details";
 
@@ -49,7 +49,7 @@ public sealed class TravelWorkflowToolHandler(IWorkflowFactory workflowFactory) 
         if (!call.TryGetArgument<string>("request", out var details, Json.FunctionCallSerializerOptions))
             yield break;
 
-        var workflow = await workflowFactory.Create();
+        var workflow = await workflowFactoryProvider().Create();
 
         var request = new TravelWorkflowRequest(
             new ChatMessage(ChatRole.User, details),

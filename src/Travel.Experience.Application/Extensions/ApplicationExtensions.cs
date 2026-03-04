@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Travel.Agents.Services;
 using Travel.Experience.Application.Agents;
+using Travel.Workflows.Interfaces;
 
 namespace Travel.Experience.Application.Extensions;
 
@@ -9,7 +10,8 @@ public static class ApplicationExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddSingleton<TravelWorkflowToolHandler>();
+        services.AddSingleton<TravelWorkflowToolHandler>(sp =>
+            new TravelWorkflowToolHandler(() => sp.GetRequiredService<IWorkflowFactory>()));
         services.AddSingleton<PlanningToolsHandler>();
         services.AddSingleton<ExtractingToolsHandler>();
         services.AddSingleton<IToolRegistry>(sp =>
