@@ -12,8 +12,11 @@ public static class TelemetryHelper
     private static TracerProvider? _tracerProvider;
     private static MeterProvider? _meterProvider;
 
-    public static void Initialize(IOptions<AspireDashboardSettings> settings)
+    public static void Initialize(IOptions<AspireDashboardSettings>? settings)
     {
+        if (settings is null)
+            return;
+
         var dashboardSettings = settings.Value;
 
         _tracerProvider = Sdk.CreateTracerProviderBuilder()
