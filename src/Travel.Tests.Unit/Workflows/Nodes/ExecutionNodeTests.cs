@@ -15,7 +15,7 @@ using Travel.Workflows.Extensions;
 using Travel.Workflows.Nodes;
 using Travel.Workflows.Services;
 
-namespace Travel.Tests.Unit.Workflows;
+namespace Travel.Tests.Unit.Workflows.Nodes;
 
 public class ExecutionNodeTests
 {
