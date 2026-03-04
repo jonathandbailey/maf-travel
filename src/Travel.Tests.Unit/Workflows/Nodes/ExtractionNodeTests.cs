@@ -28,7 +28,7 @@ public class ExtractionNodeTests
         var travelPlanElement = System.Text.Json.JsonSerializer.SerializeToElement(travelPlan);
         var functionCallContent = new FunctionCallContent(
             callId: $"call_{Guid.NewGuid()}",
-            name: ExtractingTools.UpdateTravelPlanToolName,
+            name: ExtractingToolsHandler.UpdateTravelPlanToolName,
             arguments: new Dictionary<string, object?>
             {
                 [WorkflowConstants.ExtractingNodeUpdatePlanFunctionName] = travelPlanElement
@@ -78,7 +78,7 @@ public class ExtractionNodeTests
 
     private static async Task<ExtractionNode> CreateExtractionNode(IChatClient chatClient)
     {
-        var agentFactory = new CustomPromptAgentFactory(chatClient, tools: ExtractingTools.GetDeclarationOnlyTools());
+        var agentFactory = new CustomPromptAgentFactory(chatClient, tools: new ExtractingToolsHandler().GetDeclarationOnlyTools());
         var agent = await agentFactory.CreateFromYamlAsync(StubAgentTemplate.Yaml);
         return new ExtractionNode(agent);
     }

@@ -74,7 +74,7 @@ public class PlannerNodeTests
 
     private static async Task<PlannerNode> CreatePlannerNode(IChatClient chatClient)
     {
-        var agentFactory = new CustomPromptAgentFactory(chatClient, tools: PlanningTools.GetDeclarationOnlyTools());
+        var agentFactory = new CustomPromptAgentFactory(chatClient, tools: new PlanningToolsHandler().GetDeclarationOnlyTools());
         var agent = await agentFactory.CreateFromYamlAsync(StubAgentTemplate.Yaml);
         return new PlannerNode(agent);
     }
@@ -104,7 +104,7 @@ public class PlannerNodeTests
     public async Task HandleAsync_ShouldSendAgentResponse_ToNextNode()
     {
         var threadId = Guid.NewGuid();
-        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningTools.PlanningCompleteToolName));
+        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningToolsHandler.PlanningCompleteToolName));
         var (runner, capturingNode) = SetupRunner(plannerNode);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -117,7 +117,7 @@ public class PlannerNodeTests
     public async Task HandleAsync_ShouldSendAgentResponse_WithPlanningCompleteToolCall()
     {
         var threadId = Guid.NewGuid();
-        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningTools.PlanningCompleteToolName));
+        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningToolsHandler.PlanningCompleteToolName));
         var (runner, capturingNode) = SetupRunner(plannerNode);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -125,7 +125,7 @@ public class PlannerNodeTests
         var toolCalls = capturingNode.CapturedResponse!.Messages
             .SelectMany(m => m.Contents.OfType<FunctionCallContent>())
             .ToList();
-        toolCalls.Should().Contain(fc => fc.Name == PlanningTools.PlanningCompleteToolName);
+        toolCalls.Should().Contain(fc => fc.Name == PlanningToolsHandler.PlanningCompleteToolName);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class PlannerNodeTests
     public async Task HandleAsync_ShouldSendAgentResponse_WithRequestInformationToolCall()
     {
         var threadId = Guid.NewGuid();
-        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningTools.RequestInformationToolName));
+        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningToolsHandler.RequestInformationToolName));
         var (runner, capturingNode) = SetupRunner(plannerNode);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -141,7 +141,7 @@ public class PlannerNodeTests
         var toolCalls = capturingNode.CapturedResponse!.Messages
             .SelectMany(m => m.Contents.OfType<FunctionCallContent>())
             .ToList();
-        toolCalls.Should().Contain(fc => fc.Name == PlanningTools.RequestInformationToolName);
+        toolCalls.Should().Contain(fc => fc.Name == PlanningToolsHandler.RequestInformationToolName);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class PlannerNodeTests
     public async Task HandleAsync_ShouldEmitTravelPlanStatusUpdateEvent()
     {
         var threadId = Guid.NewGuid();
-        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningTools.PlanningCompleteToolName));
+        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningToolsHandler.PlanningCompleteToolName));
         var (runner, _) = SetupRunner(plannerNode);
 
         var events = new List<WorkflowEvent>();
@@ -164,7 +164,7 @@ public class PlannerNodeTests
     public async Task HandleAsync_ShouldEmitStatusUpdate_WithPlannerNodeSource()
     {
         var threadId = Guid.NewGuid();
-        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningTools.PlanningCompleteToolName));
+        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningToolsHandler.PlanningCompleteToolName));
         var (runner, _) = SetupRunner(plannerNode);
 
         var events = new List<WorkflowEvent>();
@@ -208,7 +208,7 @@ public class PlannerNodeTests
     public async Task HandleAsync_ShouldEmitErrorEvent_WhenTravelPlanIsNotInContext()
     {
         var threadId = Guid.NewGuid();
-        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningTools.PlanningCompleteToolName));
+        var plannerNode = await CreatePlannerNode(CreateMockChatClientWithToolCall(PlanningToolsHandler.PlanningCompleteToolName));
         var setupNode = new NoPlanSetupNode();
 
         var builder = new WorkflowBuilder(setupNode);

@@ -27,11 +27,11 @@ public class AgentCreateMetaJsonConverter : JsonConverter<AgentFactoryHelper.Age
         if (root.TryGetProperty("Arguments", out var argumentsElement))
         {
             // Deserialize based on the tool name to get the correct type
-            if (name == ExtractingTools.UpdateTravelPlanToolName)
+            if (name == ExtractingToolsHandler.UpdateTravelPlanToolName)
             {
                 arguments = JsonSerializer.Deserialize<TravelPlanDto>(argumentsElement.GetRawText(), options);
             }
-            else if (name == PlanningTools.RequestInformationToolName)
+            else if (name == PlanningToolsHandler.RequestInformationToolName)
             {
                 arguments = JsonSerializer.Deserialize<RequestInformationDto>(argumentsElement.GetRawText(), options);
             }

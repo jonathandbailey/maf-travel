@@ -44,8 +44,8 @@ public class WorkflowMockTestHarness
 
             var tools = meta.AgentType switch
             {
-                AgentType.Planning => PlanningTools.GetDeclarationOnlyTools(),
-                AgentType.Extracting => ExtractingTools.GetDeclarationOnlyTools(),
+                AgentType.Planning => new PlanningToolsHandler().GetDeclarationOnlyTools(),
+                AgentType.Extracting => new ExtractingToolsHandler().GetDeclarationOnlyTools(),
                 _ => throw new ArgumentException($"Unknown agent type: {meta.AgentType}")
             };
 

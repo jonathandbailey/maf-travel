@@ -39,11 +39,11 @@ public partial class ExecutionNode() : Executor(NodeNames.ExecutionNodeName)
 
         switch (toolCall.Name)
         {
-            case PlanningTools.PlanningCompleteToolName:
+            case PlanningToolsHandler.PlanningCompleteToolName:
                 await context.SendMessageAsync(new TravelPlanCompletedCommand(), cancellationToken);
                 break;
 
-            case PlanningTools.RequestInformationToolName:
+            case PlanningToolsHandler.RequestInformationToolName:
                 if (!toolCall.TryGetArgument<RequestInformationDto>(WorkflowConstants.InformationRequestFunctionArgumentName, out var dto, Json.FunctionCallSerializerOptions))
                 {
                     activity?.SetStatus(ActivityStatusCode.Error, "request_information tool call missing required arguments.");

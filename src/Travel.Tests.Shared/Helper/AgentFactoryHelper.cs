@@ -1,4 +1,5 @@
-﻿using Agents.Services;
+using Agents.Services;
+using Agents.Tools;
 using Infrastructure.Repository;
 using Infrastructure.Settings;
 using Microsoft.Agents.AI;
@@ -30,7 +31,8 @@ public static  class AgentFactoryHelper
 
         var agentProvider = new AgentProvider(
             AgentHelper.CreateAgentFactory(),
-            AgentHelper.CreateAgentTemplateRepository());
+            AgentHelper.CreateAgentTemplateRepository(),
+            CreateWorkflowRegistry());
 
         mockFactory.Setup(x => x.Create())
             .ReturnsAsync(() => new TravelWorkflowService(repo, sessionRepo, agentProvider, NullLogger<TravelWorkflowService>.Instance));
@@ -41,13 +43,6 @@ public static  class AgentFactoryHelper
     public static IWorkflowFactory Create(TravelWorkflowService travelWorkflowService)
     {
         var mockFactory = new Mock<IWorkflowFactory>();
-
-        var repo = new InMemoryCheckpointRepository();
-        var sessionRepo = new InMemoryWorkflowSessionRepository();
-
-        var agentProvider = new AgentProvider(
-            AgentHelper.CreateAgentFactory(),
-            AgentHelper.CreateAgentTemplateRepository());
 
         mockFactory.Setup(x => x.Create())
             .ReturnsAsync(() => travelWorkflowService);
@@ -77,7 +72,8 @@ public static  class AgentFactoryHelper
 
         var agentProvider = new AgentProvider(
             AgentHelper.CreateAgentFactory(),
-            AgentHelper.CreateAgentTemplateRepository());
+            AgentHelper.CreateAgentTemplateRepository(),
+            CreateWorkflowRegistry());
 
         mockFactory.Setup(x => x.Create())
             .ReturnsAsync(() => new TravelWorkflowService(checkpointRepo, sessionRepo, agentProvider, NullLogger<TravelWorkflowService>.Instance));
@@ -111,14 +107,14 @@ public static  class AgentFactoryHelper
                 It.IsAny<ChatOptions>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ChatResponse(responseMessage));
-       
+
         var templateRepository = InfrastructureHelper.Create();
 
         var agentFactory = new AgentFactory(SettingsHelper.GetLanguageModelSettings(), mockMiddlewareFactory.Object);
 
         var template = await templateRepository.LoadAsync(PlanningYaml);
 
-        var agent = await agentFactory.Create(mockChatClient.Object, template, PlanningTools.GetDeclarationOnlyTools());
+        var agent = await agentFactory.Create(mockChatClient.Object, template, new PlanningToolsHandler().GetDeclarationOnlyTools());
 
         return agent;
     }
@@ -162,7 +158,7 @@ public static  class AgentFactoryHelper
 
         var templateRepository = InfrastructureHelper.Create();
 
-        var agentProvider = new AgentProvider(agentFactory, templateRepository);
+        var agentProvider = new AgentProvider(agentFactory, templateRepository, CreateWorkflowRegistry());
 
         return await agentProvider.CreateAsync(type);
     }
@@ -175,10 +171,16 @@ public static  class AgentFactoryHelper
 
         var templateRepository = InfrastructureHelper.Create();
 
-        var agentProvider = new AgentProvider(agentFactory, templateRepository);
+        var agentProvider = new AgentProvider(agentFactory, templateRepository, CreateWorkflowRegistry());
 
         return await agentProvider.CreateAsync(type, chatClient);
     }
+
+    private static IToolRegistry CreateWorkflowRegistry() => new ToolRegistry(
+    [
+        new ToolHandlerRegistration(new PlanningToolsHandler(), ["planning"]),
+        new ToolHandlerRegistration(new ExtractingToolsHandler(), ["extracting"])
+    ]);
 
     public class AgentCreateMeta(AgentType agentType, string name, string? argumentsKey = null, object? arguments = null)
     {

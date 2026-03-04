@@ -28,7 +28,7 @@ public class ExecutionNodeTests
 
         var functionCallContent = new FunctionCallContent(
             callId: $"call_{Guid.NewGuid()}",
-            name: PlanningTools.PlanningCompleteToolName,
+            name: PlanningToolsHandler.PlanningCompleteToolName,
             arguments: null);
 
         var responseMessage = new ChatMessage(ChatRole.Assistant, [functionCallContent]);
@@ -50,7 +50,7 @@ public class ExecutionNodeTests
         var dtoElement = JsonSerializer.SerializeToElement(dto, Json.FunctionCallSerializerOptions);
         var functionCallContent = new FunctionCallContent(
             callId: $"call_{Guid.NewGuid()}",
-            name: PlanningTools.RequestInformationToolName,
+            name: PlanningToolsHandler.RequestInformationToolName,
             arguments: new Dictionary<string, object?>
             {
                 [WorkflowConstants.InformationRequestFunctionArgumentName] = dtoElement
@@ -107,7 +107,7 @@ public class ExecutionNodeTests
 
     private static async Task<SetupNode> CreateSetupNode(IChatClient chatClient)
     {
-        var agentFactory = new CustomPromptAgentFactory(chatClient, tools: PlanningTools.GetDeclarationOnlyTools());
+        var agentFactory = new CustomPromptAgentFactory(chatClient, tools: new PlanningToolsHandler().GetDeclarationOnlyTools());
         var agent = await agentFactory.CreateFromYamlAsync(StubAgentTemplate.Yaml);
         return new SetupNode(agent);
     }

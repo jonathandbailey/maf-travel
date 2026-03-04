@@ -1,5 +1,6 @@
 ﻿using Agents.Tools;
 using Microsoft.Extensions.DependencyInjection;
+using Travel.Agents.Services;
 using Travel.Experience.Application.Agents;
 
 namespace Travel.Experience.Application.Extensions;
@@ -9,10 +10,19 @@ public static class ApplicationExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddSingleton<TravelWorkflowToolHandler>();
+        services.AddSingleton<PlanningToolsHandler>();
+        services.AddSingleton<ExtractingToolsHandler>();
         services.AddSingleton<IToolRegistry>(sp =>
         {
-            var handler = sp.GetRequiredService<TravelWorkflowToolHandler>();
-            return new ToolRegistry([new ToolHandlerRegistration(handler, ["conversation"])]);
+            var conversation = sp.GetRequiredService<TravelWorkflowToolHandler>();
+            var planning = sp.GetRequiredService<PlanningToolsHandler>();
+            var extracting = sp.GetRequiredService<ExtractingToolsHandler>();
+            return new ToolRegistry(
+            [
+                new ToolHandlerRegistration(conversation, ["conversation"]),
+                new ToolHandlerRegistration(planning, ["planning"]),
+                new ToolHandlerRegistration(extracting, ["extracting"])
+            ]);
         });
         services.AddSingleton<IConversationAgentFactory, ConversationAgentFactory>();
 
