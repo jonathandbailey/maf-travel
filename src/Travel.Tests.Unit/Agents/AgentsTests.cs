@@ -4,9 +4,9 @@ using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 using Travel.Tests.Shared.Helper;
 
-namespace Travel.Tests.Unit;
+namespace Travel.Tests.Unit.Agents;
 
-public class Agents
+public class AgentsTests
 {
     private const string Destination = "Paris";
     private const int NumberOfTravelers = 2;
