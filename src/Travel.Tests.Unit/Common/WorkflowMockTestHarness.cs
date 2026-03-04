@@ -1,3 +1,5 @@
+using Agents.Services;
+using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -40,7 +42,15 @@ public class WorkflowMockTestHarness
         {
             var chatClient = AgentFactoryHelper.CreateMockChatClient(meta);
 
-            var agent = await AgentFactoryHelper.Create(meta.AgentType, chatClient);
+            var tools = meta.AgentType switch
+            {
+                AgentType.Planning => PlanningTools.GetDeclarationOnlyTools(),
+                AgentType.Extracting => ExtractingTools.GetDeclarationOnlyTools(),
+                _ => throw new ArgumentException($"Unknown agent type: {meta.AgentType}")
+            };
+
+            var agentFactory = new CustomPromptAgentFactory(chatClient, tools: tools);
+            var agent = await agentFactory.CreateFromYamlAsync(StubAgentTemplate.Yaml);
 
             agentProvider.Setup(x => x.CreateAsync(meta.AgentType))
                 .ReturnsAsync(agent);
