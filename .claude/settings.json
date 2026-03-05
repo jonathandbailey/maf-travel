@@ -21,7 +21,8 @@
       "Bash(find . -name \"*.tsbuildinfo\" -delete)",
       "Bash(dotnet build src/Agents/Agents.csproj --no-restore -v q)",
       "Bash(dotnet list package --include-transitive)",
-      "Bash(dotnet build src/Travel.Tests.Unit/Travel.Tests.Unit.csproj src/Travel.Experience.Application/Travel.Experience.Application.csproj)"
+      "Bash(dotnet build src/Travel.Tests.Unit/Travel.Tests.Unit.csproj src/Travel.Experience.Application/Travel.Experience.Application.csproj)",
+      "Bash(dotnet build src/Travel.Storage.Init/Travel.Storage.Init.csproj)"
     ]
   }
 }
