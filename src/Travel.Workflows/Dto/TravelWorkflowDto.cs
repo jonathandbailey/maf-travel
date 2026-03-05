@@ -6,4 +6,4 @@ namespace Travel.Workflows.Dto;
 public record TravelWorkflowRequest(
     ChatMessage Message, 
     Guid ThreadId,
-    TravelPlanDto TravelPlan);
+    TravelPlanState TravelPlan);

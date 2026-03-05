@@ -26,7 +26,7 @@ public class WorkflowMockTestHarness
     {
         var workflowService = await Create(message, metas);
 
-        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, message), _threadId, new TravelPlanDto());
+        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, message), _threadId, new TravelPlanState());
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 

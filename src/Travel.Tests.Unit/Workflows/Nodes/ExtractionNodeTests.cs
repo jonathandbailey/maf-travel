@@ -19,9 +19,9 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 public class ExtractionNodeTests
 {
     private static TravelWorkflowRequest CreateRequest(Guid threadId, string message = "I want to travel to Paris")
-        => new(new ChatMessage(ChatRole.User, message), threadId, new TravelPlanDto());
+        => new(new ChatMessage(ChatRole.User, message), threadId, new TravelPlanState());
 
-    private static IChatClient CreateMockChatClient(TravelPlanDto travelPlan)
+    private static IChatClient CreateMockChatClient(TravelPlanState travelPlan)
     {
         var mockChatClient = new Mock<IChatClient>();
 
@@ -108,7 +108,7 @@ public class ExtractionNodeTests
     public async Task HandleAsync_ShouldSendTravelPlanUpdateCommand_WithExtractedPlan()
     {
         var threadId = Guid.NewGuid();
-        var expectedPlan = new TravelPlanDto { Origin = "London", Destination = "Paris" };
+        var expectedPlan = new TravelPlanState { Origin = "London", Destination = "Paris" };
         var extractionNode = await CreateExtractionNode(CreateMockChatClient(expectedPlan));
         var (runner, capturingNode) = SetupRunner(extractionNode);
         var request = CreateRequest(threadId);
@@ -125,7 +125,7 @@ public class ExtractionNodeTests
     public async Task HandleAsync_ShouldEmitTravelPlanStatusUpdateEvent_AfterAgentResponds()
     {
         var threadId = Guid.NewGuid();
-        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanDto()));
+        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanState()));
         var (runner, _) = SetupRunner(extractionNode);
         var request = CreateRequest(threadId);
 
@@ -141,7 +141,7 @@ public class ExtractionNodeTests
     public async Task HandleAsync_ShouldEmitStatusUpdate_WithExtractionNodeSource()
     {
         var threadId = Guid.NewGuid();
-        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanDto()));
+        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanState()));
         var (runner, _) = SetupRunner(extractionNode);
         var request = CreateRequest(threadId);
 
@@ -158,7 +158,7 @@ public class ExtractionNodeTests
     public async Task HandleAsync_ShouldEmitErrorEvent_WhenMessageTextIsEmpty()
     {
         var threadId = Guid.NewGuid();
-        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanDto()));
+        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanState()));
         var (runner, _) = SetupRunner(
             extractionNode,
             commandFactory: _ => new TravelPlanExtractCommand(new ChatMessage(ChatRole.User, "")));

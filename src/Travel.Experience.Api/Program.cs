@@ -2,6 +2,7 @@ using Agents.Extensions;
 using Infrastructure.Extensions;
 using ServiceDefaults;
 using Travel.Agents.Extensions;
+using Travel.Experience.Api;
 using Travel.Experience.Api.Extensions;
 using Travel.Experience.Application.Extensions;
 using Travel.Workflows.Extensions;
@@ -45,6 +46,8 @@ else
 app.UseCorsPolicyServiceDiscovery();
 
 await app.MapAgUiToAgent();
+
+app.MapTravelPlanEndpoints();
 
 
 

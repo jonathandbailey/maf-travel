@@ -17,7 +17,7 @@ public class AgentsTests
 
     private readonly List<string> _expectedKeys = ["Origin", "ReturnDate"];
 
-    private readonly TravelPlanDto _travePlanState = new(destination: Destination, startDate: DepartureDate, numberOfTravelers: NumberOfTravelers);
+    private readonly TravelPlanState _travePlanState = new(destination: Destination, startDate: DepartureDate, numberOfTravelers: NumberOfTravelers);
 
 
     [Fact]
@@ -45,7 +45,7 @@ public class AgentsTests
 
     }
 
-    public static ChatMessage CreateTravelPlanMessage(TravelPlanDto travelPlan)
+    public static ChatMessage CreateTravelPlanMessage(TravelPlanState travelPlan)
     {
         var serializedPlan = JsonSerializer.Serialize(travelPlan);
         var template = $"TravelPlanSummary : {serializedPlan}";

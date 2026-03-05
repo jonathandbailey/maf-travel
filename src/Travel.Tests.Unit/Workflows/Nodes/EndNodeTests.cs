@@ -14,16 +14,16 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 public class EndNodeTests
 {
     private static TravelWorkflowRequest CreateRequest(Guid threadId)
-        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanDto());
+        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
-    private static TravelPlanDto CreateCompletePlan() => new TravelPlanDto(
+    private static TravelPlanState CreateCompletePlan() => new TravelPlanState(
         origin: "London",
         destination: "Paris",
         startDate: new DateTime(2026, 6, 1),
         endDate: new DateTime(2026, 6, 8),
         numberOfTravelers: 2);
 
-    private static TravelPlanningRunner SetupRunner(Guid threadId, TravelPlanDto travelPlan)
+    private static TravelPlanningRunner SetupRunner(Guid threadId, TravelPlanState travelPlan)
     {
         var setupNode = new SetupNode(travelPlan);
         var endNode = new EndNode();
@@ -175,7 +175,7 @@ public class EndNodeTests
     }
 
     // Sets threadId + travelPlan in context then forwards TravelPlanCompletedCommand to EndNode
-    private class SetupNode(TravelPlanDto travelPlan)
+    private class SetupNode(TravelPlanState travelPlan)
         : Executor<TravelWorkflowRequest, TravelPlanCompletedCommand>("SetupNode")
     {
         public override async ValueTask<TravelPlanCompletedCommand> HandleAsync(

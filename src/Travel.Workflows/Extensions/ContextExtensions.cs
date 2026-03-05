@@ -13,15 +13,15 @@ public static class ContextExtensions
     private const string ThreadIdKey = "ThreadIdKey";
     private const string? ThreadIdScopeName = "ThreadIdScope";
 
-    public static async Task<TravelPlanDto> GetTravelPlan(this IWorkflowContext context, CancellationToken cancellationToken)
+    public static async Task<TravelPlanState> GetTravelPlan(this IWorkflowContext context, CancellationToken cancellationToken)
     {
-        var travelPlan = await context.ReadStateAsync<TravelPlanDto>(TravelPlanKey, scopeName: TravelPlanScopeName, cancellationToken: cancellationToken)
+        var travelPlan = await context.ReadStateAsync<TravelPlanState>(TravelPlanKey, scopeName: TravelPlanScopeName, cancellationToken: cancellationToken)
                          ?? throw new InvalidOperationException("Travel Plan State Not Found.");
 
         return travelPlan;
     }
 
-    public static async Task SetTravelPlan(this IWorkflowContext context, TravelPlanDto travelPlan, CancellationToken cancellationToken)
+    public static async Task SetTravelPlan(this IWorkflowContext context, TravelPlanState travelPlan, CancellationToken cancellationToken)
     {
         await context.QueueStateUpdateAsync(TravelPlanKey, travelPlan, scopeName: TravelPlanScopeName, cancellationToken: cancellationToken);
     }

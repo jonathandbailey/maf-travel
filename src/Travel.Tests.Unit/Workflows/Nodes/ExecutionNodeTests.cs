@@ -20,7 +20,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 public class ExecutionNodeTests
 {
     private static TravelWorkflowRequest CreateRequest(Guid threadId)
-        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanDto());
+        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
     private static IChatClient CreateMockChatClientWithPlanningComplete()
     {
@@ -250,7 +250,7 @@ public class ExecutionNodeTests
             RequestInformationCommand command, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             CapturedCommand = command;
-            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanDto()), cancellationToken);
+            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanState()), cancellationToken);
         }
     }
 
@@ -262,7 +262,7 @@ public class ExecutionNodeTests
             TravelPlanCompletedCommand command, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             WasInvoked = true;
-            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanDto()), cancellationToken);
+            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanState()), cancellationToken);
         }
     }
 }

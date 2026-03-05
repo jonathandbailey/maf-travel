@@ -3,14 +3,14 @@ using Travel.Agents.Dto;
 
 namespace Travel.Workflows.Events;
 
-public class TravelPlanUpdateEvent(TravelPlanDto travelPlanDto) : WorkflowEvent
+public class TravelPlanUpdateEvent(TravelPlanState travelPlanState) : WorkflowEvent
 {
-    public TravelPlanDto TravelPlanDto { get; } = travelPlanDto;
+    public TravelPlanState TravelPlanState { get; } = travelPlanState;
 }
 
-public class TravelPlanningCompleteEvent(TravelPlanDto travelPlan) : WorkflowEvent
+public class TravelPlanningCompleteEvent(TravelPlanState travelPlan) : WorkflowEvent
 {
-    public TravelPlanDto TravelPlan { get; } = travelPlan;
+    public TravelPlanState TravelPlan { get; } = travelPlan;
 }
 
 public class TravelPlanStatusUpdateEvent(string Status, string? Thought = null, string? Source = null) : WorkflowEvent

@@ -53,7 +53,7 @@ public partial class ExtractionNode(AIAgent agent) : Executor(NodeNames.Extracti
         var updateCall = response.ExtractToolCalls()
             .FirstOrDefault(c => c.Name == ExtractingToolsHandler.UpdateTravelPlanToolName);
 
-        if (updateCall == null || !updateCall.TryGetArgument<TravelPlanDto>(WorkflowConstants.ExtractingNodeUpdatePlanFunctionName, out var details, Json.FunctionCallSerializerOptions))
+        if (updateCall == null || !updateCall.TryGetArgument<TravelPlanState>(WorkflowConstants.ExtractingNodeUpdatePlanFunctionName, out var details, Json.FunctionCallSerializerOptions))
         {
             activity?.SetStatus(ActivityStatusCode.Error, "Agent did not return expected update_travel_plan tool call.");
             throw new WorkflowException("ExtractionNode: agent response did not contain the expected tool call.", NodeNames.ExtractionNodeName, threadId);

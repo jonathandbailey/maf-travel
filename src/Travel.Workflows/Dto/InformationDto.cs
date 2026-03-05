@@ -9,9 +9,9 @@ public record InformationResponse(ChatMessage Message);
 
 public record InformationRequestDetails(string Context, List<string> Entities);
 
-public record TravelPlanUpdateCommand(TravelPlanDto TravelPlan);
+public record TravelPlanUpdateCommand(TravelPlanState TravelPlan);
 
-public record TravelPlanSummary(TravelPlanDto travelPlanSummary);
+public record TravelPlanSummary(TravelPlanState travelPlanSummary);
 
 public record TravelPlanContextUpdated();
 

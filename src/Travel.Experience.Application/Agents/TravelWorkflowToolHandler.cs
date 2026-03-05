@@ -54,7 +54,7 @@ public sealed class TravelWorkflowToolHandler(Func<IWorkflowFactory> workflowFac
         var request = new TravelWorkflowRequest(
             new ChatMessage(ChatRole.User, details),
             threadId,
-            new TravelPlanDto());
+            new TravelPlanState());
 
         await foreach (var evt in workflow.WatchStreamAsync(request, cancellationToken))
         {
@@ -81,7 +81,7 @@ public sealed class TravelWorkflowToolHandler(Func<IWorkflowFactory> workflowFac
 
             if (evt is TravelPlanUpdateEvent travelPlanUpdateEvent)
             {
-                yield return new ToolStateSnapshotUpdate("TravelPlanUpdate", travelPlanUpdateEvent.TravelPlanDto);
+                yield return new ToolStateSnapshotUpdate("TravelPlanUpdate", travelPlanUpdateEvent.TravelPlanState);
             }
 
             if (evt is ExecutorFailedEvent or WorkflowErrorEvent)
