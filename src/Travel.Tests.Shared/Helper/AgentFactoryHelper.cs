@@ -35,7 +35,7 @@ public static  class AgentFactoryHelper
             CreateWorkflowRegistry());
 
         mockFactory.Setup(x => x.Create())
-            .ReturnsAsync(() => new TravelWorkflowService(repo, sessionRepo, agentProvider, NullLogger<TravelWorkflowService>.Instance));
+            .ReturnsAsync(() => new TravelWorkflowService(repo, sessionRepo, agentProvider, new Mock<ITravelPlanRepository>().Object, NullLogger<TravelWorkflowService>.Instance));
 
         return mockFactory.Object;
     }
@@ -76,7 +76,7 @@ public static  class AgentFactoryHelper
             CreateWorkflowRegistry());
 
         mockFactory.Setup(x => x.Create())
-            .ReturnsAsync(() => new TravelWorkflowService(checkpointRepo, sessionRepo, agentProvider, NullLogger<TravelWorkflowService>.Instance));
+            .ReturnsAsync(() => new TravelWorkflowService(checkpointRepo, sessionRepo, agentProvider, new Mock<ITravelPlanRepository>().Object, NullLogger<TravelWorkflowService>.Instance));
 
         return mockFactory.Object;
     }

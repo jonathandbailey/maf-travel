@@ -1,10 +1,13 @@
 using System.Runtime.CompilerServices;
 using Infrastructure.Repository;
+using Infrastructure.Repository.Entities;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Logging;
+using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Events;
 using Travel.Workflows.Infrastructure;
 
 namespace Travel.Workflows.Services;
@@ -13,6 +16,7 @@ public class TravelWorkflowService(
     ICheckpointRepository checkpointRepository,
     IWorkflowSessionRepository sessionRepository,
     IAgentProvider agentProvider,
+    ITravelPlanRepository travelPlanRepository,
     ILogger<TravelWorkflowService> logger)
 {
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -23,6 +27,30 @@ public class TravelWorkflowService(
         {
             await foreach (var evt in runner.WatchStreamAsync(request, cancellationToken))
             {
+                TravelPlanDto? planDto = evt switch
+                {
+                    TravelPlanUpdateEvent e => e.TravelPlanDto,
+                    TravelPlanningCompleteEvent e => e.TravelPlan,
+                    _ => null
+                };
+
+                if (planDto is not null)
+                {
+                    try
+                    {
+                        await travelPlanRepository.SaveAsync(new TravelPlanEntity
+                        {
+                            Id = request.ThreadId,
+                            Origin = planDto.Origin,
+                            Destination = planDto.Destination,
+                            NumberOfTravelers = planDto.NumberOfTravelers,
+                            StartDate = planDto.StartDate,
+                            EndDate = planDto.EndDate,
+                        }, cancellationToken);
+                    }
+                    catch (Exception ex) { logger.LogWarning(ex, "Failed to save travel plan for thread {ThreadId}.", request.ThreadId); }
+                }
+
                 yield return evt;
             }
         }
