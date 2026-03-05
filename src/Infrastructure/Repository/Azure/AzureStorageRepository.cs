@@ -149,6 +149,33 @@ public class AzureStorageRepository(BlobServiceClient blobServiceClient, ILogger
         }
     }
 
+    public async Task DeleteBlobAsync(string blobName, string containerName)
+    {
+        Verify.NotNullOrWhiteSpace(blobName);
+        Verify.NotNullOrWhiteSpace(containerName);
+
+        var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = blobContainerClient.GetBlobClient(blobName);
+
+        try
+        {
+            await blobClient.DeleteIfExistsAsync();
+        }
+        catch (RequestFailedException exception)
+        {
+            logger.LogError(exception,
+                "Failed to delete blob {blobName} from container {containerName}: {errorCode}",
+                blobName, containerName, exception.ErrorCode);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "An unknown exception occurred while deleting blob {blobName} from container {containerName}",
+                blobName, containerName);
+            throw;
+        }
+    }
+
     private static bool IsTextContentType(string contentType)
     {
         if (string.IsNullOrEmpty(contentType))
@@ -195,10 +222,9 @@ public class AzureStorageRepository(BlobServiceClient blobServiceClient, ILogger
         }
     }
 
-    public async Task<List<string>> ListBlobsAsync(string containerName, string prefix)
+    public async Task<List<string>> ListBlobsAsync(string containerName, string prefix = "")
     {
         Verify.NotNullOrWhiteSpace(containerName);
-        Verify.NotNullOrWhiteSpace(prefix);
 
         var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
         var blobNames = new List<string>();

@@ -14,6 +14,7 @@ public static class InfrastructureExtensions
   
         services.Configure<FileStorageSettings>(options => configuration.GetSection("FileStorageSettings").Bind(options));
         services.Configure<AzureStorageSettings>(options => configuration.GetSection("AzureStorageSettings").Bind(options));
+        services.Configure<TravelPlanStorageSettings>(options => configuration.GetSection("TravelPlanStorageSettings").Bind(options));
 
         services.AddAzureClients(azure =>
         {
@@ -25,6 +26,7 @@ public static class InfrastructureExtensions
         services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
         services.AddSingleton<IAgentThreadRepository, AzureStorageAgentThreadRepository>();
         services.AddSingleton<IAzureStorageRepository, AzureStorageRepository>();
+        services.AddSingleton<ITravelPlanRepository, AzureStorageTravelPlanRepository>();
 
         return services;
     }

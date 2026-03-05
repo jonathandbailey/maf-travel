@@ -7,5 +7,6 @@ public interface IAzureStorageRepository
     Task<bool> ContainerExists(string containerName);
     Task<bool> BlobExists(string blobName, string containerName);
     Task CreateContainerAsync(string containerName);
-    Task<List<string>> ListBlobsAsync(string containerName, string prefix);
+    Task<List<string>> ListBlobsAsync(string containerName, string prefix = "");
+    Task DeleteBlobAsync(string blobName, string containerName);
 }
