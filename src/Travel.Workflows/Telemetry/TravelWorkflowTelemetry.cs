@@ -63,21 +63,21 @@ public static class TravelWorkflowTelemetry
         }
     }
 
-    public static Activity? AddTravelPlanStateSnapshotAfter(this Activity? activity, TravelPlanDto travelPlanDto)
+    public static Activity? AddTravelPlanStateSnapshotAfter(this Activity? activity, TravelPlanState travelPlanState)
     {
         activity?.AddEvent(new ActivityEvent("StateAfterUpdate", tags: new ActivityTagsCollection
         {
-            { "snapshot", JsonSerializer.Serialize(travelPlanDto) }
+            { "snapshot", JsonSerializer.Serialize(travelPlanState) }
         }));
 
         return activity;
     }
 
-    public static Activity? AddTravelPlanStateSnapshotBefore(this Activity? activity, TravelPlanDto travelPlanDto)
+    public static Activity? AddTravelPlanStateSnapshotBefore(this Activity? activity, TravelPlanState travelPlanState)
     {
         activity?.AddEvent(new ActivityEvent("StateBeforeUpdate", tags: new ActivityTagsCollection
         {
-            { "snapshot", JsonSerializer.Serialize(travelPlanDto) }
+            { "snapshot", JsonSerializer.Serialize(travelPlanState) }
         }));
 
         return activity;

@@ -14,13 +14,13 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 public class UpdateNodeTests
 {
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(
-        TravelPlanDto? initialPlan = null,
-        TravelPlanDto? patchPlan = null,
+        TravelPlanState? initialPlan = null,
+        TravelPlanState? patchPlan = null,
         Guid? sessionThreadId = null)
     {
         var threadId = sessionThreadId ?? Guid.NewGuid();
-        var resolvedInitial = initialPlan ?? new TravelPlanDto();
-        var resolvedPatch = patchPlan ?? new TravelPlanDto();
+        var resolvedInitial = initialPlan ?? new TravelPlanState();
+        var resolvedPatch = patchPlan ?? new TravelPlanState();
 
         var setupNode = new SetupNode(threadId, resolvedInitial, resolvedPatch);
         var updateNode = new UpdateNode();
@@ -40,7 +40,7 @@ public class UpdateNodeTests
     private static TravelWorkflowRequest CreateRequest(Guid? threadId = null)
     {
         var id = threadId ?? Guid.NewGuid();
-        return new TravelWorkflowRequest(new ChatMessage(ChatRole.User, "test"), id, new TravelPlanDto());
+        return new TravelWorkflowRequest(new ChatMessage(ChatRole.User, "test"), id, new TravelPlanState());
     }
 
     [Fact]
@@ -48,8 +48,8 @@ public class UpdateNodeTests
     public async Task HandleAsync_ShouldApplyPatch_ToExistingTravelPlan()
     {
         var threadId = Guid.NewGuid();
-        var initial = new TravelPlanDto { Origin = "London" };
-        var patch = new TravelPlanDto { Destination = "Paris" };
+        var initial = new TravelPlanState { Origin = "London" };
+        var patch = new TravelPlanState { Destination = "Paris" };
         var (runner, capturingNode) = SetupRunner(initial, patch, threadId);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -64,8 +64,8 @@ public class UpdateNodeTests
     public async Task HandleAsync_ShouldNotOverwriteExistingField_WhenPatchFieldIsNull()
     {
         var threadId = Guid.NewGuid();
-        var initial = new TravelPlanDto { Origin = "London", Destination = "Rome" };
-        var patch = new TravelPlanDto { Destination = "Paris" }; // Origin is null in patch
+        var initial = new TravelPlanState { Origin = "London", Destination = "Rome" };
+        var patch = new TravelPlanState { Destination = "Paris" }; // Origin is null in patch
         var (runner, capturingNode) = SetupRunner(initial, patch, threadId);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -79,8 +79,8 @@ public class UpdateNodeTests
     public async Task HandleAsync_ShouldPersistUpdatedPlan_InContext()
     {
         var threadId = Guid.NewGuid();
-        var initial = new TravelPlanDto();
-        var patch = new TravelPlanDto { Origin = "Berlin", Destination = "Tokyo", NumberOfTravelers = 3 };
+        var initial = new TravelPlanState();
+        var patch = new TravelPlanState { Origin = "Berlin", Destination = "Tokyo", NumberOfTravelers = 3 };
         var (runner, capturingNode) = SetupRunner(initial, patch, threadId);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -109,16 +109,16 @@ public class UpdateNodeTests
     public async Task HandleAsync_ShouldEmitTravelPlanUpdateEvent_WithUpdatedPlan()
     {
         var threadId = Guid.NewGuid();
-        var patch = new TravelPlanDto { Origin = "Sydney", Destination = "Auckland" };
-        var (runner, _) = SetupRunner(new TravelPlanDto(), patch, threadId);
+        var patch = new TravelPlanState { Origin = "Sydney", Destination = "Auckland" };
+        var (runner, _) = SetupRunner(new TravelPlanState(), patch, threadId);
 
         var events = new List<WorkflowEvent>();
         await foreach (var evt in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None))
             events.Add(evt);
 
         var updateEvent = events.OfType<TravelPlanUpdateEvent>().First();
-        updateEvent.TravelPlanDto.Origin.Should().Be("Sydney");
-        updateEvent.TravelPlanDto.Destination.Should().Be("Auckland");
+        updateEvent.TravelPlanState.Origin.Should().Be("Sydney");
+        updateEvent.TravelPlanState.Destination.Should().Be("Auckland");
     }
 
     [Fact]
@@ -164,7 +164,7 @@ public class UpdateNodeTests
     }
 
     // Sets up context with initial plan and thread ID, then sends TravelPlanUpdateCommand with the patch
-    private class SetupNode(Guid threadId, TravelPlanDto initialPlan, TravelPlanDto patchPlan)
+    private class SetupNode(Guid threadId, TravelPlanState initialPlan, TravelPlanState patchPlan)
         : Executor<TravelWorkflowRequest, TravelPlanUpdateCommand>("SetupNode")
     {
         public override async ValueTask<TravelPlanUpdateCommand> HandleAsync(
@@ -184,14 +184,14 @@ public class UpdateNodeTests
             TravelWorkflowRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(threadId, cancellationToken);
-            await context.SetTravelPlan(new TravelPlanDto(), cancellationToken);
+            await context.SetTravelPlan(new TravelPlanState(), cancellationToken);
             return new TravelPlanUpdateCommand(null!);
         }
     }
 
     private class CapturingNode() : Executor<TravelPlanContextUpdated>("CapturingNode")
     {
-        public TravelPlanDto? CapturedTravelPlan { get; private set; }
+        public TravelPlanState? CapturedTravelPlan { get; private set; }
 
         public override async ValueTask HandleAsync(
             TravelPlanContextUpdated message, IWorkflowContext context, CancellationToken cancellationToken = default)

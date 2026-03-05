@@ -5,17 +5,17 @@ namespace Travel.Agents.Mappers;
 
 public static class TravelPlanMapper
 {
-    public static TravelPlanEntity ToEntity(Guid planId, TravelPlanDto dto) => new()
+    public static TravelPlanEntity ToEntity(Guid planId, TravelPlanState state) => new()
     {
         Id = planId,
-        Origin = dto.Origin,
-        Destination = dto.Destination,
-        NumberOfTravelers = dto.NumberOfTravelers,
-        StartDate = dto.StartDate,
-        EndDate = dto.EndDate
+        Origin = state.Origin,
+        Destination = state.Destination,
+        NumberOfTravelers = state.NumberOfTravelers,
+        StartDate = state.StartDate,
+        EndDate = state.EndDate
     };
 
-    public static TravelPlanDto ToDto(TravelPlanEntity entity) => new()
+    public static TravelPlanState ToDto(TravelPlanEntity entity) => new()
     {
         Origin = entity.Origin,
         Destination = entity.Destination,

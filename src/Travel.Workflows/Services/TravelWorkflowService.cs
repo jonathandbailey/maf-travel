@@ -27,9 +27,9 @@ public class TravelWorkflowService(
         {
             await foreach (var evt in runner.WatchStreamAsync(request, cancellationToken))
             {
-                TravelPlanDto? planDto = evt switch
+                TravelPlanState? planDto = evt switch
                 {
-                    TravelPlanUpdateEvent e => e.TravelPlanDto,
+                    TravelPlanUpdateEvent e => e.TravelPlanState,
                     TravelPlanningCompleteEvent e => e.TravelPlan,
                     _ => null
                 };

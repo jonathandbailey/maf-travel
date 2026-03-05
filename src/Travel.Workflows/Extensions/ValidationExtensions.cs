@@ -26,7 +26,7 @@ public static class ValidationExtensions
         }
     }
 
-    public static void Validate(this TravelPlanDto travelPlan, string nodeName, Guid threadId)
+    public static void Validate(this TravelPlanState travelPlan, string nodeName, Guid threadId)
     {
         if (string.IsNullOrWhiteSpace(travelPlan.Origin))
             throw new WorkflowValidationException("TravelPlan Origin is required.", nodeName, threadId);

@@ -14,7 +14,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 public class InformationResponseNodeTests
 {
     private static TravelWorkflowRequest CreateRequest(Guid threadId)
-        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanDto());
+        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(
         Guid threadId, ChatMessage responseMessage)
@@ -108,7 +108,7 @@ public class InformationResponseNodeTests
             TravelPlanExtractCommand command, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             CapturedCommand = command;
-            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanDto()), cancellationToken);
+            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanState()), cancellationToken);
         }
     }
 }

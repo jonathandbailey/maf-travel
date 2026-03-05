@@ -4,7 +4,7 @@ using Travel.Tests.Shared.Helper;
 
 namespace Travel.Tests.Shared;
 
-public record TravelPlanningScenario(string[] Messages, TravelPlanDto ExpectedTravelPlan);
+public record TravelPlanningScenario(string[] Messages, TravelPlanState ExpectedTravelPlan);
 
 public record WorkflowRun(
     string Message,
@@ -12,7 +12,7 @@ public record WorkflowRun(
 
 public record PlanningWorkflowScenario(
     string ScenarioName,
-    TravelPlanDto ExpectedTravelPlan,
+    TravelPlanState ExpectedTravelPlan,
     List<WorkflowRun> Runs);
 
 public static class ScenarioLoader

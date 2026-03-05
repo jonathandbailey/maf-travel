@@ -15,7 +15,7 @@ public sealed class ExtractingToolsHandler : IToolHandler
 
     [Description("Request More Information")]
     private static string UpdateTravelPlan(
-        [Description("The update for the travel plan")] TravelPlanDto travelPlan)
+        [Description("The update for the travel plan")] TravelPlanState travelPlan)
         => "The travel plan has been updated successfully.";
 
     static ExtractingToolsHandler()

@@ -5,7 +5,7 @@ using Travel.Tests.Shared.Helper;
 
 namespace Travel.Tests.Unit.TestData;
 
-public record TravelPlanningScenario(string[] Messages, TravelPlanDto ExpectedTravelPlan);
+public record TravelPlanningScenario(string[] Messages, TravelPlanState ExpectedTravelPlan);
 
 public record WorkflowRun(
     string Message,
@@ -13,7 +13,7 @@ public record WorkflowRun(
 
 public record PlanningWorkflowScenario(
     string ScenarioName,
-    TravelPlanDto ExpectedTravelPlan,
+    TravelPlanState ExpectedTravelPlan,
     List<WorkflowRun> Runs);
 
 public record ConversationAgentMeta(string Name, string? ArgumentsKey, object? Arguments);
@@ -32,7 +32,7 @@ public record ConversationAgentRun(
 
 public record ConversationAgentScenario(
     string ScenarioName,
-    TravelPlanDto ExpectedTravelPlan,
+    TravelPlanState ExpectedTravelPlan,
     List<ConversationAgentRun> Runs);
 
 public static class UnitTestsScenarioLoader

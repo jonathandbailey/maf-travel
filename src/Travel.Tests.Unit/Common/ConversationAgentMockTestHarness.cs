@@ -32,13 +32,13 @@ public class ConversationAgentMockTestHarness
         Updates.AddRange(updates);
     }
 
-    public IEnumerable<TravelPlanDto> GetTravelPlanSnapshots()
+    public IEnumerable<TravelPlanState> GetTravelPlanSnapshots()
     {
         foreach (var update in Updates)
         {
             foreach (var content in update.Contents.OfType<DataContent>())
             {
-                var snapshot = JsonSerializer.Deserialize<SnapShot<TravelPlanDto>>(
+                var snapshot = JsonSerializer.Deserialize<SnapShot<TravelPlanState>>(
                     content.Data.ToArray(),
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 

@@ -18,11 +18,11 @@ public class StartNodeTests
         Guid? threadId = null,
         string message = "I want to travel to Paris",
         ChatRole? role = null,
-        TravelPlanDto? travelPlan = null)
+        TravelPlanState? travelPlan = null)
     {
         var id = threadId ?? Guid.NewGuid();
         var chatMessage = new ChatMessage(role ?? ChatRole.User, message);
-        return new TravelWorkflowRequest(chatMessage, id, travelPlan ?? new TravelPlanDto());
+        return new TravelWorkflowRequest(chatMessage, id, travelPlan ?? new TravelPlanState());
     }
 
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(Guid? sessionThreadId = null)
@@ -74,7 +74,7 @@ public class StartNodeTests
     public async Task HandleAsync_ShouldSetTravelPlan_InContext()
     {
         var threadId = Guid.NewGuid();
-        var travelPlan = new TravelPlanDto { Origin = "London", Destination = "Paris" };
+        var travelPlan = new TravelPlanState { Origin = "London", Destination = "Paris" };
         var (runner, capturingNode) = SetupRunner(threadId);
         var request = CreateRequest(threadId, travelPlan: travelPlan);
 
@@ -158,7 +158,7 @@ public class StartNodeTests
     private class CapturingNode() : Executor<TravelPlanExtractCommand>("CapturingNode")
     {
         public TravelPlanExtractCommand? CapturedCommand { get; private set; }
-        public TravelPlanDto? CapturedTravelPlan { get; private set; }
+        public TravelPlanState? CapturedTravelPlan { get; private set; }
         public Guid CapturedThreadId { get; private set; }
 
         public override async ValueTask HandleAsync(TravelPlanExtractCommand command, IWorkflowContext context,

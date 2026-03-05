@@ -14,7 +14,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 public class InformationRequestNodeTests
 {
     private static TravelWorkflowRequest CreateRequest(Guid threadId)
-        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanDto());
+        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
     private static TravelPlanningRunner SetupRunner(Guid threadId, RequestInformationCommand command)
     {
@@ -108,7 +108,7 @@ public class InformationRequestNodeTests
         public override async ValueTask HandleAsync(
             InformationResponse response, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
-            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanDto()), cancellationToken);
+            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanState()), cancellationToken);
         }
     }
 }

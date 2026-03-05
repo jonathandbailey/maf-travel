@@ -19,7 +19,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 public class PlannerNodeTests
 {
     private static TravelWorkflowRequest CreateRequest(Guid threadId)
-        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanDto());
+        => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
     private static IChatClient CreateMockChatClientWithToolCall(string toolName)
     {
@@ -81,9 +81,9 @@ public class PlannerNodeTests
 
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(
         PlannerNode plannerNode,
-        TravelPlanDto? travelPlan = null)
+        TravelPlanState? travelPlan = null)
     {
-        var resolvedPlan = travelPlan ?? new TravelPlanDto { Origin = "London", Destination = "Paris" };
+        var resolvedPlan = travelPlan ?? new TravelPlanState { Origin = "London", Destination = "Paris" };
         var setupNode = new SetupNode(resolvedPlan);
         var capturingNode = new CapturingNode();
 
@@ -226,7 +226,7 @@ public class PlannerNodeTests
     }
 
     // Sets context (threadId + travelPlan) then sends TravelPlanContextUpdated to PlannerNode
-    private class SetupNode(TravelPlanDto travelPlan) : Executor<TravelWorkflowRequest, TravelPlanContextUpdated>("SetupNode")
+    private class SetupNode(TravelPlanState travelPlan) : Executor<TravelWorkflowRequest, TravelPlanContextUpdated>("SetupNode")
     {
         public override async ValueTask<TravelPlanContextUpdated> HandleAsync(
             TravelWorkflowRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
@@ -256,7 +256,7 @@ public class PlannerNodeTests
             AgentResponse response, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             CapturedResponse = response;
-            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanDto()), cancellationToken);
+            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanState()), cancellationToken);
         }
     }
 }

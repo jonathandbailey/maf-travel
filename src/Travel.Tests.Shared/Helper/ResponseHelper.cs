@@ -63,13 +63,13 @@ public class FunctionCallAssertion
         return this;
     }
 
-    public FunctionCallAssertion WithTravelPlan(Action<TravelPlanDto> validation)
+    public FunctionCallAssertion WithTravelPlan(Action<TravelPlanState> validation)
     {
         _functionCall.Arguments.Should().NotBeNull()
             .And.ContainKey("travelPlan", $"function {_functionCall.Name} should have argument 'travelPlan'");
 
         var travelPlanJson = _functionCall.Arguments!["travelPlan"];
-        TravelPlanDto? travelPlan;
+        TravelPlanState? travelPlan;
 
         var options = new JsonSerializerOptions
         {
@@ -78,12 +78,12 @@ public class FunctionCallAssertion
 
         if (travelPlanJson is JsonElement jsonElement)
         {
-            travelPlan = JsonSerializer.Deserialize<TravelPlanDto>(jsonElement.GetRawText(), options);
+            travelPlan = JsonSerializer.Deserialize<TravelPlanState>(jsonElement.GetRawText(), options);
         }
         else
         {
             var json = JsonSerializer.Serialize(travelPlanJson);
-            travelPlan = JsonSerializer.Deserialize<TravelPlanDto>(json, options);
+            travelPlan = JsonSerializer.Deserialize<TravelPlanState>(json, options);
         }
 
         travelPlan.Should().NotBeNull($"travelPlan argument should be deserializable");

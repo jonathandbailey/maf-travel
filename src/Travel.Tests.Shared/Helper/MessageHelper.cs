@@ -6,7 +6,7 @@ namespace Travel.Tests.Shared.Helper;
 
 public static class MessageHelper
 {
-    public static ChatMessage CreateTravelPlanMessage(TravelPlanDto travelPlan)
+    public static ChatMessage CreateTravelPlanMessage(TravelPlanState travelPlan)
     {
         var serializedPlan = JsonSerializer.Serialize(travelPlan);
         var template = $"TravelPlanSummary : {serializedPlan}";

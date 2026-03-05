@@ -3,7 +3,7 @@
 
 public record RequestInformationDto(string Message, string Thought, List<string> RequiredInputs);
 
-public class TravelPlanDto(
+public class TravelPlanState(
     string? origin = null,
     string? destination = null,
     DateTime? startDate = null,

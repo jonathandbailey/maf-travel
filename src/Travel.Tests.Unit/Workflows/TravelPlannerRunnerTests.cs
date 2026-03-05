@@ -13,7 +13,7 @@ namespace Travel.Tests.Unit.Workflows;
 public class TravelPlannerRunnerTests
 {
     private static TravelWorkflowRequest CreateRequest(Guid threadId) =>
-        new(new ChatMessage(ChatRole.User, "Test message"), threadId, new TravelPlanDto());
+        new(new ChatMessage(ChatRole.User, "Test message"), threadId, new TravelPlanState());
 
     private static (TravelPlanningRunner runner, TravelWorkflowRequest request) SetupRunner(
         Executor startNode,
@@ -192,7 +192,7 @@ public class TravelPlannerRunnerTests
         public override async ValueTask HandleAsync(TravelWorkflowRequest message, IWorkflowContext context,
             CancellationToken cancellationToken = default)
         {
-            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanDto()), cancellationToken);
+            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanState()), cancellationToken);
         }
     }
 
@@ -210,7 +210,7 @@ public class TravelPlannerRunnerTests
         public override async ValueTask HandleAsync(TravelWorkflowRequest message, IWorkflowContext context,
             CancellationToken cancellationToken = default)
         {
-            await context.AddEventAsync(new TravelPlanUpdateEvent(new TravelPlanDto()), cancellationToken);
+            await context.AddEventAsync(new TravelPlanUpdateEvent(new TravelPlanState()), cancellationToken);
         }
     }
 
