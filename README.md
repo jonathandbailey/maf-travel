@@ -1,60 +1,34 @@
 [![Build & Unit Test](https://github.com/jonathandbailey/maf-travel/actions/workflows/dotnet.yml/badge.svg)](https://github.com/jonathandbailey/maf-travel/actions/workflows/dotnet.yml)
 
-# MAF Travel — Alpha Release
+# Microsoft Agent Framework Travel
 
-An AI-powered vacation planning assistant built on the **Microsoft Agent Framework (MAF)**. Chat naturally with the assistant to describe your trip — it will ask the right questions, build up a structured travel plan, and keep track of everything across turns.
+An educational agentic travel application built on the Microsoft Agent Framework (MAF), using .NET, C#, and React. Users plan a vacation through a chat interface — the assistant gathers required details across multiple turns and produces a structured travel plan.
 
-This project is an exploration of practical agentic patterns in .NET. The travel domain is a vehicle for demonstrating those patterns clearly — the techniques here are designed to be lifted and applied to other problems.
+This project explores the patterns and trade-offs that arise when moving beyond demos toward more realistic agentic applications. It is a work-in-progress and not production-ready.
 
-## User Experience
+The travel application showcases key principles of UX and Agentic Architecture:
 
-The UI is designed to demonstrate what a well-behaved agentic application feels like from the user's perspective — not just what it produces, but how it communicates while it works.
+**Stateless Workflows**
+Workflow state is checkpointed and persisted to Azure Blob Storage at every suspension point, then restored on resume. This enables human-in-the-loop feedback and seamless recovery across process restarts.
 
-**Real-time feedback from agents and workflows**
-The interface shows a live "Thought process" timeline as the workflow runs — each step, agent action, and tool call surfaces as it happens, not as a batch at the end. A structured travel plan panel updates in the sidebar as details are confirmed, giving the user a continuous view of what the assistant has gathered so far.
+**Tool Registry**
+Agents discover and invoke tools consistently via a central Tool Registry. Tools are registered as declaration-only stubs — the LLM sees the schema, but execution is handled by workflow nodes, not the tool functions themselves.
+
+**Real-Time Streaming**
+Intermediate status updates are streamed from workflows to the UI via the AG-UI protocol, giving the user real-time visibility into what the assistant is doing.
 
 **Interruptability**
-The submit button becomes a stop button the moment a response starts streaming. The user can cancel at any point mid-workflow — the assistant stops immediately without waiting for the current operation to complete. This reflects a core principle of agentic UX: the user should always be in control.
+The user can cancel the request at any time via the UI. Because workflow state is checkpointed, cancellation is non-destructive — the workflow can be resumed from where it left off.
 
-**Pre-loaded prompts and application capabilities**
-A suggestions menu in the chat input offers quick-start prompts, including one that asks the assistant to describe what it can do. This lowers the barrier for new users and demonstrates how an application can surface its own capabilities as a first-class feature rather than leaving them to documentation.
+**Capability Discovery**
+The user can query the application's capabilities through the chat interface to understand what actions are available to them.
 
----
+**Traceability**
+Application, agent, and workflow traces are emitted as OpenTelemetry spans and displayed in the Aspire Dashboard. Metrics include per-run token usage.
 
-## Key Features
+**Structured Agent ReAct Workflows**
+The travel plan collection workflow uses a ReAct (Reason and Act) loop: the planning agent audits what information is still missing, then either requests more from the user or signals completion. This loop drives a DAG-based workflow with suspend/resume support.
 
-**Streaming real-time workflow events via AG-UI**
-Workflow progress — agent thoughts, tool calls, state snapshots — streams to the client in real time using the AG-UI protocol. The UI updates as the workflow runs, not after it finishes.
-
-**Stateless suspend and resume**
-Workflows checkpoint themselves to Azure Blob Storage at every suspension point. There is no in-memory session state: a workflow can be resumed by any process instance, across restarts, simply by passing the checkpoint reference on the next request.
-
-**Tool Repository Pattern**
-Tools are registered in a central `IToolRegistry` and resolved by name at runtime. Agent prompts declare tool schemas, but execution is handled by the registry — keeping AI tool definitions cleanly separated from the code that acts on them.
-
-**Declarative agent templates**
-Agents are defined as YAML prompt files, not C# classes. Swapping out an agent's behaviour means editing a template, not recompiling. Tool schemas are attached as declaration-only stubs so the LLM sees a consistent interface regardless of how execution is wired up.
-
-**Unit and integration test coverage**
-Integration tests run full end-to-end workflow scenarios with pre-scripted mock agent responses — no real Azure OpenAI calls required. Unit tests cover individual components in isolation. Scenario definitions live in JSON files, making it straightforward to add new test cases without touching C# code.
-
-**Built-in observability**
-Every workflow node and tool call emits an OpenTelemetry trace span. The full execution path — from user message to agent response to tool result — is visible as a distributed trace in the Aspire dashboard.
-
----
-
-## What It Does
-
-You describe a vacation in plain language. The assistant uses a **ReAct (Reason & Act)** loop to:
-
-1. Extract structured travel details from what you say
-2. Reason about what information is still missing
-3. Ask targeted follow-up questions until the plan is complete
-4. Emit a finalised `TravelPlanDto` when all required fields are satisfied
-
-The assistant communicates over the **AG-UI protocol**, so any AG-UI-compatible frontend can connect to it.
-
----
 
 ## Tech Stack
 
