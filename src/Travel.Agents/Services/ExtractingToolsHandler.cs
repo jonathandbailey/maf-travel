@@ -13,7 +13,7 @@ public sealed class ExtractingToolsHandler : IToolHandler
 
     private static readonly List<AITool> s_tools;
 
-    [Description("Request More Information")]
+    [Description("Update the travel plan with information extracted from the user's message")]
     private static string UpdateTravelPlan(
         [Description("The update for the travel plan")] TravelPlanState travelPlan)
         => "The travel plan has been updated successfully.";
