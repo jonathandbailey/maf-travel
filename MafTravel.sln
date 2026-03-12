@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Application", "src\T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Domain", "src\Travel.Domain\Travel.Domain.csproj", "{2072DF12-0E8F-4220-A4E7-BD631D46B381}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Infrastructure", "Travel.Infrastructure\Travel.Infrastructure.csproj", "{E0364EE5-D83E-4D93-B0E4-63560F343E14}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,10 @@ Global
 		{2072DF12-0E8F-4220-A4E7-BD631D46B381}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2072DF12-0E8F-4220-A4E7-BD631D46B381}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2072DF12-0E8F-4220-A4E7-BD631D46B381}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0364EE5-D83E-4D93-B0E4-63560F343E14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0364EE5-D83E-4D93-B0E4-63560F343E14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0364EE5-D83E-4D93-B0E4-63560F343E14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0364EE5-D83E-4D93-B0E4-63560F343E14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -145,6 +151,7 @@ Global
 		{2F75755D-D779-B81D-2CE8-93094E901818} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
 		{68958E5C-0905-48F7-AE6D-FFB7102A51B9} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
 		{2072DF12-0E8F-4220-A4E7-BD631D46B381} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
+		{E0364EE5-D83E-4D93-B0E4-63560F343E14} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CECF4BFE-6870-4849-BFB1-EC0B46CF01E1}
