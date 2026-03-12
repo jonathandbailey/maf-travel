@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ServiceDefaults\ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Travel.Application\Travel.Application.csproj" />
+    <ProjectReference Include="..\Travel.Infrastructure\Travel.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

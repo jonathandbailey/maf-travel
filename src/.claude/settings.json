@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/source/github/maf-travel/**)"
+      "Read(//c/source/github/maf-travel/**)",
+      "Bash(dotnet build:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\source\\github\\maf-travel"
     ]
   }
 }

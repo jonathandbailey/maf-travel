@@ -2,6 +2,22 @@
   "version": 2,
   "dependencies": {
     "net10.0": {
+      "FluentValidation": {
+        "type": "Direct",
+        "requested": "[11.4.0, )",
+        "resolved": "11.4.0",
+        "contentHash": "WZJyrNf4suiaI6avVG32W9kmBLC3+V5rDTcLeRJjeU4tDmTyDIOz1459DzCKppXs34YpZg9rCUzDY3M4XxG7Ug=="
+      },
+      "FluentValidation.DependencyInjectionExtensions": {
+        "type": "Direct",
+        "requested": "[11.4.0, )",
+        "resolved": "11.4.0",
+        "contentHash": "iZXtoDqfRnggHwIbFWnK1sFs3KlTadH5ezNDiXz411OSkUNowBRboaZBcSvx4gEot7CNZdoReUKWYJwow2+mbg==",
+        "dependencies": {
+          "FluentValidation": "11.4.0",
+          "Microsoft.Extensions.Dependencyinjection.Abstractions": "2.1.0"
+        }
+      },
       "MediatR": {
         "type": "Direct",
         "requested": "[14.1.0, )",
@@ -60,6 +76,12 @@
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
           "Microsoft.IdentityModel.Logging": "8.14.0"
+        }
+      },
+      "travel.domain": {
+        "type": "Project",
+        "dependencies": {
+          "MediatR": "[14.1.0, )"
         }
       }
     }

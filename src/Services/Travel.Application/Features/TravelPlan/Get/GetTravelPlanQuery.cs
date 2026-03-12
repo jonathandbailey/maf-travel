@@ -1,0 +1,18 @@
+using MediatR;
+using Travel.Application.Interfaces;
+
+namespace Travel.Application.Features.TravelPlan.Get;
+
+public record GetTravelPlanQuery(Guid Id) : IRequest<TravelPlanResponse?>;
+
+public class GetTravelPlanQueryHandler(ITravelPlanRepository repository)
+    : IRequestHandler<GetTravelPlanQuery, TravelPlanResponse?>
+{
+    public async Task<TravelPlanResponse?> Handle(GetTravelPlanQuery query, CancellationToken cancellationToken)
+    {
+        var plan = await repository.GetAsync(query.Id, cancellationToken);
+        if (plan is null) return null;
+
+        return new TravelPlanResponse(plan.Id, plan.Origin, plan.Destination, plan.NumberOfTravelers, plan.StartDate, plan.EndDate);
+    }
+}
