@@ -21,4 +21,6 @@ var api = builder.AddProject<Projects.Travel_Experience_Api>("travel-experience-
 
 var ui = builder.AddUiServices(api);
 
+builder.AddProject<Projects.Travel_Api>("travel-api");
+
 builder.Build().Run();
