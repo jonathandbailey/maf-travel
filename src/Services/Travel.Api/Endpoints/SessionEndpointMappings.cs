@@ -9,6 +9,7 @@ public class SessionEndpointMappings : IEndpoint
     {
         var group = app.MapGroup("/sessions");
         group.MapPost("", CreateAsync);
+        group.MapPatch("/{id:guid}", UpdateAsync);
     }
 
     private static async Task<IResult> CreateAsync(ISender sender)
@@ -16,4 +17,12 @@ public class SessionEndpointMappings : IEndpoint
         var response = await sender.Send(new CreateSessionCommand());
         return Results.Created($"/sessions/{response.Id}", response);
     }
+
+    private static async Task<IResult> UpdateAsync(ISender sender, Guid id, UpdateSessionRequest request)
+    {
+        var response = await sender.Send(new UpdateSessionCommand(id, request.TravelPlanId));
+        return Results.Ok(response);
+    }
 }
+
+public record UpdateSessionRequest(Guid TravelPlanId);

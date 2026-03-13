@@ -2,6 +2,7 @@ using System.Text.Json;
 using Infrastructure.Repository.Azure;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
+using Travel.Application.Exceptions;
 using Travel.Application.Interfaces;
 using Travel.Application.Models;
 using Travel.Infrastructure.Documents;
@@ -25,7 +26,27 @@ public class SessionRepository(
     public async Task AddAsync(Session session, CancellationToken cancellationToken = default)
     {
         await EnsureContainerAsync();
-        var document = new SessionDocument(session.Id, session.CreatedAt);
+        var document = new SessionDocument(session.Id, session.CreatedAt, session.TravelPlanId);
+        var json = JsonSerializer.Serialize(document, JsonOptions);
+        await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, "application/json");
+    }
+
+    public async Task<Session> GetAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
+            throw new NotFoundException($"Session {id} was not found.");
+
+        var json = await storageRepository.DownloadTextBlobAsync(BlobName(id), ContainerName);
+        var document = JsonSerializer.Deserialize<SessionDocument>(json, JsonOptions)!;
+        return new Session(document.Id, document.CreatedAt, document.TravelPlanId);
+    }
+
+    public async Task UpdateAsync(Session session, CancellationToken cancellationToken = default)
+    {
+        if (!await storageRepository.BlobExists(BlobName(session.Id), ContainerName))
+            throw new NotFoundException($"Session {session.Id} was not found.");
+
+        var document = new SessionDocument(session.Id, session.CreatedAt, session.TravelPlanId);
         var json = JsonSerializer.Serialize(document, JsonOptions);
         await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, "application/json");
     }
