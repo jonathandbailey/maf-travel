@@ -7,7 +7,8 @@
       "Bash(grep -r \"IExceptionHandler\\\\|ExceptionHandler\\\\|ProblemDetails\\\\|Results.Problem\\\\|Results.ValidationProblem\" /c/source/github/maf-travel/src/Services --include=*.cs)",
       "Bash(grep -r \"class.*Exception\\\\|throw new\\\\|catch\\\\|try {\" /c/source/github/maf-travel/src/Services --include=*.cs)",
       "Bash(grep -r \"middleware\\\\|Middleware\\\\|exception\\\\|Exception\\\\|UseExceptionHandler\\\\|UseStatusCodePages\" /c/source/github/maf-travel/src/Services --include=*.cs)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(grep -v \"^d.*\\\\.$\")"
     ],
     "additionalDirectories": [
       "c:\\source\\github\\maf-travel"

@@ -12,16 +12,19 @@ public class TravelPlanEndpointMappings : IEndpoint
 {
     public void MapRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/travel-plans", CreateAsync);
-        app.MapGet("/travel-plans", ListAsync);
-        app.MapGet("/travel-plans/{id:guid}", GetAsync);
-        app.MapPut("/travel-plans/{id:guid}", UpdateAsync);
-        app.MapDelete("/travel-plans/{id:guid}", DeleteAsync);
+        var group = app.MapGroup("/travel-plans");
+        group.MapPost("", CreateAsync);
+        group.MapGet("", ListAsync);
+        group.MapGet("/{id:guid}", GetAsync);
+        group.MapPut("/{id:guid}", UpdateAsync);
+        group.MapDelete("/{id:guid}", DeleteAsync);
     }
 
-    private static async Task<IResult> CreateAsync(ISender sender, CreateTravelPlanCommand command)
+    private static async Task<IResult> CreateAsync(ISender sender, CreateTravelPlanRequest request)
     {
-        var response = await sender.Send(command);
+        var response = await sender.Send(new CreateTravelPlanCommand(
+            request.Origin, request.Destination, request.NumberOfTravelers,
+            request.StartDate, request.EndDate));
         return Results.Created($"/travel-plans/{response.Id}", response);
     }
 
@@ -34,12 +37,14 @@ public class TravelPlanEndpointMappings : IEndpoint
     private static async Task<IResult> GetAsync(ISender sender, Guid id)
     {
         var response = await sender.Send(new GetTravelPlanQuery(id));
-        return response is null ? Results.NotFound() : Results.Ok(response);
+        return Results.Ok(response);
     }
 
-    private static async Task<IResult> UpdateAsync(ISender sender, Guid id, UpdateTravelPlanCommand command)
+    private static async Task<IResult> UpdateAsync(ISender sender, Guid id, UpdateTravelPlanRequest request)
     {
-        var response = await sender.Send(command with { Id = id });
+        var response = await sender.Send(new UpdateTravelPlanCommand(
+            id, request.Origin, request.Destination, request.NumberOfTravelers,
+            request.StartDate, request.EndDate));
         return Results.Ok(response);
     }
 
@@ -49,3 +54,17 @@ public class TravelPlanEndpointMappings : IEndpoint
         return Results.NoContent();
     }
 }
+
+public record CreateTravelPlanRequest(
+    string? Origin,
+    string? Destination,
+    int? NumberOfTravelers,
+    DateTime? StartDate,
+    DateTime? EndDate);
+
+public record UpdateTravelPlanRequest(
+    string? Origin,
+    string? Destination,
+    int? NumberOfTravelers,
+    DateTime? StartDate,
+    DateTime? EndDate);
