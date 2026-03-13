@@ -10,19 +10,24 @@ import { useTravelPlan } from "../features/travel/hooks/useTravelPlan";
 import { createSession, updateSession } from '../app/services/sessionService';
 import { useSessionStore } from '../app/store/sessionStore';
 import { useTravelPlanStore } from '../features/travel/store/travelPlanStore';
+import { getTravelPlan } from '../features/travel/services/travelPlanService';
 import "./ChatPage.css";
 
 const ChatPage = () => {
     const { id } = useParams<{ id: string }>();
     const setSessionId = useSessionStore((s) => s.setSessionId);
     const createPlan = useTravelPlanStore((s) => s.createPlan);
+    const updatePlan = useTravelPlanStore((s) => s.updatePlan);
 
     useEffect(() => {
         createPlan();
+        getTravelPlan(id!).then(({ origin, destination, startDate, endDate, numberOfTravelers }) =>
+            updatePlan({ origin, destination, startDate, endDate, numberOfTravelers })
+        );
         createSession()
             .then((session) => updateSession(session.id, id!).then(() => session))
             .then((session) => setSessionId(session.id));
-    }, [id, setSessionId, createPlan]);
+    }, [id, setSessionId, createPlan, updatePlan]);
 
     const [inputValue, setInputValue] = useState("");
     const { exchanges, isStreaming, sendMessage, handleCancel, client } = useChatAgent();

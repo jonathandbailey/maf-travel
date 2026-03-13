@@ -24,3 +24,9 @@ export async function listTravelPlans(): Promise<TravelPlanResponse[]> {
     if (!response.ok) throw new Error(`Failed to list travel plans: ${response.status}`);
     return response.json();
 }
+
+export async function getTravelPlan(id: string): Promise<TravelPlanResponse> {
+    const response = await fetch(`${BASE}/travel-plans/${id}`);
+    if (!response.ok) throw new Error(`Failed to get travel plan: ${response.status}`);
+    return response.json();
+}
