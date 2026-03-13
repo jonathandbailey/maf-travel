@@ -24,6 +24,8 @@ Features/
       Response.cs
 Behaviors/
   ValidationBehavior.cs
+Exceptions/
+  NotFoundException.cs    ← thrown by handlers when a resource is not found
 Interfaces/
   ITravelPlanRepository.cs   ← repository contracts
 ```
@@ -33,3 +35,4 @@ Interfaces/
 - Validators use FluentValidation `AbstractValidator<T>`
 - Publish domain events after saving, not inside domain methods
 - Responses are simple records/DTOs — no domain types leak to callers
+- **Not-found**: throw `NotFoundException` (from `Exceptions/`) when a handler cannot find a requested resource — never return `null` and never throw `KeyNotFoundException`
