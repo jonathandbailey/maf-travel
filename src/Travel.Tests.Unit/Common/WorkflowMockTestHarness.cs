@@ -1,5 +1,4 @@
 using Agents.Services;
-using Infrastructure.Repository;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
@@ -10,6 +9,7 @@ using Travel.Agents.Services;
 using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
 using Travel.Workflows.Dto;
+using Travel.Workflows.Interfaces;
 using Travel.Workflows.Services;
 
 namespace Travel.Tests.Unit.Common;
@@ -57,7 +57,7 @@ public class WorkflowMockTestHarness
                 .ReturnsAsync(agent);
         }
 
-        var workflowService = new TravelWorkflowService(_checkpointRepository, _sessionRepository, agentProvider.Object, new Mock<ITravelPlanRepository>().Object, NullLogger<TravelWorkflowService>.Instance);
+        var workflowService = new TravelWorkflowService(_checkpointRepository, _sessionRepository, agentProvider.Object, new Mock<ITravelApiClient>().Object, NullLogger<TravelWorkflowService>.Instance);
 
         return workflowService;
     }

@@ -1,14 +1,13 @@
 using System.Runtime.CompilerServices;
 using Infrastructure.Repository;
-using Infrastructure.Repository.Entities;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Logging;
-using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
 using Travel.Workflows.Infrastructure;
+using Travel.Workflows.Interfaces;
 
 namespace Travel.Workflows.Services;
 
@@ -16,37 +15,36 @@ public class TravelWorkflowService(
     ICheckpointRepository checkpointRepository,
     IWorkflowSessionRepository sessionRepository,
     IAgentProvider agentProvider,
-    ITravelPlanRepository travelPlanRepository,
+    ITravelApiClient travelApiClient,
     ILogger<TravelWorkflowService> logger)
 {
     public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        var plan = await travelApiClient.GetPlanBySessionAsync(request.ThreadId, cancellationToken);
+
+        var isNewSession = !await sessionRepository.ExistsAsync(request.ThreadId);
+        if (isNewSession)
+            request = request with { TravelPlan = plan };
+
         var runner = await CreateRunnerAsync(request);
 
         try
         {
             await foreach (var evt in runner.WatchStreamAsync(request, cancellationToken))
             {
-                TravelPlanState? planDto = evt switch
+                var planState = evt switch
                 {
                     TravelPlanUpdateEvent e => e.TravelPlanState,
                     TravelPlanningCompleteEvent e => e.TravelPlan,
                     _ => null
                 };
 
-                if (planDto is not null)
+                if (planState is not null)
                 {
+                    planState.Id = plan.Id;
                     try
                     {
-                        await travelPlanRepository.SaveAsync(new TravelPlanEntity
-                        {
-                            Id = request.ThreadId,
-                            Origin = planDto.Origin,
-                            Destination = planDto.Destination,
-                            NumberOfTravelers = planDto.NumberOfTravelers,
-                            StartDate = planDto.StartDate,
-                            EndDate = planDto.EndDate,
-                        }, cancellationToken);
+                        await travelApiClient.UpdatePlanAsync(planState, cancellationToken);
                     }
                     catch (Exception ex) { logger.LogWarning(ex, "Failed to save travel plan for thread {ThreadId}.", request.ThreadId); }
                 }

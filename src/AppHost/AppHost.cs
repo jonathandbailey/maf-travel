@@ -14,16 +14,17 @@ var storageInit = builder.AddProject<Projects.Travel_Storage_Init>("storage-init
     .WithEnvironment("AzureStorageSettings__AgentThreadContainerName", "agent-threads")
     .WithEnvironment("AzureStorageSettings__CheckpointContainerName", "checkpoints");
 
+var travelApi = builder.AddProject<Projects.Travel_Api>("travel-api")
+    .WithReference(blobs)
+    .WaitFor(blobs)
+    .WaitForCompletion(storageInit);
+
 var api = builder.AddProject<Projects.Travel_Experience_Api>("travel-experience-api")
     .WithReference(blobs)
+    .WithReference(travelApi)
     .WaitFor(blobs)
     .WaitForCompletion(storageInit);
 
 var ui = builder.AddUiServices(api);
-
-builder.AddProject<Projects.Travel_Api>("travel-api")
-    .WithReference(blobs)
-    .WaitFor(blobs)
-    .WaitForCompletion(storageInit);
 
 builder.Build().Run();

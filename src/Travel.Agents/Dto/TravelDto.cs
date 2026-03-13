@@ -1,15 +1,20 @@
-﻿namespace Travel.Agents.Dto;
+﻿using System.Text.Json.Serialization;
+
+namespace Travel.Agents.Dto;
 
 
 public record RequestInformationDto(string Message, string Thought, List<string> RequiredInputs);
 
 public class TravelPlanState(
+    Guid id = default,
     string? origin = null,
     string? destination = null,
     DateTime? startDate = null,
     DateTime? endDate = null,
     int? numberOfTravelers = null)
 {
+    [JsonIgnore]
+    public Guid Id { get; set; } = id;
     public string? Origin { get; set; } = origin;
     public string? Destination { get; set; } = destination;
 

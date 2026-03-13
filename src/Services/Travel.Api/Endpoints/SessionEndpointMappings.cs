@@ -1,5 +1,6 @@
 using MediatR;
 using Travel.Application.Features.Session.Commands;
+using Travel.Application.Features.Session.Queries;
 
 namespace Travel.Api.Endpoints;
 
@@ -9,6 +10,7 @@ public class SessionEndpointMappings : IEndpoint
     {
         var group = app.MapGroup("/sessions");
         group.MapPost("", CreateAsync);
+        group.MapGet("/{id:guid}", GetAsync);
         group.MapPatch("/{id:guid}", UpdateAsync);
     }
 
@@ -16,6 +18,12 @@ public class SessionEndpointMappings : IEndpoint
     {
         var response = await sender.Send(new CreateSessionCommand());
         return Results.Created($"/sessions/{response.Id}", response);
+    }
+
+    private static async Task<IResult> GetAsync(ISender sender, Guid id)
+    {
+        var response = await sender.Send(new GetSessionQuery(id));
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> UpdateAsync(ISender sender, Guid id, UpdateSessionRequest request)

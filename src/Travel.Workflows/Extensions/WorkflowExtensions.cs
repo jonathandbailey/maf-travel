@@ -12,6 +12,9 @@ public static class WorkflowExtensions
         services.AddSingleton<IWorkflowSessionRepository, WorkflowSessionRepository>();
         services.AddSingleton<IWorkflowFactory, WorkflowFactory>();
 
+        services.AddHttpClient<ITravelApiClient, TravelApiClient>(client =>
+            client.BaseAddress = new Uri("https+http://travel-api"));
+
         return services;
     }
 }
