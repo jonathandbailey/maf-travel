@@ -25,7 +25,6 @@ Inject this interface into every repository. Key methods:
 ```
 Repositories/
   TravelPlanRepository.cs         ← implements ITravelPlanRepository; injects IAzureStorageRepository
-  InMemoryTravelPlanRepository.cs ← for tests (no storage dependency)
 Documents/
   TravelPlanDocument.cs           ← internal persistence model (not exposed outside this project)
 ```
@@ -34,6 +33,12 @@ Documents/
 - Accept domain models in public method signatures; map to/from Documents internally
 - Documents are plain serializable types (records or classes) — no domain logic
 - Serialize Documents as JSON via System.Text.Json
-- InMemory implementations must implement the same interface and live in this project
 - DI registration in `InfrastructureServiceCollectionExtensions.cs`
 - References: Travel.Domain, Travel.Application, shared `Infrastructure/` project
+
+## Not-found and error handling
+- `GetAsync` throws `NotFoundException` (from `Travel.Application.Exceptions`) when the blob does not exist — never returns null; `ITravelPlanRepository.GetAsync` return type is `Task<TravelPlan>` (non-nullable)
+- `UpdateAsync` must verify the plan exists before uploading — throw `NotFoundException` if the blob is not found; do not silently upsert
+- `DeleteAsync` throws `NotFoundException` if the blob does not exist — delete is not idempotent
+- `EnsureContainerAsync` is called only in `AddAsync` by design: a plan cannot exist to update or delete if it was never added, so container existence is guaranteed transitively
+- `ListAsync` logs `LogWarning` for each blob that fails to deserialize, then skips it — never swallow deserialization failures silently

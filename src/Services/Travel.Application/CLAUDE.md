@@ -36,4 +36,4 @@ Interfaces/
 - Validators use FluentValidation `AbstractValidator<T>`; none currently exist but the pipeline is ready
 - Publish domain events after saving, not inside domain methods
 - Responses are simple records/DTOs — no domain types leak to callers
-- **Not-found**: throw `NotFoundException` (from `Exceptions/`) when a handler cannot find a requested resource — never return `null` and never throw `KeyNotFoundException`
+- **Not-found**: `NotFoundException` (from `Exceptions/`) is thrown by the **repository**, not by the handler — handlers do not null-check repository results. `ITravelPlanRepository.GetAsync` returns `Task<TravelPlan>` (non-nullable); if the resource doesn't exist the repository throws before the handler receives a value. Never return `null` from a handler and never throw `KeyNotFoundException`
