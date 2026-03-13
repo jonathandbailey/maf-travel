@@ -1,11 +1,18 @@
+import { useEffect, useState } from 'react';
 import { Menu } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { createTravelPlan } from '../../features/travel/services/travelPlanService';
+import { createTravelPlan, listTravelPlans } from '../../features/travel/services/travelPlanService';
+import type { TravelPlanResponse } from '../../features/travel/services/travelPlanService';
 import './layout.css';
 
 const RootNavigationMenu = ({ collapsed }: { collapsed: boolean }) => {
     const navigate = useNavigate();
+    const [plans, setPlans] = useState<TravelPlanResponse[]>([]);
+
+    useEffect(() => {
+        listTravelPlans().then(setPlans).catch(() => {});
+    }, []);
 
     const handleNewPlan = async () => {
         const plan = await createTravelPlan();
@@ -25,6 +32,13 @@ const RootNavigationMenu = ({ collapsed }: { collapsed: boolean }) => {
                     icon: <PlusOutlined />,
                     onClick: handleNewPlan,
                 },
+                { type: 'divider' },
+                ...plans.map((plan) => ({
+                    key: plan.id,
+                    label: plan.destination ?? 'Untitled Plan',
+                    icon: <EnvironmentOutlined />,
+                    onClick: () => navigate(`/travel-plans/${plan.id}`),
+                })),
             ]}
         />
     );
