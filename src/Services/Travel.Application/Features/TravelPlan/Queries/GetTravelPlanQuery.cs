@@ -1,5 +1,4 @@
 using MediatR;
-using Travel.Application.Exceptions;
 using Travel.Application.Interfaces;
 
 namespace Travel.Application.Features.TravelPlan.Queries;
@@ -11,9 +10,7 @@ public class GetTravelPlanQueryHandler(ITravelPlanRepository repository)
 {
     public async Task<TravelPlanResponse> Handle(GetTravelPlanQuery query, CancellationToken cancellationToken)
     {
-        var plan = await repository.GetAsync(query.Id, cancellationToken)
-            ?? throw new NotFoundException($"TravelPlan {query.Id} not found.");
-
+        var plan = await repository.GetAsync(query.Id, cancellationToken);
         return new TravelPlanResponse(plan.Id, plan.Origin, plan.Destination, plan.NumberOfTravelers, plan.StartDate, plan.EndDate);
     }
 }

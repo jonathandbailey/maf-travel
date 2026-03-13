@@ -1,5 +1,4 @@
 using MediatR;
-using Travel.Application.Exceptions;
 using Travel.Application.Interfaces;
 
 namespace Travel.Application.Features.TravelPlan.Commands;
@@ -18,8 +17,7 @@ public class UpdateTravelPlanCommandHandler(
 {
     public async Task<TravelPlanResponse> Handle(UpdateTravelPlanCommand command, CancellationToken cancellationToken)
     {
-        var plan = await repository.GetAsync(command.Id, cancellationToken)
-            ?? throw new NotFoundException($"TravelPlan {command.Id} not found.");
+        var plan = await repository.GetAsync(command.Id, cancellationToken);
 
         plan.Update(
             command.Origin,

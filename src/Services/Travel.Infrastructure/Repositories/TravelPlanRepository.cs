@@ -3,6 +3,7 @@ using Infrastructure.Repository.Azure;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Travel.Application.Exceptions;
 using Travel.Application.Interfaces;
 using Travel.Domain.Aggregates;
 using Travel.Infrastructure.Documents;
@@ -24,18 +25,17 @@ public class TravelPlanRepository(
 
     private static string BlobName(Guid id) => $"{id}.json";
 
-    public async Task<TravelPlan?> GetAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<TravelPlan> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var blobName = BlobName(id);
         if (!await storageRepository.BlobExists(blobName, ContainerName))
-        {
-            logger.LogDebug("TravelPlan blob {BlobName} not found in {Container}", blobName, ContainerName);
-            return null;
-        }
+            throw new NotFoundException($"TravelPlan {id} not found.");
 
         var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
         var document = JsonSerializer.Deserialize<TravelPlanDocument>(json, JsonOptions);
-        return document is null ? null : ToDomain(document);
+        return document is null
+            ? throw new NotFoundException($"TravelPlan {id} not found.")
+            : ToDomain(document);
     }
 
     public async Task<IReadOnlyList<TravelPlan>> ListAsync(CancellationToken cancellationToken = default)
@@ -47,7 +47,9 @@ public class TravelPlanRepository(
         {
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
             var document = JsonSerializer.Deserialize<TravelPlanDocument>(json, JsonOptions);
-            if (document is not null)
+            if (document is null)
+                logger.LogWarning("Failed to deserialize TravelPlan blob {BlobName} in {Container}", blob, ContainerName);
+            else
                 plans.Add(ToDomain(document));
         }
 
@@ -63,12 +65,20 @@ public class TravelPlanRepository(
 
     public async Task UpdateAsync(TravelPlan plan, CancellationToken cancellationToken = default)
     {
+        if (!await storageRepository.BlobExists(BlobName(plan.Id), ContainerName))
+            throw new NotFoundException($"TravelPlan {plan.Id} not found.");
+
         var json = JsonSerializer.Serialize(ToDocument(plan), JsonOptions);
         await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, "application/json");
     }
 
-    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-        => storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
+            throw new NotFoundException($"TravelPlan {id} not found.");
+
+        await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
+    }
 
     private async Task EnsureContainerAsync()
     {

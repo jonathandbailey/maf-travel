@@ -39,8 +39,7 @@ The `ValidationBehavior<TRequest, TResponse>` pipeline behavior in `Behaviors/` 
    - Injects `IAzureStorageRepository` (from the shared `Infrastructure/` project)
    - Maps domain model ↔ document internally; never persists domain types directly
    - Serializes documents as JSON via `System.Text.Json`
-3. Add an `InMemory{Name}Repository` in the same folder for test use
-4. Register all repositories in `InfrastructureServiceCollectionExtensions.cs`
+3. Register all repositories in `InfrastructureServiceCollectionExtensions.cs`
 
 ### Step 4 — Travel.Api: expose the endpoint
 

@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Travel.Experience.Application\Travel.Experience.Application.csproj" />
     <ProjectReference Include="..\Travel.Workflows\Travel.Workflows.csproj" />
+    <ProjectReference Include="..\Services\Travel.Application\Travel.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
