@@ -3,7 +3,7 @@
 Application layer — orchestrates use cases via MediatR. No infrastructure concerns.
 
 ## Patterns
-- **Vertical slice with Commands/Queries grouping**: features live in `Features/{Domain}/Commands/{Operation}/` or `Features/{Domain}/Queries/{Operation}/`
+- **Vertical slice with Commands/Queries grouping**: features live in `Features/{Domain}/Commands/` or `Features/{Domain}/Queries/`
 - **Command and handler are co-located** in the same file (e.g. `CreateTravelPlanCommand.cs` contains both `CreateTravelPlanCommand` and `CreateTravelPlanCommandHandler`)
 - **Shared response per domain**: `TravelPlanResponse.cs` lives at `Features/TravelPlan/` and is shared across all commands and queries — no per-operation response type
 - **Pipeline behaviors** in `Behaviors/`: `ValidationBehavior<TRequest, TResponse>` runs FluentValidation before every handler; skips silently if no validators are registered
@@ -16,17 +16,12 @@ Application layer — orchestrates use cases via MediatR. No infrastructure conc
 Features/
   TravelPlan/
     Commands/
-      CreateTravelPlan/
-        CreateTravelPlanCommand.cs   ← IRequest<TravelPlanResponse> + IRequestHandler (co-located)
-      UpdateTravelPlan/
-        UpdateTravelPlanCommand.cs
-      DeleteTravelPlan/
-        DeleteTravelPlanCommand.cs
+      CreateTravelPlanCommand.cs   ← IRequest<TravelPlanResponse> + IRequestHandler (co-located)
+      UpdateTravelPlanCommand.cs
+      DeleteTravelPlanCommand.cs
     Queries/
-      GetTravelPlan/
-        GetTravelPlanQuery.cs        ← IRequest<TravelPlanResponse> + IRequestHandler (co-located)
-      ListTravelPlans/
-        ListTravelPlansQuery.cs      ← IRequest<IReadOnlyList<TravelPlanResponse>> + IRequestHandler
+      GetTravelPlanQuery.cs        ← IRequest<TravelPlanResponse> + IRequestHandler (co-located)
+      ListTravelPlansQuery.cs      ← IRequest<IReadOnlyList<TravelPlanResponse>> + IRequestHandler
     TravelPlanResponse.cs            ← shared response record for all TravelPlan operations
 Behaviors/
   ValidationBehavior.cs

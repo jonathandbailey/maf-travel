@@ -23,7 +23,7 @@ Add an aggregate root under `Aggregates/{Name}/`, inheriting `AggregateRoot`. Ad
 ### Step 2 — Travel.Application: define the contract and use case
 
 1. Add a repository interface to `Interfaces/` (e.g. `ITravelPlanRepository.cs`)
-2. Create a vertical slice under `Features/{Domain}/Commands/{Operation}/` or `Features/{Domain}/Queries/{Operation}/`:
+2. Create a vertical slice under `Features/{Domain}/Commands/` or `Features/{Domain}/Queries/`:
    - `{Operation}Command.cs` / `{Operation}Query.cs` — command/query record and handler **co-located in the same file**; command implements `IRequest<TResponse>`, handler implements `IRequestHandler<TCommand, TResponse>`
    - Shared `{Domain}Response.cs` at `Features/{Domain}/` — one response type for all operations on that domain
    - Optional `{Operation}Validator.cs` — extends `AbstractValidator<TCommand>`; `ValidationBehavior` skips if none registered

@@ -2,7 +2,7 @@ using MediatR;
 using Travel.Application.Exceptions;
 using Travel.Application.Interfaces;
 
-namespace Travel.Application.Features.TravelPlan.Queries.GetTravelPlan;
+namespace Travel.Application.Features.TravelPlan.Queries;
 
 public record GetTravelPlanQuery(Guid Id) : IRequest<TravelPlanResponse>;
 

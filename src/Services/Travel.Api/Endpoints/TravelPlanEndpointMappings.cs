@@ -1,10 +1,6 @@
 using MediatR;
-using Travel.Application.Features.TravelPlan;
-using Travel.Application.Features.TravelPlan.Commands.CreateTravelPlan;
-using Travel.Application.Features.TravelPlan.Commands.DeleteTravelPlan;
-using Travel.Application.Features.TravelPlan.Commands.UpdateTravelPlan;
-using Travel.Application.Features.TravelPlan.Queries.GetTravelPlan;
-using Travel.Application.Features.TravelPlan.Queries.ListTravelPlans;
+using Travel.Application.Features.TravelPlan.Commands;
+using Travel.Application.Features.TravelPlan.Queries;
 
 namespace Travel.Api.Endpoints;
 

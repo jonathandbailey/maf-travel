@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Travel.Application.Behaviors;
-using Travel.Application.Features.TravelPlan.Commands.CreateTravelPlan;
+using Travel.Application.Features.TravelPlan.Commands;
 
 namespace Travel.Application.Extensions;
 

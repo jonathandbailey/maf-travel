@@ -1,7 +1,7 @@
 using MediatR;
 using Travel.Application.Interfaces;
 
-namespace Travel.Application.Features.TravelPlan.Queries.ListTravelPlans;
+namespace Travel.Application.Features.TravelPlan.Queries;
 
 public record ListTravelPlansQuery : IRequest<IReadOnlyList<TravelPlanResponse>>;
 
