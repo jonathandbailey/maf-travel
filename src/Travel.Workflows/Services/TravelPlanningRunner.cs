@@ -92,7 +92,8 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
                 throw new WorkflowException("Workflow is already executing.");
 
             case WorkflowState.Completed:
-                throw new WorkflowException("Workflow has already completed and cannot be restarted.");
+                TransitionTo(WorkflowState.Executing);
+                return await InProcessExecution.RunStreamingAsync(workflow, request, checkpointManager);
 
             case WorkflowState.Failed:
                 throw new WorkflowException("Workflow has failed and cannot be restarted.");

@@ -41,6 +41,23 @@ public class SessionRepository(
         return new Session(document.Id, document.CreatedAt, document.TravelPlanId);
     }
 
+    public async Task<Session?> GetByTravelPlanIdAsync(Guid travelPlanId, CancellationToken cancellationToken = default)
+    {
+        if (!await storageRepository.ContainerExists(ContainerName))
+            return null;
+
+        var blobs = await storageRepository.ListBlobsAsync(ContainerName);
+        foreach (var blob in blobs)
+        {
+            var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
+            var document = JsonSerializer.Deserialize<SessionDocument>(json, JsonOptions);
+            if (document?.TravelPlanId == travelPlanId)
+                return new Session(document.Id, document.CreatedAt, document.TravelPlanId);
+        }
+
+        return null;
+    }
+
     public async Task UpdateAsync(Session session, CancellationToken cancellationToken = default)
     {
         if (!await storageRepository.BlobExists(BlobName(session.Id), ContainerName))

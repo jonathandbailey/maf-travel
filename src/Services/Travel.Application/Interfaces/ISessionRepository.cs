@@ -6,5 +6,6 @@ public interface ISessionRepository
 {
     Task AddAsync(Session session, CancellationToken cancellationToken = default);
     Task<Session> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Session?> GetByTravelPlanIdAsync(Guid travelPlanId, CancellationToken cancellationToken = default);
     Task UpdateAsync(Session session, CancellationToken cancellationToken = default);
 }

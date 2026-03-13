@@ -1,5 +1,6 @@
 using MediatR;
 using Travel.Application.Interfaces;
+using SessionModel = Travel.Application.Models.Session;
 using TravelPlanAggregate = Travel.Domain.Aggregates.TravelPlan;
 
 namespace Travel.Application.Features.TravelPlan.Commands;
@@ -13,6 +14,7 @@ public record CreateTravelPlanCommand(
 
 public class CreateTravelPlanCommandHandler(
     ITravelPlanRepository repository,
+    ISessionRepository sessionRepository,
     IPublisher publisher) : IRequestHandler<CreateTravelPlanCommand, TravelPlanResponse>
 {
     public async Task<TravelPlanResponse> Handle(CreateTravelPlanCommand command, CancellationToken cancellationToken)
@@ -26,11 +28,14 @@ public class CreateTravelPlanCommandHandler(
 
         await repository.AddAsync(plan, cancellationToken);
 
+        var session = new SessionModel(Guid.NewGuid(), DateTime.UtcNow, plan.Id);
+        await sessionRepository.AddAsync(session, cancellationToken);
+
         foreach (var domainEvent in plan.DomainEvents)
             await publisher.Publish(domainEvent, cancellationToken);
 
         plan.ClearDomainEvents();
 
-        return new TravelPlanResponse(plan.Id, plan.Origin, plan.Destination, plan.NumberOfTravelers, plan.StartDate, plan.EndDate);
+        return new TravelPlanResponse(plan.Id, plan.Origin, plan.Destination, plan.NumberOfTravelers, plan.StartDate, plan.EndDate, session.Id);
     }
 }

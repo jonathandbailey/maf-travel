@@ -5,6 +5,7 @@ export interface TravelPlanResponse {
     numberOfTravelers: number | null;
     startDate: string | null;
     endDate: string | null;
+    sessionId: string | null;
 }
 
 const BASE = `https://localhost:7168`;
