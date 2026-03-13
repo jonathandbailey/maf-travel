@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/source/github/maf-travel/**)",
+      "Bash(dotnet build:*)",
+      "Bash(find /c/source/github/maf-travel/src/Services/Travel.Api -not -path */bin/* -not -path */obj/* -type f)",
+      "Bash(grep -r \"IExceptionHandler\\\\|ExceptionHandler\\\\|ProblemDetails\\\\|Results.Problem\\\\|Results.ValidationProblem\" /c/source/github/maf-travel/src/Services --include=*.cs)",
+      "Bash(grep -r \"class.*Exception\\\\|throw new\\\\|catch\\\\|try {\" /c/source/github/maf-travel/src/Services --include=*.cs)",
+      "Bash(grep -r \"middleware\\\\|Middleware\\\\|exception\\\\|Exception\\\\|UseExceptionHandler\\\\|UseStatusCodePages\" /c/source/github/maf-travel/src/Services --include=*.cs)",
+      "Bash(xargs cat:*)",
+      "Bash(grep -v \"^d.*\\\\.$\")",
+      "Bash(find /c/source/github/maf-travel/src/Services -not -path */bin/* -not -path */obj/* -type f)"
+    ],
+    "additionalDirectories": [
+      "c:\\source\\github\\maf-travel"
+    ]
+  }
+}

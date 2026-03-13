@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Services\Travel.Api\Travel.Api.csproj" />
     <ProjectReference Include="..\Travel.Experience.Api\Travel.Experience.Api.csproj" />
     <ProjectReference Include="..\Travel.Storage.Init\Travel.Storage.Init.csproj" />
   </ItemGroup>

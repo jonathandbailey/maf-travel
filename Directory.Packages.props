@@ -6,6 +6,8 @@
   <ItemGroup>
     <PackageVersion Include="Azure.AI.OpenAI" Version="2.8.0-beta.1" />
     <PackageVersion Include="FluentAssertions" Version="8.8.0" />
+    <PackageVersion Include="FluentValidation" Version="11.4.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.4.0" />
     <!-- -->
     <PackageVersion Include="Microsoft.Agents.AI.Declarative" Version="1.0.0-rc2" />
     <PackageVersion Include="Microsoft.Agents.AI.Hosting.A2A" Version="1.0.0-preview.260225.1" />
@@ -51,7 +53,7 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.0" />
     <PackageVersion Include="Azure.Identity" Version="1.17.1" />
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.27.0" />
-    <PackageVersion Include="MediatR" Version="14.0.0" />
+    <PackageVersion Include="MediatR" Version="14.1.0" />
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
     <PackageVersion Include="coverlet.collector" Version="8.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
