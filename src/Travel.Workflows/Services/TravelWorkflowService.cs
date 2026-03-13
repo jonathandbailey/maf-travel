@@ -22,6 +22,8 @@ public class TravelWorkflowService(
     {
         var plan = await travelApiClient.GetPlanBySessionAsync(request.ThreadId, cancellationToken);
 
+        var id = plan.Id;
+
         var isNewSession = !await sessionRepository.ExistsAsync(request.ThreadId);
         if (isNewSession)
             request = request with { TravelPlan = plan };
@@ -41,7 +43,7 @@ public class TravelWorkflowService(
 
                 if (planState is not null)
                 {
-                    planState.Id = plan.Id;
+                    planState.Id = id;
                     try
                     {
                         await travelApiClient.UpdatePlanAsync(planState, cancellationToken);

@@ -7,7 +7,7 @@ import Welcome from "../features/travel/components/Welcome";
 import { useState } from "react";
 import { useChatAgent } from "../features/chat/hooks/useChatAgent";
 import { useTravelPlan } from "../features/travel/hooks/useTravelPlan";
-import { createSession } from '../app/services/sessionService';
+import { createSession, updateSession } from '../app/services/sessionService';
 import { useSessionStore } from '../app/store/sessionStore';
 import { useTravelPlanStore } from '../features/travel/store/travelPlanStore';
 import "./ChatPage.css";
@@ -19,7 +19,9 @@ const ChatPage = () => {
 
     useEffect(() => {
         createPlan();
-        createSession().then((session) => setSessionId(session.id));
+        createSession()
+            .then((session) => updateSession(session.id, id!).then(() => session))
+            .then((session) => setSessionId(session.id));
     }, [id, setSessionId, createPlan]);
 
     const [inputValue, setInputValue] = useState("");
