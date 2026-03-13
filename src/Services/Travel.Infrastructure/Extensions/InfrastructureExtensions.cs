@@ -17,11 +17,15 @@ public static class InfrastructureExtensions
         services.Configure<TravelPlanStorageSettings>(options =>
             configuration.GetSection("TravelPlanStorageSettings").Bind(options));
 
+        services.Configure<SessionStorageSettings>(options =>
+            configuration.GetSection("SessionStorageSettings").Bind(options));
+
         services.AddAzureClients(azure =>
             azure.AddBlobServiceClient(configuration.GetConnectionString("blobs")));
 
         services.AddSingleton<IAzureStorageRepository, AzureStorageRepository>();
         services.AddSingleton<ITravelPlanRepository, TravelPlanRepository>();
+        services.AddSingleton<ISessionRepository, SessionRepository>();
 
         return services;
     }

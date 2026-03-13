@@ -3,6 +3,8 @@ import { EventType, randomUUID, type BaseEvent, type StateSnapshotEvent, type Te
 import type { StatusUpdate } from "../domain/StatusUpdate";
 import { ChatAgentClient } from "../services/ChatAgentClient";
 import { useTravelPlanStore } from "../../travel/store/travelPlanStore";
+import { useSessionStore } from "../../../app/store/sessionStore";
+import { createSession } from "../../../app/services/sessionService";
 
 export interface ExchangeItem {
     id: string;
@@ -30,7 +32,7 @@ export function useChatAgent() {
     const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
     const [isStreaming, setIsStreaming] = useState(false);
 
-    const [client] = useState(() => new ChatAgentClient(AGENT_URL, randomUUID(), {
+    const [client] = useState(() => new ChatAgentClient(AGENT_URL, useSessionStore.getState().sessionId ?? randomUUID(), {
         onRunStarted: (exchangeId, userText) => {
             setExchanges((prev) => [...prev, { id: exchangeId, userContent: userText, statusUpdates: [] }]);
             setIsStreaming(true);
@@ -79,13 +81,21 @@ export function useChatAgent() {
     }));
 
     useEffect(() => {
-        return useTravelPlanStore.subscribe((state, prevState) => {
-            if (state.planVersion !== prevState.planVersion) {
-                setExchanges([]);
-                client.setThreadId(randomUUID());
+        return useSessionStore.subscribe((state, prevState) => {
+            if (state.sessionId && state.sessionId !== prevState.sessionId) {
+                client.setThreadId(state.sessionId);
             }
         });
     }, [client]);
+
+    useEffect(() => {
+        return useTravelPlanStore.subscribe((state, prevState) => {
+            if (state.planVersion !== prevState.planVersion) {
+                setExchanges([]);
+                createSession().then((session) => useSessionStore.getState().setSessionId(session.id));
+            }
+        });
+    }, []);
 
     const sendMessage = (text: string) => {
         if (!text.trim()) return;

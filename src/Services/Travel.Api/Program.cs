@@ -1,12 +1,15 @@
 using ServiceDefaults;
 using Travel.Api;
 using Travel.Api.Exceptions;
+using Travel.Api.Extensions;
 using Travel.Application.Extensions;
 using Travel.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+builder.AddCorsPolicyFromServiceDiscovery();
 
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
@@ -33,6 +36,8 @@ foreach (var endpoint in typeof(IEndpoint).Assembly.GetTypes()
 {
     endpoint.MapRoutes(app);
 }
+
+app.UseCorsPolicyServiceDiscovery();
 
 app.Run();
 
