@@ -2,7 +2,7 @@ using MediatR;
 using Travel.Application.Exceptions;
 using Travel.Application.Interfaces;
 
-namespace Travel.Application.Features.TravelPlan.Update;
+namespace Travel.Application.Features.TravelPlan.Commands.UpdateTravelPlan;
 
 public record UpdateTravelPlanCommand(
     Guid Id,

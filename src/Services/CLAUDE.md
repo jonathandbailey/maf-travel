@@ -23,11 +23,11 @@ Add an aggregate root under `Aggregates/{Name}/`, inheriting `AggregateRoot`. Ad
 ### Step 2 — Travel.Application: define the contract and use case
 
 1. Add a repository interface to `Interfaces/` (e.g. `ITravelPlanRepository.cs`)
-2. Create a vertical slice under `Features/{Domain}/{Operation}/`:
-   - `Command.cs` / `Query.cs` — implements `IRequest<TResponse>`
-   - `Handler.cs` — implements `IRequestHandler<TCommand, TResponse>`; injects the repository interface; publishes domain events via `IPublisher` after saving; throws `NotFoundException` (from `Exceptions/`) if a required resource is not found
-   - `Validator.cs` — extends `AbstractValidator<TCommand>`
-   - `Response.cs` — plain record, no domain types
+2. Create a vertical slice under `Features/{Domain}/Commands/{Operation}/` or `Features/{Domain}/Queries/{Operation}/`:
+   - `{Operation}Command.cs` / `{Operation}Query.cs` — command/query record and handler **co-located in the same file**; command implements `IRequest<TResponse>`, handler implements `IRequestHandler<TCommand, TResponse>`
+   - Shared `{Domain}Response.cs` at `Features/{Domain}/` — one response type for all operations on that domain
+   - Optional `{Operation}Validator.cs` — extends `AbstractValidator<TCommand>`; `ValidationBehavior` skips if none registered
+   - Handler publishes domain events via `IPublisher` after saving: iterate `aggregate.DomainEvents`, publish each, then call `aggregate.ClearDomainEvents()`; throws `NotFoundException` (from `Exceptions/`) if a required resource is not found
 
 The `ValidationBehavior<TRequest, TResponse>` pipeline behavior in `Behaviors/` runs FluentValidation automatically before every handler.
 

@@ -8,7 +8,8 @@
       "Bash(grep -r \"class.*Exception\\\\|throw new\\\\|catch\\\\|try {\" /c/source/github/maf-travel/src/Services --include=*.cs)",
       "Bash(grep -r \"middleware\\\\|Middleware\\\\|exception\\\\|Exception\\\\|UseExceptionHandler\\\\|UseStatusCodePages\" /c/source/github/maf-travel/src/Services --include=*.cs)",
       "Bash(xargs cat:*)",
-      "Bash(grep -v \"^d.*\\\\.$\")"
+      "Bash(grep -v \"^d.*\\\\.$\")",
+      "Bash(find /c/source/github/maf-travel/src/Services -not -path */bin/* -not -path */obj/* -type f)"
     ],
     "additionalDirectories": [
       "c:\\source\\github\\maf-travel"

@@ -2,7 +2,7 @@ using MediatR;
 using Travel.Application.Interfaces;
 using TravelPlanAggregate = Travel.Domain.Aggregates.TravelPlan;
 
-namespace Travel.Application.Features.TravelPlan.Create;
+namespace Travel.Application.Features.TravelPlan.Commands.CreateTravelPlan;
 
 public record CreateTravelPlanCommand(
     string? Origin,

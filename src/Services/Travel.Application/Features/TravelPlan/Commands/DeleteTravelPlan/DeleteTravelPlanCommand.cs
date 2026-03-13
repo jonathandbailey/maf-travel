@@ -1,7 +1,7 @@
 using MediatR;
 using Travel.Application.Interfaces;
 
-namespace Travel.Application.Features.TravelPlan.Delete;
+namespace Travel.Application.Features.TravelPlan.Commands.DeleteTravelPlan;
 
 public record DeleteTravelPlanCommand(Guid Id) : IRequest;
 
