@@ -1,0 +1,24 @@
+.dashboard-page {
+    padding: 24px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.dashboard-loading {
+    display: flex;
+    justify-content: center;
+    padding: 64px 0;
+}
+
+.dashboard-empty {
+    display: flex;
+    justify-content: center;
+    padding: 64px 0;
+}

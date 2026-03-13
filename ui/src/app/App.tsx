@@ -1,22 +1,15 @@
 import './App.css'
-import { useEffect } from 'react';
 import { Layout } from 'antd';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import ChatPage from '../pages/ChatPage';
+import DashboardPage from '../pages/DashboardPage';
 import RootHeader from './layout/RootHeader';
 import RootNavigationMenu from './layout/RootNavigationMenu';
 import ErrorBoundary from './ErrorBoundary';
-import { createSession } from './services/sessionService';
-import { useSessionStore } from './store/sessionStore';
 
 const { Header, Content, Sider } = Layout;
 
 function App() {
-  const setSessionId = useSessionStore((s) => s.setSessionId);
-
-  useEffect(() => {
-    createSession().then((session) => setSessionId(session.id));
-  }, [setSessionId]);
-
   return (
     <ErrorBoundary>
       <Layout className="app-layout">
@@ -26,7 +19,11 @@ function App() {
         <Layout className="app-body">
           <Sider width={250} className="app-sider"><RootNavigationMenu /></Sider>
           <Content className="app-content">
-            <ChatPage />
+            <Routes>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/travel-plans/:id" element={<ChatPage />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
           </Content>
         </Layout>
       </Layout>

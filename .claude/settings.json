@@ -30,7 +30,8 @@
       "Bash(dotnet build src/Travel.Workflows/Travel.Workflows.csproj -q)",
       "Bash(dotnet build MafTravel.sln -q)",
       "Bash(dotnet build src/Travel.Workflows/Travel.Workflows.csproj)",
-      "Bash(dotnet build src/Travel.Tests.Shared/Travel.Tests.Shared.csproj)"
+      "Bash(dotnet build src/Travel.Tests.Shared/Travel.Tests.Shared.csproj)",
+      "Bash(npm install:*)"
     ]
   }
 }
