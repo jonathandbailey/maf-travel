@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createTravelPlan } from '../../features/travel/services/travelPlanService';
 import './layout.css';
 
-const RootNavigationMenu = () => {
+const RootNavigationMenu = ({ collapsed }: { collapsed: boolean }) => {
     const navigate = useNavigate();
 
     const handleNewPlan = async () => {
@@ -15,6 +15,7 @@ const RootNavigationMenu = () => {
     return (
         <Menu
             mode="inline"
+            inlineCollapsed={collapsed}
             defaultSelectedKeys={['chat']}
             className="nav-menu"
             items={[
