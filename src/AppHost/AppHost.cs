@@ -25,6 +25,10 @@ var api = builder.AddProject<Projects.Travel_Experience_Api>("travel-experience-
     .WaitFor(blobs)
     .WaitForCompletion(storageInit);
 
-var ui = builder.AddUiServices(api);
+var gateway = builder.AddProject<Projects.Travel_Gateway>("travel-gateway");
+
+var ui = builder.AddUiServices(gateway);
+
+
 
 builder.Build().Run();
