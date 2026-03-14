@@ -8,7 +8,7 @@ namespace Travel.Workflows.Extensions;
 
 public static class ValidationExtensions
 {
-    public static void Validate(this TravelWorkflowRequest request)
+    public static void Validate(this WorkflowRunRequest request)
     {
         if (request.ThreadId == Guid.Empty)
         {

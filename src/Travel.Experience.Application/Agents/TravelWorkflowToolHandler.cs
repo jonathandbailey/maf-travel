@@ -3,7 +3,6 @@ using Microsoft.Extensions.AI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Agents.Tools;
-using Travel.Agents.Dto;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
 using Travel.Workflows.Events;
@@ -53,8 +52,7 @@ public sealed class TravelWorkflowToolHandler(Func<IWorkflowFactory> workflowFac
 
         var request = new TravelWorkflowRequest(
             new ChatMessage(ChatRole.User, details),
-            threadId,
-            new TravelPlanState());
+            threadId);
 
         await foreach (var evt in workflow.WatchStreamAsync(request, cancellationToken))
         {

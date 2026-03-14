@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.Agents.AI.Workflows;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
@@ -11,7 +11,7 @@ namespace Travel.Workflows.Nodes;
 public partial class StartNode() : Executor(NodeNames.StartNodeName)
 {
     [MessageHandler(Send = [typeof(TravelPlanExtractCommand)])]
-    private async ValueTask HandleAsync(TravelWorkflowRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
+    private async ValueTask HandleAsync(WorkflowRunRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
     {
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.StartNodeName, request.ThreadId);
 

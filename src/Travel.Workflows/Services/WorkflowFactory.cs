@@ -10,7 +10,7 @@ public class WorkflowFactory(
     ICheckpointRepository checkpointRepository,
     IWorkflowSessionRepository sessionRepository,
     IAgentProvider agentProvider,
-    ITravelPlanRepository travelPlanRepository,
+    ITravelApiClient travelApiClient,
     ILogger<TravelWorkflowService> logger) : IWorkflowFactory
 {
     public Task<TravelWorkflowService> Create()
@@ -19,7 +19,7 @@ public class WorkflowFactory(
             checkpointRepository,
             sessionRepository,
             agentProvider,
-            travelPlanRepository,
+            travelApiClient,
             logger);
 
         return Task.FromResult(workflowService);

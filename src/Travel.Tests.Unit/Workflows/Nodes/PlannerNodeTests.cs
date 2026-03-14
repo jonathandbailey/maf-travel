@@ -18,7 +18,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 
 public class PlannerNodeTests
 {
-    private static TravelWorkflowRequest CreateRequest(Guid threadId)
+    private static WorkflowRunRequest CreateRequest(Guid threadId)
         => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
     private static IChatClient CreateMockChatClientWithToolCall(string toolName)
@@ -226,10 +226,10 @@ public class PlannerNodeTests
     }
 
     // Sets context (threadId + travelPlan) then sends TravelPlanContextUpdated to PlannerNode
-    private class SetupNode(TravelPlanState travelPlan) : Executor<TravelWorkflowRequest, TravelPlanContextUpdated>("SetupNode")
+    private class SetupNode(TravelPlanState travelPlan) : Executor<WorkflowRunRequest, TravelPlanContextUpdated>("SetupNode")
     {
         public override async ValueTask<TravelPlanContextUpdated> HandleAsync(
-            TravelWorkflowRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
+            WorkflowRunRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(message.ThreadId, cancellationToken);
             await context.SetTravelPlan(travelPlan, cancellationToken);
@@ -238,10 +238,10 @@ public class PlannerNodeTests
     }
 
     // Sets threadId but does NOT set TravelPlan — triggers missing plan error
-    private class NoPlanSetupNode() : Executor<TravelWorkflowRequest, TravelPlanContextUpdated>("NoPlanSetupNode")
+    private class NoPlanSetupNode() : Executor<WorkflowRunRequest, TravelPlanContextUpdated>("NoPlanSetupNode")
     {
         public override async ValueTask<TravelPlanContextUpdated> HandleAsync(
-            TravelWorkflowRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
+            WorkflowRunRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(message.ThreadId, cancellationToken);
             return new TravelPlanContextUpdated();

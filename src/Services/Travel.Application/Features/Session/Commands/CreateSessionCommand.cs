@@ -11,10 +11,10 @@ public class CreateSessionCommandHandler(
 {
     public async Task<SessionResponse> Handle(CreateSessionCommand command, CancellationToken cancellationToken)
     {
-        var session = new SessionModel(Guid.NewGuid(), DateTime.UtcNow);
+        var session = new SessionModel(Guid.NewGuid(), DateTime.UtcNow, null);
 
         await repository.AddAsync(session, cancellationToken);
 
-        return new SessionResponse(session.Id, session.CreatedAt);
+        return new SessionResponse(session.Id, session.CreatedAt, session.TravelPlanId);
     }
 }

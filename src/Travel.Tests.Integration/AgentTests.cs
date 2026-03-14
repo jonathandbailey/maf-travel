@@ -26,7 +26,7 @@ public class AgentTests
 
         var agent = await AgentHelper.Create("planning.yaml", new PlanningToolsHandler().GetDeclarationOnlyTools());
 
-        var message = MessageHelper.CreateTravelPlanMessage(new TravelPlanState(Origin, Destination, DepartureDate, ReturnDate, NumberOfTravelers));
+        var message = MessageHelper.CreateTravelPlanMessage(new TravelPlanState(origin: Origin, destination: Destination, startDate: DepartureDate, endDate: ReturnDate, numberOfTravelers: NumberOfTravelers));
 
         var agentRunOptions = new ChatClientAgentRunOptions();
 
@@ -48,7 +48,7 @@ public class AgentTests
 
         var agent = await AgentHelper.Create("planning.yaml", new PlanningToolsHandler().GetDeclarationOnlyTools());
 
-        var message = MessageHelper.CreateTravelPlanMessage(new TravelPlanState(null, "Paris", new DateTime(2026, 5, 1)));
+        var message = MessageHelper.CreateTravelPlanMessage(new TravelPlanState(origin: null, destination: "Paris", startDate: new DateTime(2026, 5, 1)));
 
         var agentRunOptions = new ChatClientAgentRunOptions();
 

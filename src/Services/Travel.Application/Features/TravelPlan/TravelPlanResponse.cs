@@ -6,4 +6,5 @@ public record TravelPlanResponse(
     string? Destination,
     int? NumberOfTravelers,
     DateTime? StartDate,
-    DateTime? EndDate);
+    DateTime? EndDate,
+    Guid? SessionId = null);

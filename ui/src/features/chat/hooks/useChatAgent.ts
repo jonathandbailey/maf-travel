@@ -4,7 +4,6 @@ import type { StatusUpdate } from "../domain/StatusUpdate";
 import { ChatAgentClient } from "../services/ChatAgentClient";
 import { useTravelPlanStore } from "../../travel/store/travelPlanStore";
 import { useSessionStore } from "../../../app/store/sessionStore";
-import { createSession } from "../../../app/services/sessionService";
 
 export interface ExchangeItem {
     id: string;
@@ -92,7 +91,6 @@ export function useChatAgent() {
         return useTravelPlanStore.subscribe((state, prevState) => {
             if (state.planVersion !== prevState.planVersion) {
                 setExchanges([]);
-                createSession().then((session) => useSessionStore.getState().setSessionId(session.id));
             }
         });
     }, []);

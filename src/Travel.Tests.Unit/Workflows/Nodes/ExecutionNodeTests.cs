@@ -19,7 +19,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 
 public class ExecutionNodeTests
 {
-    private static TravelWorkflowRequest CreateRequest(Guid threadId)
+    private static WorkflowRunRequest CreateRequest(Guid threadId)
         => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
     private static IChatClient CreateMockChatClientWithPlanningComplete()
@@ -232,10 +232,10 @@ public class ExecutionNodeTests
     }
 
     // Sets threadId, runs the agent, and forwards the AgentResponse to ExecutionNode
-    private class SetupNode(AIAgent agent) : Executor<TravelWorkflowRequest, AgentResponse>("SetupNode")
+    private class SetupNode(AIAgent agent) : Executor<WorkflowRunRequest, AgentResponse>("SetupNode")
     {
         public override async ValueTask<AgentResponse> HandleAsync(
-            TravelWorkflowRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
+            WorkflowRunRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(message.ThreadId, cancellationToken);
             return await agent.RunAsync("test", cancellationToken: cancellationToken);

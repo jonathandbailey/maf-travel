@@ -10,7 +10,7 @@ namespace Travel.Workflows.Infrastructure;
 public interface IWorkflowSessionRepository
 {
     Task<bool> ExistsAsync(Guid threadId);
-    Task<WorkflowSession?> LoadAsync(Guid threadId);
+    Task<WorkflowSession> LoadAsync(Guid threadId);
     Task SaveAsync(WorkflowSession session);
 }
 
@@ -27,11 +27,13 @@ public class WorkflowSessionRepository(IFileRepository fileRepository, IOptions<
     public Task<bool> ExistsAsync(Guid threadId) =>
         fileRepository.ExistsAsync(BuildPath($"{threadId}-session.json"));
 
-    public async Task<WorkflowSession?> LoadAsync(Guid threadId)
+    public async Task<WorkflowSession> LoadAsync(Guid threadId)
     {
         var path = BuildPath($"{threadId}-session.json");
         var content = await fileRepository.LoadAsync(path);
-        return JsonSerializer.Deserialize<WorkflowSession>(content, SerializerOptions);
+        var deserialized = JsonSerializer.Deserialize<WorkflowSession>(content, SerializerOptions);
+
+        return deserialized ?? throw new JsonException("Failed to deserialize WorkflowSession.");
     }
 
     public async Task SaveAsync(WorkflowSession session)

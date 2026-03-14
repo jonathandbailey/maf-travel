@@ -13,7 +13,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 
 public class InformationRequestNodeTests
 {
-    private static TravelWorkflowRequest CreateRequest(Guid threadId)
+    private static WorkflowRunRequest CreateRequest(Guid threadId)
         => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
     private static TravelPlanningRunner SetupRunner(Guid threadId, RequestInformationCommand command)
@@ -92,10 +92,10 @@ public class InformationRequestNodeTests
 
     // Sets threadId then forwards the RequestInformationCommand to InformationRequestNode
     private class SetupNode(RequestInformationCommand command)
-        : Executor<TravelWorkflowRequest, RequestInformationCommand>("SetupNode")
+        : Executor<WorkflowRunRequest, RequestInformationCommand>("SetupNode")
     {
         public override async ValueTask<RequestInformationCommand> HandleAsync(
-            TravelWorkflowRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
+            WorkflowRunRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(request.ThreadId, cancellationToken);
             return command;

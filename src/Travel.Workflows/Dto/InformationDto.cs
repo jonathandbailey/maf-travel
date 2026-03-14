@@ -9,7 +9,7 @@ public record InformationResponse(ChatMessage Message);
 
 public record InformationRequestDetails(string Context, List<string> Entities);
 
-public record TravelPlanUpdateCommand(TravelPlanState TravelPlan);
+public record TravelPlanUpdateCommand(TravelPlanData Data);
 
 public record TravelPlanSummary(TravelPlanState travelPlanSummary);
 

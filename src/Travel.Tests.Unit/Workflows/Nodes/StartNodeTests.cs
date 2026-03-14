@@ -14,7 +14,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 
 public class StartNodeTests
 {
-    private static TravelWorkflowRequest CreateRequest(
+    private static WorkflowRunRequest CreateRequest(
         Guid? threadId = null,
         string message = "I want to travel to Paris",
         ChatRole? role = null,
@@ -22,7 +22,7 @@ public class StartNodeTests
     {
         var id = threadId ?? Guid.NewGuid();
         var chatMessage = new ChatMessage(role ?? ChatRole.User, message);
-        return new TravelWorkflowRequest(chatMessage, id, travelPlan ?? new TravelPlanState());
+        return new WorkflowRunRequest(chatMessage, id, travelPlan ?? new TravelPlanState());
     }
 
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(Guid? sessionThreadId = null)
