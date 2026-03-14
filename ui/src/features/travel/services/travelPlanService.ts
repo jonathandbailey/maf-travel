@@ -8,10 +8,10 @@ export interface TravelPlanResponse {
     sessionId: string | null;
 }
 
-const BASE = `https://localhost:7168`;
+const BASE = `${import.meta.env.VITE_API_BASE_URL}/api`;
 
 export async function createTravelPlan(): Promise<TravelPlanResponse> {
-    const response = await fetch(`${BASE}/travel-plans`, {
+    const response = await fetch(`${BASE}/travel/plans`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
@@ -21,13 +21,13 @@ export async function createTravelPlan(): Promise<TravelPlanResponse> {
 }
 
 export async function listTravelPlans(): Promise<TravelPlanResponse[]> {
-    const response = await fetch(`${BASE}/travel-plans`);
+    const response = await fetch(`${BASE}/travel/plans`);
     if (!response.ok) throw new Error(`Failed to list travel plans: ${response.status}`);
     return response.json();
 }
 
 export async function getTravelPlan(id: string): Promise<TravelPlanResponse> {
-    const response = await fetch(`${BASE}/travel-plans/${id}`);
+    const response = await fetch(`${BASE}/travel/plans/${id}`);
     if (!response.ok) throw new Error(`Failed to get travel plan: ${response.status}`);
     return response.json();
 }
