@@ -18,10 +18,10 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 
 public class ExtractionNodeTests
 {
-    private static TravelWorkflowRequest CreateRequest(Guid threadId, string message = "I want to travel to Paris")
+    private static WorkflowRunRequest CreateRequest(Guid threadId, string message = "I want to travel to Paris")
         => new(new ChatMessage(ChatRole.User, message), threadId, new TravelPlanState());
 
-    private static IChatClient CreateMockChatClient(TravelPlanState travelPlan)
+    private static IChatClient CreateMockChatClient(TravelPlanData travelPlan)
     {
         var mockChatClient = new Mock<IChatClient>();
 
@@ -85,7 +85,7 @@ public class ExtractionNodeTests
 
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(
         ExtractionNode extractionNode,
-        Func<TravelWorkflowRequest, TravelPlanExtractCommand>? commandFactory = null)
+        Func<WorkflowRunRequest, TravelPlanExtractCommand>? commandFactory = null)
     {
         var factory = commandFactory ?? (req => new TravelPlanExtractCommand(req.Message));
         var setupNode = new SetupNode(factory);
@@ -108,7 +108,7 @@ public class ExtractionNodeTests
     public async Task HandleAsync_ShouldSendTravelPlanUpdateCommand_WithExtractedPlan()
     {
         var threadId = Guid.NewGuid();
-        var expectedPlan = new TravelPlanState { Origin = "London", Destination = "Paris" };
+        var expectedPlan = new TravelPlanData(Origin: "London", Destination: "Paris");
         var extractionNode = await CreateExtractionNode(CreateMockChatClient(expectedPlan));
         var (runner, capturingNode) = SetupRunner(extractionNode);
         var request = CreateRequest(threadId);
@@ -116,8 +116,8 @@ public class ExtractionNodeTests
         await foreach (var _ in runner.WatchStreamAsync(request, CancellationToken.None)) { }
 
         capturingNode.CapturedCommand.Should().NotBeNull();
-        capturingNode.CapturedCommand!.TravelPlan.Origin.Should().Be("London");
-        capturingNode.CapturedCommand.TravelPlan.Destination.Should().Be("Paris");
+        capturingNode.CapturedCommand!.Data.Origin.Should().Be("London");
+        capturingNode.CapturedCommand.Data.Destination.Should().Be("Paris");
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class ExtractionNodeTests
     public async Task HandleAsync_ShouldEmitTravelPlanStatusUpdateEvent_AfterAgentResponds()
     {
         var threadId = Guid.NewGuid();
-        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanState()));
+        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanData()));
         var (runner, _) = SetupRunner(extractionNode);
         var request = CreateRequest(threadId);
 
@@ -141,7 +141,7 @@ public class ExtractionNodeTests
     public async Task HandleAsync_ShouldEmitStatusUpdate_WithExtractionNodeSource()
     {
         var threadId = Guid.NewGuid();
-        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanState()));
+        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanData()));
         var (runner, _) = SetupRunner(extractionNode);
         var request = CreateRequest(threadId);
 
@@ -158,7 +158,7 @@ public class ExtractionNodeTests
     public async Task HandleAsync_ShouldEmitErrorEvent_WhenMessageTextIsEmpty()
     {
         var threadId = Guid.NewGuid();
-        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanState()));
+        var extractionNode = await CreateExtractionNode(CreateMockChatClient(new TravelPlanData()));
         var (runner, _) = SetupRunner(
             extractionNode,
             commandFactory: _ => new TravelPlanExtractCommand(new ChatMessage(ChatRole.User, "")));
@@ -217,11 +217,11 @@ public class ExtractionNodeTests
         runner.Session.State.Should().Be(WorkflowState.Failed);
     }
 
-    private class SetupNode(Func<TravelWorkflowRequest, TravelPlanExtractCommand> commandFactory)
-        : Executor<TravelWorkflowRequest, TravelPlanExtractCommand>("SetupNode")
+    private class SetupNode(Func<WorkflowRunRequest, TravelPlanExtractCommand> commandFactory)
+        : Executor<WorkflowRunRequest, TravelPlanExtractCommand>("SetupNode")
     {
         public override async ValueTask<TravelPlanExtractCommand> HandleAsync(
-            TravelWorkflowRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
+            WorkflowRunRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(message.ThreadId, cancellationToken);
             await context.SetTravelPlan(message.TravelPlan, cancellationToken);
@@ -237,7 +237,7 @@ public class ExtractionNodeTests
             TravelPlanUpdateCommand command, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             CapturedCommand = command;
-            await context.AddEventAsync(new TravelPlanningCompleteEvent(command.TravelPlan), cancellationToken);
+            await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanState()), cancellationToken);
         }
     }
 }

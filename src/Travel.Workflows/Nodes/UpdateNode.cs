@@ -19,7 +19,7 @@ public partial class UpdateNode() : Executor(NodeNames.UpdateNode)
 
         using var activity = TravelWorkflowTelemetry.InvokeNode(NodeNames.UpdateNode, threadId);
 
-        if (command.TravelPlan == null)
+        if (command.Data == null)
         {
             throw new WorkflowValidationException("UpdateNode received a command with a null TravelPlan.", NodeNames.UpdateNode, threadId);
         }
@@ -30,7 +30,7 @@ public partial class UpdateNode() : Executor(NodeNames.UpdateNode)
 
             activity?.AddTravelPlanStateSnapshotBefore(travelPlan);
 
-            travelPlan.ApplyPatch(command.TravelPlan);
+            travelPlan.ApplyPatch(command.Data);
 
             activity?.AddTravelPlanStateSnapshotAfter(travelPlan);
 

@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using Infrastructure.Repository;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Logging;
+using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
 using Travel.Workflows.Dto;
@@ -22,70 +23,68 @@ public class TravelWorkflowService(
     {
         var plan = await travelApiClient.GetPlanBySessionAsync(request.ThreadId, cancellationToken);
 
-        var id = plan.Id;
+        var runRequest = new WorkflowRunRequest(request.Message, request.ThreadId, plan);
 
-        var isNewSession = !await sessionRepository.ExistsAsync(request.ThreadId);
-        if (isNewSession)
-            request = request with { TravelPlan = plan };
-
-        var runner = await CreateRunnerAsync(request);
+        var runner = await CreateRunnerAsync(request.ThreadId);
 
         try
         {
-            await foreach (var evt in runner.WatchStreamAsync(request, cancellationToken))
+            await foreach (var evt in runner.WatchStreamAsync(runRequest, cancellationToken))
             {
-                var planState = evt switch
-                {
-                    TravelPlanUpdateEvent e => e.TravelPlanState,
-                    TravelPlanningCompleteEvent e => e.TravelPlan,
-                    _ => null
-                };
-
-                if (planState is not null)
-                {
-                    planState.Id = id;
-                    try
-                    {
-                        await travelApiClient.UpdatePlanAsync(planState, cancellationToken);
-                    }
-                    catch (Exception ex) { logger.LogWarning(ex, "Failed to save travel plan for thread {ThreadId}.", request.ThreadId); }
-                }
+                if (evt is TravelPlanUpdateEvent planUpdateEvt)
+                    await TrySavePlanAsync(planUpdateEvt.TravelPlanState, request.ThreadId, cancellationToken);
+                else if (evt is TravelPlanningCompleteEvent completeEvt)
+                    await TrySavePlanAsync(completeEvt.TravelPlan, request.ThreadId, cancellationToken);
 
                 yield return evt;
             }
         }
         finally
         {
-            var state = runner.Session.State is WorkflowState.Suspended or WorkflowState.Completed
-                ? runner.Session.State
-                : WorkflowState.Failed;
-
-            try
-            {
-                await sessionRepository.SaveAsync(new WorkflowSession(
-                    request.ThreadId,
-                    state,
-                    runner.Session.LastCheckpoint));
-            }
-            catch (Exception ex) { logger.LogWarning(ex, "Failed to save session state for thread {ThreadId}.", request.ThreadId); }
+            await TrySaveSessionAsync(runner, request.ThreadId);
         }
     }
 
-    private async Task<TravelPlanningRunner> CreateRunnerAsync(TravelWorkflowRequest request)
+    private async Task<TravelPlanningRunner> CreateRunnerAsync(Guid threadId)
     {
-        var loaded = await sessionRepository.ExistsAsync(request.ThreadId)
-            ? await sessionRepository.LoadAsync(request.ThreadId)
-            : null;
-        var session = loaded ?? new WorkflowSession(request.ThreadId, WorkflowState.Created, null);
+        var session = await sessionRepository.ExistsAsync(threadId)
+            ? await sessionRepository.LoadAsync(threadId)
+            : new WorkflowSession(threadId, WorkflowState.Created, null);
 
         var planningTask = agentProvider.CreateAsync(AgentType.Planning);
         var extractingTask = agentProvider.CreateAsync(AgentType.Extracting);
+
         await Task.WhenAll(planningTask, extractingTask);
 
         var workflow = TravelWorkflowBuilder.Build(planningTask.Result, extractingTask.Result);
 
-        var checkpointManager = CheckpointManager.CreateJson(new CheckpointStore(checkpointRepository, request.ThreadId));
+        var checkpointManager = CheckpointManager.CreateJson(new CheckpointStore(checkpointRepository, threadId));
 
         return new TravelPlanningRunner(workflow, checkpointManager, session);
+    }
+
+    private async Task TrySavePlanAsync(TravelPlanState planState, Guid threadId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await travelApiClient.UpdatePlanAsync(planState, cancellationToken);
+        }
+        catch (Exception ex) { logger.LogWarning(ex, "Failed to save travel plan for thread {ThreadId}.", threadId); }
+    }
+
+    private async Task TrySaveSessionAsync(TravelPlanningRunner runner, Guid threadId)
+    {
+        var state = runner.Session.State is WorkflowState.Suspended or WorkflowState.Completed
+            ? runner.Session.State
+            : WorkflowState.Failed;
+
+        try
+        {
+            await sessionRepository.SaveAsync(new WorkflowSession(
+                threadId,
+                state,
+                runner.Session.LastCheckpoint));
+        }
+        catch (Exception ex) { logger.LogWarning(ex, "Failed to save session state for thread {ThreadId}.", threadId); }
     }
 }

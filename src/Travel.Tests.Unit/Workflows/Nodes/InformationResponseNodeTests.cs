@@ -13,7 +13,7 @@ namespace Travel.Tests.Unit.Workflows.Nodes;
 
 public class InformationResponseNodeTests
 {
-    private static TravelWorkflowRequest CreateRequest(Guid threadId)
+    private static WorkflowRunRequest CreateRequest(Guid threadId)
         => new(new ChatMessage(ChatRole.User, "test"), threadId, new TravelPlanState());
 
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(
@@ -90,10 +90,10 @@ public class InformationResponseNodeTests
 
     // Sets threadId and forwards InformationResponse to InformationResponseNode
     private class SetupNode(ChatMessage message)
-        : Executor<TravelWorkflowRequest, InformationResponse>("SetupNode")
+        : Executor<WorkflowRunRequest, InformationResponse>("SetupNode")
     {
         public override async ValueTask<InformationResponse> HandleAsync(
-            TravelWorkflowRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
+            WorkflowRunRequest request, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(request.ThreadId, cancellationToken);
             return new InformationResponse(message);

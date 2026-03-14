@@ -24,9 +24,9 @@ public class WorkflowMockTestHarness
 
     public async Task<List<WorkflowEvent>> WatchStreamAsync(string message, List<AgentFactoryHelper.AgentCreateMeta> metas)
     {
-        var workflowService = await Create(message, metas);
+        var workflowService = await Create(metas);
 
-        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, message), _threadId, new TravelPlanState());
+        var request = new TravelWorkflowRequest(new ChatMessage(ChatRole.User, message), _threadId);
 
         var events = await workflowService.WatchStreamAsync(request).ToListAsync();
 
@@ -35,7 +35,7 @@ public class WorkflowMockTestHarness
         return events;
     }
 
-    public async Task<TravelWorkflowService> Create(string message, List<AgentFactoryHelper.AgentCreateMeta> metas)
+    public async Task<TravelWorkflowService> Create(List<AgentFactoryHelper.AgentCreateMeta> metas)
     {
         var agentProvider = new Mock<IAgentProvider>();
 
@@ -57,9 +57,13 @@ public class WorkflowMockTestHarness
                 .ReturnsAsync(agent);
         }
 
-        var workflowService = new TravelWorkflowService(_checkpointRepository, _sessionRepository, agentProvider.Object, new Mock<ITravelApiClient>().Object, NullLogger<TravelWorkflowService>.Instance);
+        var travelApiClient = new Mock<ITravelApiClient>();
+        travelApiClient
+            .Setup(x => x.GetPlanBySessionAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TravelPlanState());
+
+        var workflowService = new TravelWorkflowService(_checkpointRepository, _sessionRepository, agentProvider.Object, travelApiClient.Object, NullLogger<TravelWorkflowService>.Instance);
 
         return workflowService;
     }
-    
 }

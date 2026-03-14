@@ -1,4 +1,6 @@
-﻿namespace Travel.Workflows.Extensions;
+﻿using Travel.Agents.Dto;
+
+namespace Travel.Workflows.Extensions;
 
 public static class StateExtensions
 {
@@ -14,5 +16,14 @@ public static class StateExtensions
                 prop.SetValue(target, patchValue);
             }
         }
+    }
+
+    public static void ApplyPatch(this TravelPlanState target, TravelPlanData patch)
+    {
+        if (patch.Origin != null) target.Origin = patch.Origin;
+        if (patch.Destination != null) target.Destination = patch.Destination;
+        if (patch.StartDate != null) target.StartDate = patch.StartDate;
+        if (patch.EndDate != null) target.EndDate = patch.EndDate;
+        if (patch.NumberOfTravelers != null) target.NumberOfTravelers = patch.NumberOfTravelers;
     }
 }

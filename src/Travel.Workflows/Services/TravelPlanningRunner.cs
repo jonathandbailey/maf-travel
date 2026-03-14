@@ -13,7 +13,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
 
     public WorkflowSession Session => _session;
 
-    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(TravelWorkflowRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<WorkflowEvent> WatchStreamAsync(WorkflowRunRequest request, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(request.Message.Text))
         {
@@ -74,7 +74,7 @@ public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpoin
         }
     }
 
-    private async ValueTask<StreamingRun> CreateWorkflowRun(TravelWorkflowRequest request)
+    private async ValueTask<StreamingRun> CreateWorkflowRun(WorkflowRunRequest request)
     {
         switch (_session.State)
         {

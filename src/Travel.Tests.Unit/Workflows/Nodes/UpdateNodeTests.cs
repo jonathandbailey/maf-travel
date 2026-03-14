@@ -15,12 +15,12 @@ public class UpdateNodeTests
 {
     private static (TravelPlanningRunner runner, CapturingNode capturingNode) SetupRunner(
         TravelPlanState? initialPlan = null,
-        TravelPlanState? patchPlan = null,
+        TravelPlanData? patchData = null,
         Guid? sessionThreadId = null)
     {
         var threadId = sessionThreadId ?? Guid.NewGuid();
         var resolvedInitial = initialPlan ?? new TravelPlanState();
-        var resolvedPatch = patchPlan ?? new TravelPlanState();
+        var resolvedPatch = patchData ?? new TravelPlanData();
 
         var setupNode = new SetupNode(threadId, resolvedInitial, resolvedPatch);
         var updateNode = new UpdateNode();
@@ -37,10 +37,10 @@ public class UpdateNodeTests
         return (runner, capturingNode);
     }
 
-    private static TravelWorkflowRequest CreateRequest(Guid? threadId = null)
+    private static WorkflowRunRequest CreateRequest(Guid? threadId = null)
     {
         var id = threadId ?? Guid.NewGuid();
-        return new TravelWorkflowRequest(new ChatMessage(ChatRole.User, "test"), id, new TravelPlanState());
+        return new WorkflowRunRequest(new ChatMessage(ChatRole.User, "test"), id, new TravelPlanState());
     }
 
     [Fact]
@@ -49,7 +49,7 @@ public class UpdateNodeTests
     {
         var threadId = Guid.NewGuid();
         var initial = new TravelPlanState { Origin = "London" };
-        var patch = new TravelPlanState { Destination = "Paris" };
+        var patch = new TravelPlanData(Destination: "Paris");
         var (runner, capturingNode) = SetupRunner(initial, patch, threadId);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -65,7 +65,7 @@ public class UpdateNodeTests
     {
         var threadId = Guid.NewGuid();
         var initial = new TravelPlanState { Origin = "London", Destination = "Rome" };
-        var patch = new TravelPlanState { Destination = "Paris" }; // Origin is null in patch
+        var patch = new TravelPlanData(Destination: "Paris"); // Origin is null in patch
         var (runner, capturingNode) = SetupRunner(initial, patch, threadId);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -80,7 +80,7 @@ public class UpdateNodeTests
     {
         var threadId = Guid.NewGuid();
         var initial = new TravelPlanState();
-        var patch = new TravelPlanState { Origin = "Berlin", Destination = "Tokyo", NumberOfTravelers = 3 };
+        var patch = new TravelPlanData(Origin: "Berlin", Destination: "Tokyo", NumberOfTravelers: 3);
         var (runner, capturingNode) = SetupRunner(initial, patch, threadId);
 
         await foreach (var _ in runner.WatchStreamAsync(CreateRequest(threadId), CancellationToken.None)) { }
@@ -109,7 +109,7 @@ public class UpdateNodeTests
     public async Task HandleAsync_ShouldEmitTravelPlanUpdateEvent_WithUpdatedPlan()
     {
         var threadId = Guid.NewGuid();
-        var patch = new TravelPlanState { Origin = "Sydney", Destination = "Auckland" };
+        var patch = new TravelPlanData(Origin: "Sydney", Destination: "Auckland");
         var (runner, _) = SetupRunner(new TravelPlanState(), patch, threadId);
 
         var events = new List<WorkflowEvent>();
@@ -164,24 +164,24 @@ public class UpdateNodeTests
     }
 
     // Sets up context with initial plan and thread ID, then sends TravelPlanUpdateCommand with the patch
-    private class SetupNode(Guid threadId, TravelPlanState initialPlan, TravelPlanState patchPlan)
-        : Executor<TravelWorkflowRequest, TravelPlanUpdateCommand>("SetupNode")
+    private class SetupNode(Guid threadId, TravelPlanState initialPlan, TravelPlanData patchData)
+        : Executor<WorkflowRunRequest, TravelPlanUpdateCommand>("SetupNode")
     {
         public override async ValueTask<TravelPlanUpdateCommand> HandleAsync(
-            TravelWorkflowRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
+            WorkflowRunRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(threadId, cancellationToken);
             await context.SetTravelPlan(initialPlan, cancellationToken);
-            return new TravelPlanUpdateCommand(patchPlan);
+            return new TravelPlanUpdateCommand(patchData);
         }
     }
 
-    // Sends a TravelPlanUpdateCommand with a null TravelPlan to trigger validation failure
+    // Sends a TravelPlanUpdateCommand with a null Data to trigger validation failure
     private class NullPlanSetupNode(Guid threadId)
-        : Executor<TravelWorkflowRequest, TravelPlanUpdateCommand>("NullPlanSetupNode")
+        : Executor<WorkflowRunRequest, TravelPlanUpdateCommand>("NullPlanSetupNode")
     {
         public override async ValueTask<TravelPlanUpdateCommand> HandleAsync(
-            TravelWorkflowRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
+            WorkflowRunRequest message, IWorkflowContext context, CancellationToken cancellationToken = default)
         {
             await context.SetThreadId(threadId, cancellationToken);
             await context.SetTravelPlan(new TravelPlanState(), cancellationToken);

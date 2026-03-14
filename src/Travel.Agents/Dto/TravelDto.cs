@@ -1,9 +1,14 @@
-﻿using System.Text.Json.Serialization;
-
 namespace Travel.Agents.Dto;
 
 
 public record RequestInformationDto(string Message, string Thought, List<string> RequiredInputs);
+
+public record TravelPlanData(
+    string? Origin = null,
+    string? Destination = null,
+    DateTime? StartDate = null,
+    DateTime? EndDate = null,
+    int? NumberOfTravelers = null);
 
 public class TravelPlanState(
     Guid id = default,
@@ -13,7 +18,6 @@ public class TravelPlanState(
     DateTime? endDate = null,
     int? numberOfTravelers = null)
 {
-    [JsonIgnore]
     public Guid Id { get; set; } = id;
     public string? Origin { get; set; } = origin;
     public string? Destination { get; set; } = destination;

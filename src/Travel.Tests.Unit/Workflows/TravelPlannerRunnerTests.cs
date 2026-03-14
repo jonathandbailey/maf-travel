@@ -12,10 +12,10 @@ namespace Travel.Tests.Unit.Workflows;
 
 public class TravelPlannerRunnerTests
 {
-    private static TravelWorkflowRequest CreateRequest(Guid threadId) =>
+    private static WorkflowRunRequest CreateRequest(Guid threadId) =>
         new(new ChatMessage(ChatRole.User, "Test message"), threadId, new TravelPlanState());
 
-    private static (TravelPlanningRunner runner, TravelWorkflowRequest request) SetupRunner(
+    private static (TravelPlanningRunner runner, WorkflowRunRequest request) SetupRunner(
         Executor startNode,
         WorkflowState state = WorkflowState.Created,
         CheckpointInfo? checkpoint = null)
@@ -160,16 +160,16 @@ public class TravelPlannerRunnerTests
     [Fact]
     [Trait("Category", "Unit")]
 
-    public async Task WatchStreamAsync_ShouldThrow_WorkflowException_WhenState_IsCompleted()
+    public async Task WatchStreamAsync_ShouldRestartWorkflow_WhenState_IsCompleted()
     {
         var (runner, request) = SetupRunner(new CompletingNode(), WorkflowState.Completed);
+        var events = new List<WorkflowEvent>();
 
-        var act = async () =>
-        {
-            await foreach (var _ in runner.WatchStreamAsync(request, CancellationToken.None)) { }
-        };
+        await foreach (var evt in runner.WatchStreamAsync(request, CancellationToken.None))
+            events.Add(evt);
 
-        await act.Should().ThrowAsync<WorkflowException>();
+        events.Should().ContainSingle(e => e is TravelPlanningCompleteEvent);
+        runner.Session.State.Should().Be(WorkflowState.Completed);
     }
 
     [Fact]
@@ -187,36 +187,36 @@ public class TravelPlannerRunnerTests
         await act.Should().ThrowAsync<WorkflowException>();
     }
 
-    private class CompletingNode() : Executor<TravelWorkflowRequest>("CompletingNode")
+    private class CompletingNode() : Executor<WorkflowRunRequest>("CompletingNode")
     {
-        public override async ValueTask HandleAsync(TravelWorkflowRequest message, IWorkflowContext context,
+        public override async ValueTask HandleAsync(WorkflowRunRequest message, IWorkflowContext context,
             CancellationToken cancellationToken = default)
         {
             await context.AddEventAsync(new TravelPlanningCompleteEvent(new TravelPlanState()), cancellationToken);
         }
     }
 
-    private class StatusUpdateNode() : Executor<TravelWorkflowRequest>("StatusUpdateNode")
+    private class StatusUpdateNode() : Executor<WorkflowRunRequest>("StatusUpdateNode")
     {
-        public override async ValueTask HandleAsync(TravelWorkflowRequest message, IWorkflowContext context,
+        public override async ValueTask HandleAsync(WorkflowRunRequest message, IWorkflowContext context,
             CancellationToken cancellationToken = default)
         {
             await context.AddEventAsync(new TravelPlanStatusUpdateEvent("Processing"), cancellationToken);
         }
     }
 
-    private class PlanUpdateNode() : Executor<TravelWorkflowRequest>("PlanUpdateNode")
+    private class PlanUpdateNode() : Executor<WorkflowRunRequest>("PlanUpdateNode")
     {
-        public override async ValueTask HandleAsync(TravelWorkflowRequest message, IWorkflowContext context,
+        public override async ValueTask HandleAsync(WorkflowRunRequest message, IWorkflowContext context,
             CancellationToken cancellationToken = default)
         {
             await context.AddEventAsync(new TravelPlanUpdateEvent(new TravelPlanState()), cancellationToken);
         }
     }
 
-    private class SuspendNode() : Executor<TravelWorkflowRequest, InformationRequest>("SuspendNode")
+    private class SuspendNode() : Executor<WorkflowRunRequest, InformationRequest>("SuspendNode")
     {
-        public override async ValueTask<InformationRequest> HandleAsync(TravelWorkflowRequest message, IWorkflowContext context,
+        public override async ValueTask<InformationRequest> HandleAsync(WorkflowRunRequest message, IWorkflowContext context,
             CancellationToken cancellationToken = default)
         {
             return new InformationRequest("Please provide more details", new List<string>());
