@@ -18,7 +18,7 @@ public class TravelApiClient(HttpClient httpClient) : ITravelApiClient
             throw new InvalidOperationException($"Session '{sessionId}' has no linked travel plan.");
 
         var plan = await httpClient.GetFromJsonAsync<TravelPlanResponse>(
-            $"/travel-plans/{session.TravelPlanId}", cancellationToken);
+            $"api/travel/plans/{session.TravelPlanId}", cancellationToken);
 
         if (plan is null)
             throw new InvalidOperationException($"Travel plan '{session.TravelPlanId}' was not found.");
@@ -42,7 +42,7 @@ public class TravelApiClient(HttpClient httpClient) : ITravelApiClient
             plan.EndDate);
 
         var response = await httpClient.PutAsJsonAsync(
-            $"/travel-plans/{plan.Id}", request, cancellationToken);
+            $"api/travel/plans/{plan.Id}", request, cancellationToken);
 
         response.EnsureSuccessStatusCode();
     }

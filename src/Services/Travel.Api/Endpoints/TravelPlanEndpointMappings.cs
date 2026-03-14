@@ -8,7 +8,7 @@ public class TravelPlanEndpointMappings : IEndpoint
 {
     public void MapRoutes(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/travel-plans");
+        var group = app.MapGroup("api/travel/plans");
         group.MapPost("", CreateAsync);
         group.MapGet("", ListAsync);
         group.MapGet("/{id:guid}", GetAsync);
@@ -21,7 +21,7 @@ public class TravelPlanEndpointMappings : IEndpoint
         var response = await sender.Send(new CreateTravelPlanCommand(
             request.Origin, request.Destination, request.NumberOfTravelers,
             request.StartDate, request.EndDate));
-        return Results.Created($"/travel-plans/{response.Id}", response);
+        return Results.Created($"api/travel/plans/{response.Id}", response);
     }
 
     private static async Task<IResult> ListAsync(ISender sender)
