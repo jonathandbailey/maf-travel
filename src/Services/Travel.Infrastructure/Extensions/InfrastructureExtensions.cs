@@ -20,12 +20,16 @@ public static class InfrastructureExtensions
         services.Configure<SessionStorageSettings>(options =>
             configuration.GetSection("SessionStorageSettings").Bind(options));
 
+        services.Configure<FlightSearchStorageSettings>(options =>
+            configuration.GetSection("FlightSearchStorageSettings").Bind(options));
+
         services.AddAzureClients(azure =>
             azure.AddBlobServiceClient(configuration.GetConnectionString("blobs")));
 
         services.AddSingleton<IAzureStorageRepository, AzureStorageRepository>();
         services.AddSingleton<ITravelPlanRepository, TravelPlanRepository>();
         services.AddSingleton<ISessionRepository, SessionRepository>();
+        services.AddSingleton<IFlightSearchRepository, FlightSearchRepository>();
 
         return services;
     }
