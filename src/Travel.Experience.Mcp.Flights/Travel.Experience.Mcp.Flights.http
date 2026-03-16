@@ -1,6 +1,0 @@
-@Travel.Experience.Mcp.Flights_HostAddress = http://localhost:5079
-
-GET {{Travel.Experience.Mcp.Flights_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
