@@ -296,8 +296,8 @@
       },
       "ModelContextProtocol.Core": {
         "type": "Transitive",
-        "resolved": "1.0.0",
-        "contentHash": "QKboiQEq2MJMGeQ029Gy6xqge88abm0Px9lnG7hueOyf+EDCxi5SUATV+Df7GwT+NwWzkEsYG271bUQD+LGhEg==",
+        "resolved": "1.1.0",
+        "contentHash": "3E/qGSPxAnuenD8uBT2NsHCP91ztn4WC9SfV7miKjpzDYQgVvGwbxnPhhZ8PAvltYWJ/P4wWbRmJ+2M5rZkrDQ==",
         "dependencies": {
           "Microsoft.Extensions.AI.Abstractions": "10.3.0"
         }
@@ -428,7 +428,7 @@
           "Microsoft.Extensions.AI": "[10.4.0, )",
           "Microsoft.Extensions.AI.OpenAI": "[10.4.0, )",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "[1.23.0, )",
-          "ModelContextProtocol": "[1.0.0, )"
+          "ModelContextProtocol": "[1.1.0, )"
         }
       },
       "travel.experience.application": {
@@ -453,7 +453,7 @@
           "Microsoft.Agents.AI": "[1.0.0-rc4, )",
           "Microsoft.Agents.AI.Workflows": "[1.0.0-rc4, )",
           "Microsoft.AspNetCore.OpenApi": "[10.0.5, )",
-          "ModelContextProtocol": "[1.0.0, )",
+          "ModelContextProtocol": "[1.1.0, )",
           "Travel.Agents": "[1.0.0, )"
         }
       },
@@ -657,11 +657,11 @@
       },
       "ModelContextProtocol": {
         "type": "CentralTransitive",
-        "requested": "[1.0.0, )",
-        "resolved": "1.0.0",
-        "contentHash": "W7UX8AQ1qMjXyCDcpP25u/L1W2vIIgfhLX/B2ZtTU1VUyILXdmVbdRjkQesKVPT/wPMpYXIHUcZJTPdsGfKSfQ==",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "dr7MeQocnOD9exXF2TIZc/80xp/wNVw3WpJZlz0X+ezMcOCXXkAwdMbpM5hohvnXw+KF29iaaYPJwUFbni+NCQ==",
         "dependencies": {
-          "ModelContextProtocol.Core": "1.0.0"
+          "ModelContextProtocol.Core": "1.1.0"
         }
       },
       "OpenTelemetry": {
