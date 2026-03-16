@@ -4,6 +4,7 @@ using Microsoft.Extensions.AI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Travel.Experience.Application.Dto;
 using Travel.Workflows.Flights.Dto;
 using Travel.Workflows.Flights.Events;
 using Travel.Workflows.Flights.Services;
@@ -66,6 +67,12 @@ public sealed class FlightsWorkflowToolHandler(Func<FlightsWorkflowService> flig
             {
                 yield return new ToolResultUpdate(
                     new FunctionResultContent(call.CallId, flightSearchCompleteEvent.Flights));
+            }
+
+            if (evt is FlightSearchSavedEvent savedEvent)
+            {
+                var artifact = new ArtifactCreated("FlightSearch", savedEvent.Id);
+                yield return new ToolStateSnapshotUpdate("ArtifactCreated", artifact);
             }
 
             if (evt is ExecutorFailedEvent or WorkflowErrorEvent)

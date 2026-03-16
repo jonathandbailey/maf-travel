@@ -7,3 +7,8 @@ public class FlightSearchCompleteEvent(IReadOnlyList<FlightOption> flights) : Wo
 {
     public IReadOnlyList<FlightOption> Flights { get; } = flights;
 }
+
+public class FlightSearchSavedEvent(Guid id) : WorkflowEvent
+{
+    public Guid Id { get; } = id;
+}

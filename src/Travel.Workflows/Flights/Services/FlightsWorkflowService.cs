@@ -27,22 +27,27 @@ public class FlightsWorkflowService(
 
         await foreach (var evt in run.WatchStreamAsync(cancellationToken))
         {
-            if (evt is FlightSearchCompleteEvent completeEvt)
-                await TrySaveFlightSearchAsync(completeEvt.Flights, cancellationToken);
-
             yield return evt;
+
+            if (evt is FlightSearchCompleteEvent completeEvt)
+            {
+                var savedId = await TrySaveFlightSearchAsync(completeEvt.Flights, cancellationToken);
+                if (savedId.HasValue)
+                    yield return new FlightSearchSavedEvent(savedId.Value);
+            }
         }
     }
 
-    private async Task TrySaveFlightSearchAsync(IReadOnlyList<FlightOption> flights, CancellationToken cancellationToken)
+    private async Task<Guid?> TrySaveFlightSearchAsync(IReadOnlyList<FlightOption> flights, CancellationToken cancellationToken)
     {
         try
         {
-            await flightApiClient.CreateFlightSearchAsync(flights, cancellationToken);
+            return await flightApiClient.CreateFlightSearchAsync(flights, cancellationToken);
         }
         catch (Exception ex)
         {
             logger.LogWarning(ex, "Failed to save flight search results.");
+            return null;
         }
     }
 }

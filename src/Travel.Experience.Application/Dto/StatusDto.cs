@@ -16,3 +16,5 @@ public class StatusUpdate(string type, string source, string status, string deta
 
     public string Details { get; } = details;
 }
+
+public record ArtifactCreated(string ArtifactType, Guid Id);
