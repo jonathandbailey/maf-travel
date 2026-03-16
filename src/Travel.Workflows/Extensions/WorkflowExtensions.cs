@@ -24,7 +24,7 @@ public static class WorkflowExtensions
             var httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient("mcp-flights");
             var transport = new HttpClientTransport(new HttpClientTransportOptions
             {
-                Endpoint = new Uri("https+http://travel-experience-mcp-flights/mcp"),
+                Endpoint = new Uri("https://travel-experience-mcp-flights/mcp"),
                 Name = "Flights MCP Client"
             }, httpClient);
             return McpClient.CreateAsync(transport).GetAwaiter().GetResult();

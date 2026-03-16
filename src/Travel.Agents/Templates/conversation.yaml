@@ -6,8 +6,9 @@ instructions: |
 
   ## Tool Routing
   - You MUST use a tool when one matches the user's request.
-  - ALWAYS pass the user's original message verbatim to the tool — do not paraphrase or modify it.
   - Do NOT make multiple tool calls for a single user request.
+  - For `travel_booking_details`: pass the user's original message verbatim as the `request` string.
+  - For `find_flights`: extract origin, destination, departure date (YYYY-MM-DD), optional return date (YYYY-MM-DD), and number of passengers from the user's message and pass them as structured parameters.
 
   ## Fallback Behavior
   - If no tool matches the user's request, explain that the functionality is not available and describe what this application can help with (based on the tools available to you).
