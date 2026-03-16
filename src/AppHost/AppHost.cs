@@ -31,8 +31,8 @@ var ui = builder.AddUiServices(gateway);
 
 
 
-builder.AddProject<Projects.Travel_Experience_Mcp_Flights>("travel-experience-mcp-flights");
+var mcpFlights = builder.AddProject<Projects.Travel_Experience_Mcp_Flights>("travel-experience-mcp-flights");
 
-
+api.WithReference(mcpFlights).WaitFor(mcpFlights);
 
 builder.Build().Run();

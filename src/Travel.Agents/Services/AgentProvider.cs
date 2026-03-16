@@ -20,7 +20,8 @@ public class AgentProvider(
     private readonly Dictionary<AgentType, string> _agentTemplates = new()
     {
         { AgentType.Planning, "planning.yaml" },
-        { AgentType.Extracting, "extracting.yaml" }
+        { AgentType.Extracting, "extracting.yaml" },
+        { AgentType.Flight, "flight.yaml" }
     };
 
     public Task<AIAgent> CreateAsync(AgentType agentType) =>
@@ -45,6 +46,7 @@ public class AgentProvider(
     {
         AgentType.Planning => toolRegistry.GetDeclarationOnlyTools("planning"),
         AgentType.Extracting => toolRegistry.GetDeclarationOnlyTools("extracting"),
+        AgentType.Flight => toolRegistry.GetDeclarationOnlyTools("flight"),
         _ => throw new ArgumentException($"No tools configured for agent type: {agentType}", nameof(agentType))
     };
 }

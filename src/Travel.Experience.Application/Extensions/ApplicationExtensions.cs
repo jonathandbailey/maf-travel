@@ -14,16 +14,19 @@ public static class ApplicationExtensions
             new TravelWorkflowToolHandler(() => sp.GetRequiredService<IWorkflowFactory>()));
         services.AddSingleton<PlanningToolsHandler>();
         services.AddSingleton<ExtractingToolsHandler>();
+        services.AddSingleton<FlightSearchToolsHandler>();
         services.AddSingleton<IToolRegistry>(sp =>
         {
             var conversation = sp.GetRequiredService<TravelWorkflowToolHandler>();
             var planning = sp.GetRequiredService<PlanningToolsHandler>();
             var extracting = sp.GetRequiredService<ExtractingToolsHandler>();
+            var flightSearch = sp.GetRequiredService<FlightSearchToolsHandler>();
             return new ToolRegistry(
             [
                 new ToolHandlerRegistration(conversation, ["conversation"]),
                 new ToolHandlerRegistration(planning, ["planning"]),
-                new ToolHandlerRegistration(extracting, ["extracting"])
+                new ToolHandlerRegistration(extracting, ["extracting"]),
+                new ToolHandlerRegistration(flightSearch, ["flight"])
             ]);
         });
         services.AddSingleton<IConversationAgentFactory, ConversationAgentFactory>();
