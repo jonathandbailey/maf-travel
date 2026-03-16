@@ -3,7 +3,7 @@ using Infrastructure.Repository;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Agents.AI.Workflows.Checkpointing;
 
-namespace Travel.Workflows.Infrastructure;
+namespace Travel.Workflows.Common.Infrastructure;
 
 public class CheckpointStore(ICheckpointRepository checkpointRepository, Guid threadId) : JsonCheckpointStore
 {

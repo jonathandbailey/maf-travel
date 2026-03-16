@@ -3,9 +3,9 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
 using Travel.Agents.Services;
+using Travel.Workflows.Common.Interfaces;
 using Travel.Workflows.Flights.Dto;
 using Travel.Workflows.Flights.Events;
-using Travel.Workflows.Interfaces;
 
 namespace Travel.Workflows.Flights.Services;
 

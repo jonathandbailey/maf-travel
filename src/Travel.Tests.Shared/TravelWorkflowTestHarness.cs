@@ -4,7 +4,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Services;
 using Travel.Tests.Shared.Helper;
-using Travel.Workflows.Interfaces;
+using Travel.Workflows.Common.Interfaces;
 using Travel.Workflows.TravelPlanCriteria.Dto;
 
 namespace Travel.Tests.Shared;

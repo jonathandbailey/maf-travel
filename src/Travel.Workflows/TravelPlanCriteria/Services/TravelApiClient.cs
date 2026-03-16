@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using Travel.Agents.Dto;
-using Travel.Workflows.Interfaces;
+using Travel.Workflows.Common.Interfaces;
 
 namespace Travel.Workflows.TravelPlanCriteria.Services;
 

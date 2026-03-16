@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using ModelContextProtocol.Client;
+using Travel.Workflows.Common.Infrastructure;
+using Travel.Workflows.Common.Interfaces;
 using Travel.Workflows.Flights.Services;
-using Travel.Workflows.Infrastructure;
-using Travel.Workflows.Interfaces;
 using Travel.Workflows.TravelPlanCriteria.Services;
 
-namespace Travel.Workflows.Extensions;
+namespace Travel.Workflows.Common.Extensions;
 
 public static class WorkflowExtensions
 {

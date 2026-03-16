@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
-using Travel.Workflows.Infrastructure;
-using Travel.Workflows.Interfaces;
+using Travel.Workflows.Common.Infrastructure;
+using Travel.Workflows.Common.Interfaces;
 using Travel.Workflows.TravelPlanCriteria.Dto;
 using Travel.Workflows.TravelPlanCriteria.Events;
 

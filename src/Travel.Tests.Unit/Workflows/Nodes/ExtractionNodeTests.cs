@@ -8,7 +8,7 @@ using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Unit.Common;
 using Travel.Workflows.Common;
-using Travel.Workflows.Extensions;
+using Travel.Workflows.Common.Extensions;
 using Travel.Workflows.TravelPlanCriteria.Dto;
 using Travel.Workflows.TravelPlanCriteria.Events;
 using Travel.Workflows.TravelPlanCriteria.Nodes;

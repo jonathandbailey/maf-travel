@@ -3,7 +3,7 @@ using Microsoft.Extensions.AI;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
-namespace Travel.Workflows.Extensions;
+namespace Travel.Workflows.Common.Extensions;
 
 public static class FunctionExtensions
 {

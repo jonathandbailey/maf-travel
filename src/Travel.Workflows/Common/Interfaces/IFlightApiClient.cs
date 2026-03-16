@@ -1,6 +1,6 @@
 using Travel.Workflows.Flights.Dto;
 
-namespace Travel.Workflows.Interfaces;
+namespace Travel.Workflows.Common.Interfaces;
 
 public interface IFlightApiClient
 {

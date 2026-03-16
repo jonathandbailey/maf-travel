@@ -4,10 +4,10 @@ using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
-using Travel.Workflows.Exceptions;
-using Travel.Workflows.Extensions;
+using Travel.Workflows.Common.Exceptions;
+using Travel.Workflows.Common.Extensions;
+using Travel.Workflows.Common.Telemetry;
 using Travel.Workflows.Flights.Dto;
-using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Flights.Nodes;
 

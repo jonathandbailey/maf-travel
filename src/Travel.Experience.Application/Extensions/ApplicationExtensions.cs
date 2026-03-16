@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Travel.Agents.Services;
 using Travel.Experience.Application.Agents;
+using Travel.Workflows.Common.Interfaces;
 using Travel.Workflows.Flights.Services;
-using Travel.Workflows.Interfaces;
 
 namespace Travel.Experience.Application.Extensions;
 

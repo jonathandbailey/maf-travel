@@ -1,7 +1,7 @@
 using Microsoft.Agents.AI.Workflows;
+using Travel.Workflows.Common.Telemetry;
 using Travel.Workflows.Flights.Dto;
 using Travel.Workflows.Flights.Events;
-using Travel.Workflows.Telemetry;
 
 namespace Travel.Workflows.Flights.Nodes;
 

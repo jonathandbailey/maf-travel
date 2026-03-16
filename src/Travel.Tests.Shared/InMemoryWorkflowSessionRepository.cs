@@ -1,5 +1,5 @@
 using Travel.Workflows.Common;
-using Travel.Workflows.Infrastructure;
+using Travel.Workflows.Common.Infrastructure;
 
 namespace Travel.Tests.Shared;
 

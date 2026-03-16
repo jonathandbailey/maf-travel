@@ -8,7 +8,7 @@ using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
-using Travel.Workflows.Interfaces;
+using Travel.Workflows.Common.Interfaces;
 using Travel.Workflows.TravelPlanCriteria.Dto;
 using Travel.Workflows.TravelPlanCriteria.Services;
 

@@ -5,7 +5,7 @@ using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using Travel.Workflows.Common;
 
-namespace Travel.Workflows.Infrastructure;
+namespace Travel.Workflows.Common.Infrastructure;
 
 public interface IWorkflowSessionRepository
 {

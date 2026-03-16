@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
-using Travel.Workflows.Common;
-using Travel.Workflows.Exceptions;
+using Travel.Workflows.Common.Exceptions;
 using Travel.Workflows.TravelPlanCriteria.Dto;
 
-namespace Travel.Workflows.Extensions;
+namespace Travel.Workflows.Common.Extensions;
 
 public static class ValidationExtensions
 {

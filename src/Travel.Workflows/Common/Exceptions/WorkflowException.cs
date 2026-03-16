@@ -1,4 +1,4 @@
-namespace Travel.Workflows.Exceptions;
+namespace Travel.Workflows.Common.Exceptions;
 
 public class WorkflowException : Exception
 {

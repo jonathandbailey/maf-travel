@@ -3,7 +3,7 @@ using Travel.Agents.Dto;
 
 
 
-namespace Travel.Workflows.Extensions;
+namespace Travel.Workflows.Common.Extensions;
 
 public static class ContextExtensions
 {

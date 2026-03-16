@@ -5,7 +5,7 @@ using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Travel.Agents.Dto;
 
-namespace Travel.Workflows.Telemetry;
+namespace Travel.Workflows.Common.Telemetry;
 
 public static class TravelWorkflowTelemetry
 {
