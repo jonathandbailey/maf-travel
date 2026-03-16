@@ -17,6 +17,9 @@ public static class WorkflowExtensions
         services.AddHttpClient<ITravelApiClient, TravelApiClient>(client =>
             client.BaseAddress = new Uri("https+http://travel-api"));
 
+        services.AddHttpClient<IFlightApiClient, FlightApiClient>(client =>
+            client.BaseAddress = new Uri("https+http://travel-api"));
+
         services.AddHttpClient("mcp-flights");
 
         services.AddSingleton<McpClient>(sp =>
