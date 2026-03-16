@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.Agents.AI.Workflows;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 using Travel.Workflows.Exceptions;
 using Travel.Workflows.Flights.Dto;
 using Travel.Workflows.Telemetry;
@@ -10,6 +11,8 @@ namespace Travel.Workflows.Flights.Nodes;
 
 public partial class SearchNode(McpClient mcpClient) : Executor(FlightsNodeNames.SearchNode)
 {
+    private static readonly JsonSerializerOptions s_jsonOptions = new() { PropertyNameCaseInsensitive = true };
+
     [MessageHandler(Send = [typeof(FlightSearchResult)])]
     private async ValueTask HandleAsync(FlightSearchCommand command, IWorkflowContext context,
         CancellationToken cancellationToken = default)
@@ -25,7 +28,7 @@ public partial class SearchNode(McpClient mcpClient) : Executor(FlightsNodeNames
             ["passengers"] = command.Passengers
         };
 
-        ModelContextProtocol.Protocol.CallToolResult result;
+        CallToolResult result;
         try
         {
             result = await mcpClient.CallToolAsync("search_flights", args, cancellationToken: cancellationToken);
@@ -42,9 +45,12 @@ public partial class SearchNode(McpClient mcpClient) : Executor(FlightsNodeNames
             throw new WorkflowException("SearchNode: search_flights MCP tool returned an error.", FlightsNodeNames.SearchNode, Guid.Empty);
         }
 
+        var textContent = result.Content.OfType<TextContentBlock>().FirstOrDefault()
+            ?? throw new WorkflowException("SearchNode: search_flights MCP tool returned no text content.", FlightsNodeNames.SearchNode, Guid.Empty);
+
         var flights = JsonSerializer.Deserialize<List<FlightOption>>(
-            result.StructuredContent!.Value.GetRawText(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+            textContent.Text,
+            s_jsonOptions)
             ?? [];
 
         activity?.AddNodeAgentOutput($"Found {flights.Count} flight(s).");
