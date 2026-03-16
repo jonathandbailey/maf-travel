@@ -1,11 +1,11 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Agents.AI.Workflows;
 using Travel.Workflows.Common;
-using Travel.Workflows.Dto;
-using Travel.Workflows.Events;
 using Travel.Workflows.Exceptions;
+using Travel.Workflows.TravelPlanCriteria.Dto;
+using Travel.Workflows.TravelPlanCriteria.Events;
 
-namespace Travel.Workflows.Services;
+namespace Travel.Workflows.TravelPlanCriteria.Services;
 
 public class TravelPlanningRunner(Workflow workflow, CheckpointManager checkpointManager, WorkflowSession session)
 {

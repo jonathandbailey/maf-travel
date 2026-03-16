@@ -1,7 +1,7 @@
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 
-namespace Travel.Workflows.Dto;
+namespace Travel.Workflows.TravelPlanCriteria.Dto;
 
 public record TravelWorkflowRequest(
     ChatMessage Message,

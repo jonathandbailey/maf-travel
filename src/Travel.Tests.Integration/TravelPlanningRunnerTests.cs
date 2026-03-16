@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
-using Travel.Workflows.Events;
+using Travel.Workflows.TravelPlanCriteria.Events;
 
 namespace Travel.Tests.Integration;
 

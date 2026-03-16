@@ -1,9 +1,9 @@
 ﻿using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
-using Travel.Workflows.Dto;
-using Travel.Workflows.Nodes;
+using Travel.Workflows.TravelPlanCriteria.Dto;
+using Travel.Workflows.TravelPlanCriteria.Nodes;
 
-namespace Travel.Workflows.Services;
+namespace Travel.Workflows.TravelPlanCriteria.Services;
 
 public class TravelWorkflowBuilder
 {

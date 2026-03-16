@@ -8,9 +8,9 @@ using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
-using Travel.Workflows.Dto;
 using Travel.Workflows.Interfaces;
-using Travel.Workflows.Services;
+using Travel.Workflows.TravelPlanCriteria.Dto;
+using Travel.Workflows.TravelPlanCriteria.Services;
 
 namespace Travel.Tests.Unit.Common;
 

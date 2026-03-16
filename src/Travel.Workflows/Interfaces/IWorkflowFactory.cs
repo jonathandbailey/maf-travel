@@ -1,4 +1,4 @@
-﻿using Travel.Workflows.Services;
+﻿using Travel.Workflows.TravelPlanCriteria.Services;
 
 namespace Travel.Workflows.Interfaces;
 

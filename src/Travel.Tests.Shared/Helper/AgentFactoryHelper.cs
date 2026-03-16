@@ -13,7 +13,7 @@ using Travel.Agents.Services;
 using Travel.Tests.Shared.Settings;
 using Travel.Workflows.Infrastructure;
 using Travel.Workflows.Interfaces;
-using Travel.Workflows.Services;
+using Travel.Workflows.TravelPlanCriteria.Services;
 
 namespace Travel.Tests.Shared.Helper;
 

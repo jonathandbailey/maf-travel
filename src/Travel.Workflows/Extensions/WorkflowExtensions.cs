@@ -3,7 +3,7 @@ using ModelContextProtocol.Client;
 using Travel.Workflows.Flights.Services;
 using Travel.Workflows.Infrastructure;
 using Travel.Workflows.Interfaces;
-using Travel.Workflows.Services;
+using Travel.Workflows.TravelPlanCriteria.Services;
 
 namespace Travel.Workflows.Extensions;
 

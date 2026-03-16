@@ -4,12 +4,12 @@ using Microsoft.Agents.AI.Workflows;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
-using Travel.Workflows.Dto;
 using Travel.Workflows.Exceptions;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Telemetry;
+using Travel.Workflows.TravelPlanCriteria.Dto;
 
-namespace Travel.Workflows.Nodes;
+namespace Travel.Workflows.TravelPlanCriteria.Nodes;
 
 public partial class ExecutionNode() : Executor(NodeNames.ExecutionNodeName)
 {

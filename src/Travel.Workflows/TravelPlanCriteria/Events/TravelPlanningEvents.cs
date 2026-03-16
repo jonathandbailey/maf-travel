@@ -1,7 +1,7 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Travel.Agents.Dto;
 
-namespace Travel.Workflows.Events;
+namespace Travel.Workflows.TravelPlanCriteria.Events;
 
 public class TravelPlanUpdateEvent(TravelPlanState travelPlanState) : WorkflowEvent
 {

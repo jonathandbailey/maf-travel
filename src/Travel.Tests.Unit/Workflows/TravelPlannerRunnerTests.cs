@@ -3,10 +3,10 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Travel.Agents.Dto;
 using Travel.Workflows.Common;
-using Travel.Workflows.Dto;
-using Travel.Workflows.Events;
 using Travel.Workflows.Exceptions;
-using Travel.Workflows.Services;
+using Travel.Workflows.TravelPlanCriteria.Dto;
+using Travel.Workflows.TravelPlanCriteria.Events;
+using Travel.Workflows.TravelPlanCriteria.Services;
 
 namespace Travel.Tests.Unit.Workflows;
 

@@ -4,7 +4,7 @@ using Travel.Agents.Services;
 using Travel.Workflows.Infrastructure;
 using Travel.Workflows.Interfaces;
 
-namespace Travel.Workflows.Services;
+namespace Travel.Workflows.TravelPlanCriteria.Services;
 
 public class WorkflowFactory(
     ICheckpointRepository checkpointRepository,

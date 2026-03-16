@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Workflows.Common;
-using Travel.Workflows.Dto;
-using Travel.Workflows.Events;
 using Travel.Workflows.Infrastructure;
 using Travel.Workflows.Interfaces;
+using Travel.Workflows.TravelPlanCriteria.Dto;
+using Travel.Workflows.TravelPlanCriteria.Events;
 
-namespace Travel.Workflows.Services;
+namespace Travel.Workflows.TravelPlanCriteria.Services;
 
 public class TravelWorkflowService(
     ICheckpointRepository checkpointRepository,

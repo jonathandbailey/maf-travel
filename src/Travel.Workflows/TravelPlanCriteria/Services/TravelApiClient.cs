@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using Travel.Agents.Dto;
 using Travel.Workflows.Interfaces;
 
-namespace Travel.Workflows.Services;
+namespace Travel.Workflows.TravelPlanCriteria.Services;
 
 public class TravelApiClient(HttpClient httpClient) : ITravelApiClient
 {

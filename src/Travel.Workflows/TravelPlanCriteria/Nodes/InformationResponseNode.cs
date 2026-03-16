@@ -1,10 +1,10 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using Travel.Workflows.Common;
-using Travel.Workflows.Dto;
 using Travel.Workflows.Extensions;
 using Travel.Workflows.Telemetry;
+using Travel.Workflows.TravelPlanCriteria.Dto;
 
-namespace Travel.Workflows.Nodes;
+namespace Travel.Workflows.TravelPlanCriteria.Nodes;
 
 public partial class InformationResponseNode() : Executor(NodeNames.InformationResponseNode)
 {
