@@ -1,6 +1,7 @@
 import { Card, List, Typography } from "antd";
 import { useFlightSearchStore } from "../store/flightSearchStore";
 import type { FlightOptionResponse } from "../services/flightSearchService";
+import "./travel.css";
 
 const { Text } = Typography;
 
@@ -15,19 +16,19 @@ const formatPrice = (value: number) =>
 const FlightOptionItem = ({ option }: { option: FlightOptionResponse }) => (
     <List.Item>
         <div style={{ width: "100%" }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div className="flight-option-header">
                 <Text strong>{option.flightNumber}</Text>
                 <Text>{option.airline}</Text>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+            <div className="flight-option-route">
                 <Text type="secondary">{option.origin} → {option.destination}</Text>
             </div>
-            <div style={{ marginTop: 2 }}>
-                <Text type="secondary" style={{ fontSize: 12 }}>
+            <div className="flight-option-times">
+                <Text type="secondary" className="flight-option-times-text">
                     {formatDateTime(option.departureTime)} – {formatDateTime(option.arrivalTime)}
                 </Text>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+            <div className="flight-option-footer">
                 <Text>{formatPrice(option.pricePerPerson)} / person</Text>
                 <Text type="secondary">{option.availableSeats} seats</Text>
             </div>
@@ -40,7 +41,7 @@ const FlightSearch = () => {
     if (!flightSearch) return null;
 
     return (
-        <Card title="Flight Options" size="small" style={{ border: "1px solid #d9d9d9" }}>
+        <Card title="Flight Options" size="small">
             <List
                 size="small"
                 dataSource={flightSearch.flightOptions}

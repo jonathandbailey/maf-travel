@@ -1,6 +1,7 @@
 import { Card, Input, Dropdown, Button } from "antd";
 import { PlusOutlined, ArrowUpOutlined, StopOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
+import "./chat.css";
 
 interface ChatInputProps {
     value: string;
@@ -32,26 +33,14 @@ const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect, onSubmit, o
     };
 
     return (
-        <Card
-            style={{
-                width: "100%",
-                maxWidth: 768,
-                minWidth: 700,
-                marginBottom: 24,
-                marginTop: 0,
-                margin: "0 auto 24px",
-                border: "1px solid #d9d9d9",
-
-                borderRadius: 16,
-            }}
-        >
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <Card className="chat-input-card">
+            <div className="chat-input-row">
                 <Dropdown
                     menu={{ items: suggestions, onClick: handleMenuClick }}
                     placement="topLeft"
                     trigger={["click"]}
                 >
-                    <Button type="text" icon={<PlusOutlined />} />
+                    <Button type="text" icon={<PlusOutlined />} aria-label="Choose a suggestion" />
                 </Dropdown>
                 <Input
                     placeholder="Ask me anything..."
@@ -60,6 +49,7 @@ const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect, onSubmit, o
                     onChange={(e) => onChange(e.target.value)}
                     onKeyDown={onKeyDown}
                     style={{ flex: 1 }}
+                    aria-label="Message input"
                 />
                 <Button
                     type="primary"
@@ -67,6 +57,7 @@ const ChatInput = ({ value, onChange, onKeyDown, onSuggestionSelect, onSubmit, o
                     icon={isStreaming ? <StopOutlined /> : <ArrowUpOutlined />}
                     onClick={isStreaming ? onCancel : onSubmit}
                     disabled={!isStreaming && !value.trim()}
+                    aria-label={isStreaming ? "Stop streaming" : "Send message"}
                 />
             </div>
         </Card>

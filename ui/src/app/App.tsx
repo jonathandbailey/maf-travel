@@ -1,13 +1,14 @@
 import './App.css'
-import { useState, useEffect } from 'react';
-import { Button, Layout } from 'antd';
+import { lazy, Suspense, useState } from 'react';
+import { Button, Layout, Spin } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import ChatPage from '../pages/ChatPage';
-import DashboardPage from '../pages/DashboardPage';
 import RootHeader from './layout/RootHeader';
 import RootNavigationMenu from './layout/RootNavigationMenu';
 import ErrorBoundary from './ErrorBoundary';
+
+const DashboardPage = lazy(() => import('../pages/DashboardPage'));
+const ChatPage = lazy(() => import('../pages/ChatPage'));
 
 const { Header, Content, Sider } = Layout;
 
@@ -15,9 +16,12 @@ function App() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(location.pathname === '/');
 
-  useEffect(() => {
+  // Sync collapsed state with route changes without useEffect (React-recommended derived-state pattern)
+  const [prevPathname, setPrevPathname] = useState(location.pathname);
+  if (prevPathname !== location.pathname) {
+    setPrevPathname(location.pathname);
     setCollapsed(location.pathname === '/');
-  }, [location.pathname]);
+  }
 
   return (
     <ErrorBoundary>
@@ -32,15 +36,18 @@ function App() {
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
               className="sider-toggle"
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             />
             <RootNavigationMenu collapsed={collapsed} />
           </Sider>
           <Content className="app-content">
-            <Routes>
-              <Route path="/" element={<DashboardPage />} />
-              <Route path="/travel-plans/:id" element={<ChatPage />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
+            <Suspense fallback={<Spin size="large" style={{ display: 'flex', justifyContent: 'center', marginTop: 80 }} />}>
+              <Routes>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/travel-plans/:id" element={<ChatPage />} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </Suspense>
           </Content>
         </Layout>
       </Layout>

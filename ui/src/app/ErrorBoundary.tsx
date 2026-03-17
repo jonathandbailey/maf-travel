@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Button } from "antd";
 
 interface Props {
     children: ReactNode;
@@ -22,9 +23,12 @@ class ErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.error) {
             return (
-                <div style={{ padding: 40, textAlign: "center" }}>
+                <div role="alert" style={{ padding: 40, textAlign: "center" }}>
                     <h2>Something went wrong</h2>
-                    <p style={{ color: "#888" }}>{this.state.error.message}</p>
+                    <p style={{ color: "var(--color-text-muted)" }}>{this.state.error.message}</p>
+                    <Button type="primary" onClick={() => this.setState({ error: null })}>
+                        Try again
+                    </Button>
                 </div>
             );
         }

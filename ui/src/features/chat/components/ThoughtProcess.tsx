@@ -1,5 +1,6 @@
 import { Collapse, Timeline, Spin } from "antd";
 import type { StatusUpdate } from "../domain/StatusUpdate";
+import "./chat.css";
 
 interface ThoughtProcessProps {
     statusUpdates: StatusUpdate[];
@@ -13,12 +14,12 @@ const ThoughtProcess = ({ statusUpdates, isLoading }: ThoughtProcessProps) => {
             dot: isLast && isLoading ? <Spin size="small" /> : undefined,
             children: (
                 <div>
-                    <div style={{ fontWeight: 500, fontSize: "0.875rem" }}>{update.status}</div>
+                    <div className="thought-process-status">{update.status}</div>
                     {update.source && (
-                        <div style={{ color: "#888", fontSize: "0.75rem" }}>{update.source}</div>
+                        <div className="thought-process-source">{update.source}</div>
                     )}
                     {update.details && (
-                        <div style={{ color: "#555", fontSize: "0.75rem", marginTop: 4, fontStyle: "italic" }}>{update.details}</div>
+                        <div className="thought-process-details">{update.details}</div>
                     )}
                 </div>
             ),
@@ -29,7 +30,7 @@ const ThoughtProcess = ({ statusUpdates, isLoading }: ThoughtProcessProps) => {
         <Collapse
             defaultActiveKey={["1"]}
             size="small"
-            style={{ alignSelf: "flex-start", minWidth: 280, maxWidth: 480 }}
+            className="thought-process"
             items={[{
                 key: "1",
                 label: "Thought process",

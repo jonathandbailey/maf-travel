@@ -1,17 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Exchanges from "../features/chat/components/Exchanges";
-import ChatInput from "../features/chat/components/ChatInput";
-import TravelPlan from "../features/travel/components/TravelPlan";
-import FlightSearch from "../features/travel/components/FlightSearch";
-import Welcome from "../features/travel/components/Welcome";
-import { useState } from "react";
-import { useChatAgent } from "../features/chat/hooks/useChatAgent";
-import { useTravelPlan } from "../features/travel/hooks/useTravelPlan";
-import { useFlightSearch } from "../features/travel/hooks/useFlightSearch";
-import { useSessionStore } from '../app/store/sessionStore';
-import { useTravelPlanStore } from '../features/travel/store/travelPlanStore';
-import { getTravelPlan } from '../features/travel/services/travelPlanService';
+import Exchanges from "@/features/chat/components/Exchanges";
+import ChatInput from "@/features/chat/components/ChatInput";
+import TravelPlan from "@/features/travel/components/TravelPlan";
+import FlightSearch from "@/features/travel/components/FlightSearch";
+import Welcome from "@/features/travel/components/Welcome";
+import { useChatAgent } from "@/features/chat/hooks/useChatAgent";
+import { useTravelPlan } from "@/features/travel/hooks/useTravelPlan";
+import { useFlightSearch } from "@/features/travel/hooks/useFlightSearch";
+import { useSessionStore } from '@/app/store/sessionStore';
+import { useTravelPlanStore } from '@/features/travel/store/travelPlanStore';
+import { getTravelPlan } from '@/features/travel/services/travelPlanService';
 import "./ChatPage.css";
 
 const ChatPage = () => {

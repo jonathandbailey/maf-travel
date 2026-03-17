@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Card, Col, Row, Spin, Typography } from 'antd';
+import { Alert, Button, Card, Col, Row, Skeleton, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {
     createTravelPlan,
@@ -21,7 +21,18 @@ const DashboardPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [creating, setCreating] = useState(false);
 
+    // Called from event handlers (Retry button) — setState here is fine
+    const loadPlans = () => {
+        setLoading(true);
+        setError(null);
+        listTravelPlans()
+            .then(setPlans)
+            .catch((e: Error) => setError(e.message))
+            .finally(() => setLoading(false));
+    };
+
     useEffect(() => {
+        // Async setState calls inside .then/.catch/.finally are not synchronous — no cascading renders
         listTravelPlans()
             .then(setPlans)
             .catch((e: Error) => setError(e.message))
@@ -63,14 +74,19 @@ const DashboardPage = () => {
                     message={error}
                     closable
                     onClose={() => setError(null)}
+                    action={<Button size="small" onClick={loadPlans}>Retry</Button>}
                     style={{ marginBottom: 16 }}
                 />
             )}
 
             {loading ? (
-                <div className="dashboard-loading">
-                    <Spin size="large" />
-                </div>
+                <Row gutter={[16, 16]}>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <Col key={i} xs={24} sm={12} lg={8} xl={6}>
+                            <Card><Skeleton active /></Card>
+                        </Col>
+                    ))}
+                </Row>
             ) : plans.length === 0 ? (
                 <div className="dashboard-empty">
                     <Text type="secondary">No travel plans yet. Create one to get started.</Text>
