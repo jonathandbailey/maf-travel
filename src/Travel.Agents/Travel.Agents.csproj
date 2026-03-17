@@ -36,6 +36,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>Travel\Templates\planning.yaml</TargetPath>
     </None>
+    <None Update="Templates\flight.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>Travel\Templates\flight.yaml</TargetPath>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -11,9 +11,9 @@ using Moq;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Shared.Settings;
-using Travel.Workflows.Infrastructure;
-using Travel.Workflows.Interfaces;
-using Travel.Workflows.Services;
+using Travel.Workflows.Common.Infrastructure;
+using Travel.Workflows.Common.Interfaces;
+using Travel.Workflows.TravelPlanCriteria.Services;
 
 namespace Travel.Tests.Shared.Helper;
 

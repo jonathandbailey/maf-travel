@@ -5,7 +5,7 @@ using Travel.Tests.Shared;
 using Travel.Tests.Shared.Helper;
 using Travel.Tests.Unit.Common;
 using Travel.Tests.Unit.TestData;
-using Travel.Workflows.Events;
+using Travel.Workflows.TravelPlanCriteria.Events;
 using PlanningWorkflowScenario = Travel.Tests.Unit.TestData.PlanningWorkflowScenario;
 
 namespace Travel.Tests.Unit.Workflows;

@@ -10,7 +10,7 @@ using Travel.Agents.Dto;
 using Travel.Experience.Application.Agents;
 using Travel.Experience.Application.Dto;
 using Travel.Tests.Unit.TestData;
-using Travel.Workflows.Interfaces;
+using Travel.Workflows.Common.Interfaces;
 
 namespace Travel.Tests.Unit.Common;
 

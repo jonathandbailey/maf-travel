@@ -5,7 +5,7 @@ using Travel.Agents.Extensions;
 using Travel.Experience.Api;
 using Travel.Experience.Api.Extensions;
 using Travel.Experience.Application.Extensions;
-using Travel.Workflows.Extensions;
+using Travel.Workflows.Common.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

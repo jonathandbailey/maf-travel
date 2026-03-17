@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Agents.Tools;
 using Travel.Workflows.Common;
-using Travel.Workflows.Dto;
-using Travel.Workflows.Events;
-using Travel.Workflows.Extensions;
-using Travel.Workflows.Interfaces;
+using Travel.Workflows.TravelPlanCriteria.Dto;
+using Travel.Workflows.TravelPlanCriteria.Events;
+using Travel.Workflows.Common.Extensions;
+using Travel.Workflows.Common.Interfaces;
 
 namespace Travel.Experience.Application.Agents;
 
