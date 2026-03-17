@@ -65,8 +65,15 @@ public sealed class FlightsWorkflowToolHandler(Func<FlightsWorkflowService> flig
         {
             if (evt is FlightSearchCompleteEvent flightSearchCompleteEvent)
             {
+                var flights = flightSearchCompleteEvent.Flights;
+                var summary = flights.Count == 0
+                    ? "No flights found for the requested route and dates."
+                    : $"Found {flights.Count} flight options. " +
+                      $"Prices range from {flights.Min(f => f.PricePerPerson):C} to {flights.Max(f => f.PricePerPerson):C} per person. " +
+                      $"Full results are displayed in the sidebar.";
+
                 yield return new ToolResultUpdate(
-                    new FunctionResultContent(call.CallId, flightSearchCompleteEvent.Flights));
+                    new FunctionResultContent(call.CallId, summary));
             }
 
             if (evt is FlightSearchSavedEvent savedEvent)
