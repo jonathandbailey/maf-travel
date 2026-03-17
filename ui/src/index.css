@@ -3,3 +3,20 @@ html, body, #root {
   margin: 0;
 }
 
+:root {
+  --color-user-bubble-bg: #F0EEE6;
+  --color-app-bg: #FAF9F5;
+  --color-border-default: #d9d9d9;
+  --color-border-divider: #e0e0e0;
+  --color-text-muted: #888;
+  --color-text-subtle: #555;
+  --color-error-bg: #fff2f0;
+  --color-error-border: #ffccc7;
+  --color-error-text: #cf1322;
+  --font-size-body: 1.05rem;
+  --font-size-sm: 0.875rem;
+  --font-size-xs: 0.75rem;
+  --font-size-status: 0.95rem;
+  --border-radius-bubble: 8px;
+  --border-radius-input: 16px;
+}

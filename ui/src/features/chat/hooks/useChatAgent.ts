@@ -3,7 +3,7 @@ import { EventType, randomUUID, type BaseEvent, type StateSnapshotEvent, type Te
 import type { StatusUpdate } from "../domain/StatusUpdate";
 import { ChatAgentClient } from "../services/ChatAgentClient";
 import { useTravelPlanStore } from "../../travel/store/travelPlanStore";
-import { useSessionStore } from "../../../app/store/sessionStore";
+import { useSessionStore } from "@/app/store/sessionStore";
 
 export interface ExchangeItem {
     id: string;
@@ -23,6 +23,10 @@ interface StatusUpdatePayload {
 interface TypedSnapshot {
     Type: string;
     Payload?: StatusUpdatePayload;
+}
+
+function isTypedSnapshot(value: unknown): value is TypedSnapshot {
+    return typeof value === 'object' && value !== null && 'Type' in value;
 }
 
 const AGENT_URL = `${import.meta.env.VITE_API_BASE_URL}/ag-ui`;
@@ -48,9 +52,8 @@ export function useChatAgent() {
                 );
             }
             if (event.type === EventType.STATE_SNAPSHOT) {
-                const snapshot = (event as StateSnapshotEvent).snapshot as TypedSnapshot;
-                if (typeof snapshot === 'object' && snapshot !== null
-                    && 'Type' in snapshot && snapshot.Type === 'StatusUpdate' && snapshot.Payload) {
+                const snapshot = (event as StateSnapshotEvent).snapshot;
+                if (isTypedSnapshot(snapshot) && snapshot.Type === 'StatusUpdate' && snapshot.Payload) {
                     const payload = snapshot.Payload;
                     setExchanges((prev) =>
                         prev.map((ex) => ex.id === exchangeId

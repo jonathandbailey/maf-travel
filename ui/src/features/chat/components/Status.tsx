@@ -1,4 +1,5 @@
 import { Spin } from "antd";
+import "./chat.css";
 
 interface StatusProps {
     message?: string;
@@ -6,9 +7,9 @@ interface StatusProps {
 
 const Status = ({ message }: StatusProps) => {
     return (
-        <div style={{ alignSelf: "flex-start", padding: "8px 12px", display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="status" aria-live="polite" aria-label="Loading response">
             <Spin />
-            {message && <span style={{ color: "#888", fontSize: "0.95rem" }}>{message}</span>}
+            {message && <span className="status-message">{message}</span>}
         </div>
     )
 }

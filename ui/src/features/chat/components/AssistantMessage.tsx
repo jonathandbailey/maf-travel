@@ -1,4 +1,5 @@
 import Markdown from "react-markdown";
+import "./chat.css";
 
 interface AssistantMessageProps {
     content: string;
@@ -6,7 +7,7 @@ interface AssistantMessageProps {
 
 const AssistantMessage = ({ content }: AssistantMessageProps) => {
     return (
-        <div style={{ alignSelf: "flex-start", padding: "8px 12px", borderRadius: 8, maxWidth: "80%", fontSize: "1.05rem" }}>
+        <div className="assistant-message">
             <Markdown>{content}</Markdown>
         </div>
     );

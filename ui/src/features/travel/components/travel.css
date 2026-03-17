@@ -1,0 +1,25 @@
+/* FlightSearch */
+.flight-option-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flight-option-route {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.flight-option-times {
+  margin-top: 2px;
+}
+
+.flight-option-times-text {
+  font-size: var(--font-size-xs);
+}
+
+.flight-option-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
