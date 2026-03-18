@@ -1,5 +1,13 @@
 namespace Travel.Workflows.Flights.Dto;
 
+// Passed to InProcessExecution (derived from TravelPlanState)
+public record FlightsWorkflowInput(
+    string Origin,
+    string Destination,
+    DateOnly DepartureDate,
+    DateOnly? ReturnDate,
+    int Passengers);
+
 // StartNode → FlightNode
 public record FlightSearchAgentCommand(
     string Origin,

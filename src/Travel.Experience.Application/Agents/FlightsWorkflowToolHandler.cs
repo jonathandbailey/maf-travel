@@ -3,7 +3,6 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Travel.Experience.Application.Dto;
 using Travel.Workflows.Flights.Dto;
 using Travel.Workflows.Flights.Events;
@@ -16,12 +15,9 @@ public sealed class FlightsWorkflowToolHandler(Func<FlightsWorkflowService> flig
     public const string FindFlightsToolName = "find_flights";
 
     private static readonly Dictionary<string, AIFunction> s_tools;
-    private static readonly JsonSerializerOptions s_jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-    [Description("Searches for available flights when a user wants to find or book a flight.")]
-    private static string FindFlights(
-        [Description("The flight search parameters")] FindFlightsRequest request)
-        => string.Empty;
+    [Description("Searches for available flights based on the current travel plan.")]
+    private static string FindFlights() => string.Empty;
 
     static FlightsWorkflowToolHandler()
     {
@@ -42,24 +38,7 @@ public sealed class FlightsWorkflowToolHandler(Func<FlightsWorkflowService> flig
         ToolHandlerContext context,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var json = JsonSerializer.Serialize(call.Arguments);
-        var dto = JsonSerializer.Deserialize<FindFlightsRequest>(json, s_jsonOptions);
-        if (dto is null) yield break;
-
-        if (!DateOnly.TryParse(dto.DepartureDate, out var departureDate))
-        {
-            yield return new ToolErrorUpdate("Invalid departure date format. Please use YYYY-MM-DD.");
-            yield break;
-        }
-
-        DateOnly? returnDate = DateOnly.TryParse(dto.ReturnDate, out var parsed) ? parsed : null;
-
-        var request = new FlightsWorkflowRequest(
-            dto.Origin,
-            dto.Destination,
-            departureDate,
-            returnDate,
-            dto.Passengers);
+        var request = new FlightsWorkflowRequest(context.ThreadId);
 
         await foreach (var evt in flightsWorkflowServiceFactory().SearchAsync(request, cancellationToken))
         {
@@ -80,6 +59,12 @@ public sealed class FlightsWorkflowToolHandler(Func<FlightsWorkflowService> flig
             {
                 var artifact = new ArtifactCreated("FlightSearch", savedEvent.Id);
                 yield return new ToolStateSnapshotUpdate("ArtifactCreated", artifact);
+            }
+
+            if (evt is FlightPlanValidationFailedEvent validationFailedEvent)
+            {
+                yield return new ToolErrorUpdate(validationFailedEvent.Message);
+                yield break;
             }
 
             if (evt is ExecutorFailedEvent or WorkflowErrorEvent)

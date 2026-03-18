@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { EventType, randomUUID, type BaseEvent, type StateSnapshotEvent, type TextMessageContentEvent } from "@ag-ui/client";
 import type { StatusUpdate } from "../domain/StatusUpdate";
 import { ChatAgentClient } from "../services/ChatAgentClient";
@@ -34,10 +34,15 @@ const AGENT_URL = `${import.meta.env.VITE_API_BASE_URL}/ag-ui`;
 
 export function useChatAgent() {
     const [streamingExchange, setStreamingExchange] = useState<ExchangeItem | null>(null);
+    const streamingExchangeRef = useRef<ExchangeItem | null>(null);
     const [isStreaming, setIsStreaming] = useState(false);
 
     const addExchange = useChatStore((s) => s.addExchange);
     const clearExchanges = useChatStore((s) => s.clearExchanges);
+
+    useEffect(() => {
+        streamingExchangeRef.current = streamingExchange;
+    }, [streamingExchange]);
 
     const [client] = useState(() => new ChatAgentClient(AGENT_URL, useSessionStore.getState().sessionId ?? randomUUID(), {
         onRunStarted: (exchangeId, userText) => {
@@ -74,24 +79,22 @@ export function useChatAgent() {
 
         onRunFailed: (exchangeId, error) => {
             console.error("Agent run failed:", error);
-            setStreamingExchange((prev) => {
-                if (prev?.id === exchangeId) {
-                    const failed = { ...prev, error: error.message };
-                    useChatStore.getState().addExchange(failed);
-                    return null;
-                }
-                return prev;
-            });
+            const current = streamingExchangeRef.current;
+            streamingExchangeRef.current = null;
+            setStreamingExchange(null);
+            if (current?.id === exchangeId) {
+                useChatStore.getState().addExchange({ ...current, error: error.message });
+            }
             setIsStreaming(false);
         },
 
         onRunCompleted: () => {
-            setStreamingExchange((prev) => {
-                if (prev) {
-                    useChatStore.getState().addExchange(prev);
-                }
-                return null;
-            });
+            const current = streamingExchangeRef.current;
+            streamingExchangeRef.current = null;
+            setStreamingExchange(null);
+            if (current) {
+                useChatStore.getState().addExchange(current);
+            }
             setIsStreaming(false);
         },
     }));
