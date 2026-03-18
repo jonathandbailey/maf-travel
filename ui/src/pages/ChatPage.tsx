@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { MenuFoldOutlined, MessageOutlined } from '@ant-design/icons';
-import Exchanges from "@/features/chat/components/Exchanges";
 import ChatInput from "@/features/chat/components/ChatInput";
 import LatestExchange from "@/features/chat/components/LatestExchange";
 import TravelPlan from "@/features/travel/components/TravelPlan";
 import Welcome from "@/features/travel/components/Welcome";
 import { useChatAgent } from "@/features/chat/hooks/useChatAgent";
+import { useChatStore } from "@/features/chat/store/chatStore";
 import { useTravelPlan } from "@/features/travel/hooks/useTravelPlan";
 import { useFlightSearch } from "@/features/travel/hooks/useFlightSearch";
 import { useSessionStore } from '@/app/store/sessionStore';
@@ -19,6 +18,8 @@ const ChatPage = () => {
     const setSessionId = useSessionStore((s) => s.setSessionId);
     const createPlan = useTravelPlanStore((s) => s.createPlan);
     const updatePlan = useTravelPlanStore((s) => s.updatePlan);
+    const plan = useTravelPlanStore((s) => s.plan);
+    const hasValues = plan && Object.values(plan).some((v) => v !== null);
 
     useEffect(() => {
         createPlan();
@@ -29,9 +30,13 @@ const ChatPage = () => {
     }, [id, setSessionId, createPlan, updatePlan]);
 
     const [inputValue, setInputValue] = useState("");
-    const { exchanges, isStreaming, sendMessage, handleCancel, client } = useChatAgent();
+    const { streamingExchange, isStreaming, sendMessage, handleCancel, client } = useChatAgent();
     useTravelPlan(client);
     useFlightSearch(client);
+
+    const exchanges = useChatStore((s) => s.exchanges);
+    const lastCompleted = exchanges[exchanges.length - 1];
+    const displayExchange = streamingExchange ?? lastCompleted ?? undefined;
 
     const submitMessage = () => {
         if (!inputValue.trim()) return;
@@ -46,30 +51,12 @@ const ChatPage = () => {
 
     const handleSubmit = () => submitMessage();
 
-    const [siderOpen, setSiderOpen] = useState(true);
-
     return (
         <div className="chat-page">
-            <div className="chat-body">
-                <div className="chat-main">
-                    <TravelPlan />
-                </div>
-                <div className={`chat-sider-right ${siderOpen ? 'open' : 'collapsed'}`}>
-                    <button className="sider-toggle-right" onClick={() => setSiderOpen(o => !o)}>
-                        {siderOpen ? <MenuFoldOutlined /> : <MessageOutlined />}
-                    </button>
-                    {siderOpen && (
-                        <div className="sider-exchanges">
-                            {exchanges.length === 0 ? (
-                                <Welcome />
-                            ) : (
-                                <Exchanges exchanges={exchanges} />
-                            )}
-                        </div>
-                    )}
-                </div>
+            <div className="chat-main">
+                {hasValues ? <TravelPlan /> : <Welcome />}
             </div>
-            <LatestExchange exchange={exchanges[exchanges.length - 1]} />
+            <LatestExchange exchange={displayExchange} />
             <ChatInput
                 value={inputValue}
                 onChange={setInputValue}

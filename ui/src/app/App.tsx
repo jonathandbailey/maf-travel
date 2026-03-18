@@ -6,6 +6,8 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import RootHeader from './layout/RootHeader';
 import RootNavigationMenu from './layout/RootNavigationMenu';
 import ErrorBoundary from './ErrorBoundary';
+import Exchanges from '@/features/chat/components/Exchanges';
+import { useChatStore } from '@/features/chat/store/chatStore';
 
 const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 const ChatPage = lazy(() => import('../pages/ChatPage'));
@@ -15,12 +17,19 @@ const { Header, Content, Sider } = Layout;
 function App() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(location.pathname === '/');
+  const [rightCollapsed, setRightCollapsed] = useState(true);
+
+  const isChatPage = location.pathname.startsWith('/travel-plans/');
+  const exchanges = useChatStore((s) => s.exchanges);
 
   // Sync collapsed state with route changes without useEffect (React-recommended derived-state pattern)
   const [prevPathname, setPrevPathname] = useState(location.pathname);
   if (prevPathname !== location.pathname) {
     setPrevPathname(location.pathname);
     setCollapsed(location.pathname === '/');
+    if (!location.pathname.startsWith('/travel-plans/')) {
+      setRightCollapsed(true);
+    }
   }
 
   return (
@@ -49,6 +58,28 @@ function App() {
               </Routes>
             </Suspense>
           </Content>
+          {isChatPage && (
+            <Sider
+              width={520}
+              collapsedWidth={48}
+              collapsed={rightCollapsed}
+              trigger={null}
+              className="app-sider-right"
+            >
+              <Button
+                type="text"
+                icon={rightCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setRightCollapsed((o) => !o)}
+                className="sider-toggle"
+                aria-label={rightCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              />
+              {!rightCollapsed && exchanges.length > 0 && (
+                <div className="sider-exchanges">
+                  <Exchanges exchanges={exchanges} />
+                </div>
+              )}
+            </Sider>
+          )}
         </Layout>
       </Layout>
     </ErrorBoundary>
