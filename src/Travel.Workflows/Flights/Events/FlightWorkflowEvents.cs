@@ -12,3 +12,8 @@ public class FlightSearchSavedEvent(Guid id) : WorkflowEvent
 {
     public Guid Id { get; } = id;
 }
+
+public class FlightPlanValidationFailedEvent(string message) : WorkflowEvent
+{
+    public string Message { get; } = message;
+}

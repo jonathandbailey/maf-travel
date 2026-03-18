@@ -21,10 +21,23 @@ public class FlightsWorkflowService(
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var plan = await travelApiClient.GetPlanBySessionAsync(request.SessionId, cancellationToken);
+
+        var missingFields = new List<string>();
+        if (string.IsNullOrWhiteSpace(plan.Origin)) missingFields.Add(nameof(plan.Origin));
+        if (string.IsNullOrWhiteSpace(plan.Destination)) missingFields.Add(nameof(plan.Destination));
+        if (!plan.StartDate.HasValue) missingFields.Add(nameof(plan.StartDate));
+
+        if (missingFields.Count > 0)
+        {
+            yield return new FlightPlanValidationFailedEvent(
+                $"Cannot search for flights. The following required fields are not populated on the travel plan: {string.Join(", ", missingFields)}.");
+            yield break;
+        }
+
         var input = new FlightsWorkflowInput(
-            plan.Origin ?? string.Empty,
-            plan.Destination ?? string.Empty,
-            plan.StartDate.HasValue ? DateOnly.FromDateTime(plan.StartDate.Value) : DateOnly.FromDateTime(DateTime.Today),
+            plan.Origin!,
+            plan.Destination!,
+            DateOnly.FromDateTime(plan.StartDate!.Value),
             plan.EndDate.HasValue ? DateOnly.FromDateTime(plan.EndDate.Value) : null,
             plan.NumberOfTravelers ?? 1);
 

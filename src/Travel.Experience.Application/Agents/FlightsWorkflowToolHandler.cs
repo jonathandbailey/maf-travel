@@ -61,6 +61,12 @@ public sealed class FlightsWorkflowToolHandler(Func<FlightsWorkflowService> flig
                 yield return new ToolStateSnapshotUpdate("ArtifactCreated", artifact);
             }
 
+            if (evt is FlightPlanValidationFailedEvent validationFailedEvent)
+            {
+                yield return new ToolErrorUpdate(validationFailedEvent.Message);
+                yield break;
+            }
+
             if (evt is ExecutorFailedEvent or WorkflowErrorEvent)
             {
                 yield return new ToolErrorUpdate("Something went wrong while searching for flights. Please try again.");
