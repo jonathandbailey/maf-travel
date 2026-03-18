@@ -11,7 +11,7 @@ const RootNavigationMenu = ({ collapsed }: { collapsed: boolean }) => {
     const [plans, setPlans] = useState<TravelPlanResponse[]>([]);
 
     useEffect(() => {
-        listTravelPlans().then(setPlans).catch(() => {});
+        listTravelPlans().then(setPlans).catch(() => { });
     }, []);
 
     const handleNewPlan = async () => {

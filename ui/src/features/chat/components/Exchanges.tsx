@@ -7,18 +7,19 @@ interface ExchangesProps {
 }
 
 const Exchanges = ({ exchanges }: ExchangesProps) => {
-    const bottomRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (containerRef.current) {
+            containerRef.current.scrollTop = containerRef.current.scrollHeight;
+        }
     }, [exchanges]);
 
     return (
-        <div className="chat-messages-inner" role="log" aria-live="polite" aria-label="Conversation">
+        <div ref={containerRef} className="chat-messages-inner" role="log" aria-live="polite" aria-label="Conversation">
             {exchanges.map((ex) => (
                 <Exchange key={ex.id} userContent={ex.userContent} assistantContent={ex.assistantContent} statusUpdates={ex.statusUpdates} error={ex.error} />
             ))}
-            <div ref={bottomRef} />
         </div>
     );
 };

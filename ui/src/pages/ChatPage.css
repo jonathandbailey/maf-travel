@@ -9,6 +9,7 @@
     display: flex;
     flex-direction: row;
     flex: 1;
+    min-height: 0;
     overflow: hidden;
 }
 
@@ -48,6 +49,11 @@
 
 .sider-exchanges {
     flex: 1;
-    overflow-y: auto;
+    overflow: hidden;
     padding: 8px;
+}
+
+.sider-exchanges .chat-messages-inner {
+    height: 100%;
+    overflow-y: auto;
 }
