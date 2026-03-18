@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { MenuFoldOutlined, MessageOutlined } from '@ant-design/icons';
 import Exchanges from "@/features/chat/components/Exchanges";
 import ChatInput from "@/features/chat/components/ChatInput";
 import TravelPlan from "@/features/travel/components/TravelPlan";
-import FlightSearch from "@/features/travel/components/FlightSearch";
 import Welcome from "@/features/travel/components/Welcome";
 import { useChatAgent } from "@/features/chat/hooks/useChatAgent";
 import { useTravelPlan } from "@/features/travel/hooks/useTravelPlan";
@@ -45,30 +45,38 @@ const ChatPage = () => {
 
     const handleSubmit = () => submitMessage();
 
+    const [siderOpen, setSiderOpen] = useState(true);
+
     return (
         <div className="chat-page">
-            <div className="chat-main">
-                <div className="chat-messages">
-                    {exchanges.length === 0 ? (
-                        <Welcome />
-                    ) : (
-                        <Exchanges exchanges={exchanges} />
+            <div className="chat-body">
+                <div className="chat-main">
+                    <TravelPlan />
+                </div>
+                <div className={`chat-sider-right ${siderOpen ? 'open' : 'collapsed'}`}>
+                    <button className="sider-toggle-right" onClick={() => setSiderOpen(o => !o)}>
+                        {siderOpen ? <MenuFoldOutlined /> : <MessageOutlined />}
+                    </button>
+                    {siderOpen && (
+                        <div className="sider-exchanges">
+                            {exchanges.length === 0 ? (
+                                <Welcome />
+                            ) : (
+                                <Exchanges exchanges={exchanges} />
+                            )}
+                        </div>
                     )}
                 </div>
-                <ChatInput
-                    value={inputValue}
-                    onChange={setInputValue}
-                    onKeyDown={handleKeyDown}
-                    onSuggestionSelect={(suggestion) => sendMessage(suggestion)}
-                    onSubmit={handleSubmit}
-                    isStreaming={isStreaming}
-                    onCancel={handleCancel}
-                />
             </div>
-            <div className="chat-sidebar">
-                <TravelPlan />
-                <FlightSearch />
-            </div>
+            <ChatInput
+                value={inputValue}
+                onChange={setInputValue}
+                onKeyDown={handleKeyDown}
+                onSuggestionSelect={(suggestion) => sendMessage(suggestion)}
+                onSubmit={handleSubmit}
+                isStreaming={isStreaming}
+                onCancel={handleCancel}
+            />
         </div>
     )
 }
