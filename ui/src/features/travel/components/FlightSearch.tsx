@@ -1,6 +1,5 @@
 import { Card, List, Typography } from "antd";
-import { useFlightSearchStore } from "../store/flightSearchStore";
-import type { FlightOptionResponse } from "../services/flightSearchService";
+import type { FlightOptionResponse, FlightSearchResponse } from "../services/flightSearchService";
 import "./travel.css";
 
 const { Text } = Typography;
@@ -36,10 +35,7 @@ const FlightOptionItem = ({ option }: { option: FlightOptionResponse }) => (
     </List.Item>
 );
 
-const FlightSearch = () => {
-    const flightSearch = useFlightSearchStore((s) => s.flightSearch);
-    if (!flightSearch) return null;
-
+const FlightSearch = ({ flightSearch }: { flightSearch: FlightSearchResponse }) => {
     return (
         <Card title="Flight Options" size="small">
             <List

@@ -4,6 +4,7 @@ import ChatInput from "@/features/chat/components/ChatInput";
 import LatestExchange from "@/features/chat/components/LatestExchange";
 import TravelPlan from "@/features/travel/components/TravelPlan";
 import Welcome from "@/features/travel/components/Welcome";
+import FlightPlan from "@/features/travel/components/FlightPlan";
 import { useChatAgent } from "@/features/chat/hooks/useChatAgent";
 import { useChatStore } from "@/features/chat/store/chatStore";
 import { useTravelPlan } from "@/features/travel/hooks/useTravelPlan";
@@ -55,6 +56,7 @@ const ChatPage = () => {
         <div className="chat-page">
             <div className="chat-main">
                 {hasValues ? <TravelPlan /> : <Welcome />}
+                <FlightPlan />
             </div>
             <LatestExchange exchange={displayExchange} />
             <ChatInput

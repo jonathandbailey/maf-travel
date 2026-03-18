@@ -15,7 +15,7 @@ interface ArtifactCreatedSnapshot {
 }
 
 export function useFlightSearch(client: ChatAgentClient) {
-    const { setFlightSearch } = useFlightSearchStore();
+    const { addFlightSearch } = useFlightSearchStore();
 
     useEffect(() => {
         const handleEvent = (event: BaseEvent) => {
@@ -30,10 +30,10 @@ export function useFlightSearch(client: ChatAgentClient) {
 
             console.log(`Fetching flight search results for artifact ID: ${payload.Id}`);
 
-            getFlightSearch(payload.Id).then(setFlightSearch).catch(console.error);
+            getFlightSearch(payload.Id).then(addFlightSearch).catch(console.error);
         };
 
         client.addEventHandler(handleEvent);
         return () => client.removeEventHandler(handleEvent);
-    }, [client, setFlightSearch]);
+    }, [client, addFlightSearch]);
 }
