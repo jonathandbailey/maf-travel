@@ -29,7 +29,7 @@
     flex-shrink: 0;
 }
 
-.chat-sider-right.open { width: 320px; }
+.chat-sider-right.open { width: 520px; }
 .chat-sider-right.collapsed { width: 48px; }
 
 .sider-toggle-right {
@@ -50,7 +50,7 @@
 .sider-exchanges {
     flex: 1;
     overflow: hidden;
-    padding: 8px;
+    padding: 16px;
 }
 
 .sider-exchanges .chat-messages-inner {

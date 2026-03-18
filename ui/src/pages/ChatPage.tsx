@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { MenuFoldOutlined, MessageOutlined } from '@ant-design/icons';
 import Exchanges from "@/features/chat/components/Exchanges";
 import ChatInput from "@/features/chat/components/ChatInput";
+import LatestExchange from "@/features/chat/components/LatestExchange";
 import TravelPlan from "@/features/travel/components/TravelPlan";
 import Welcome from "@/features/travel/components/Welcome";
 import { useChatAgent } from "@/features/chat/hooks/useChatAgent";
@@ -68,6 +69,7 @@ const ChatPage = () => {
                     )}
                 </div>
             </div>
+            <LatestExchange exchange={exchanges[exchanges.length - 1]} />
             <ChatInput
                 value={inputValue}
                 onChange={setInputValue}

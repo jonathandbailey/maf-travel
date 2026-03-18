@@ -74,6 +74,17 @@
   font-style: italic;
 }
 
+/* LatestExchange */
+.latest-exchange {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 768px;
+  min-width: 700px;
+  margin: 0 auto 8px;
+}
+
 /* ChatInput */
 .chat-input-card {
   width: 100%;
