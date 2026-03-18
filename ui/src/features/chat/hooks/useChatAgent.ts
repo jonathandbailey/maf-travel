@@ -4,6 +4,7 @@ import type { StatusUpdate } from "../domain/StatusUpdate";
 import { ChatAgentClient } from "../services/ChatAgentClient";
 import { useTravelPlanStore } from "../../travel/store/travelPlanStore";
 import { useSessionStore } from "@/app/store/sessionStore";
+import { useChatStore } from "../store/chatStore";
 
 export interface ExchangeItem {
     id: string;
@@ -32,39 +33,40 @@ function isTypedSnapshot(value: unknown): value is TypedSnapshot {
 const AGENT_URL = `${import.meta.env.VITE_API_BASE_URL}/ag-ui`;
 
 export function useChatAgent() {
-    const [exchanges, setExchanges] = useState<ExchangeItem[]>([]);
+    const [streamingExchange, setStreamingExchange] = useState<ExchangeItem | null>(null);
     const [isStreaming, setIsStreaming] = useState(false);
+
+    const addExchange = useChatStore((s) => s.addExchange);
+    const clearExchanges = useChatStore((s) => s.clearExchanges);
 
     const [client] = useState(() => new ChatAgentClient(AGENT_URL, useSessionStore.getState().sessionId ?? randomUUID(), {
         onRunStarted: (exchangeId, userText) => {
-            setExchanges((prev) => [...prev, { id: exchangeId, userContent: userText, statusUpdates: [] }]);
+            setStreamingExchange({ id: exchangeId, userContent: userText, statusUpdates: [] });
             setIsStreaming(true);
         },
 
         onEvent: (event: BaseEvent, exchangeId: string) => {
             if (event.type === EventType.TEXT_MESSAGE_CONTENT) {
                 const delta = (event as TextMessageContentEvent).delta || '';
-                setExchanges((prev) =>
-                    prev.map((ex) => ex.id === exchangeId
-                        ? { ...ex, assistantContent: (ex.assistantContent ?? '') + delta }
-                        : ex
-                    )
+                setStreamingExchange((prev) =>
+                    prev?.id === exchangeId
+                        ? { ...prev, assistantContent: (prev.assistantContent ?? '') + delta }
+                        : prev
                 );
             }
             if (event.type === EventType.STATE_SNAPSHOT) {
                 const snapshot = (event as StateSnapshotEvent).snapshot;
                 if (isTypedSnapshot(snapshot) && snapshot.Type === 'StatusUpdate' && snapshot.Payload) {
                     const payload = snapshot.Payload;
-                    setExchanges((prev) =>
-                        prev.map((ex) => ex.id === exchangeId
-                            ? { ...ex, statusUpdates: [...ex.statusUpdates, {
+                    setStreamingExchange((prev) =>
+                        prev?.id === exchangeId
+                            ? { ...prev, statusUpdates: [...prev.statusUpdates, {
                                 type: payload.Type,
                                 source: payload.Source,
                                 status: payload.Status,
                                 details: payload.Details,
                             }] }
-                            : ex
-                        )
+                            : prev
                     );
                 }
             }
@@ -72,12 +74,24 @@ export function useChatAgent() {
 
         onRunFailed: (exchangeId, error) => {
             console.error("Agent run failed:", error);
-            setExchanges((prev) =>
-                prev.map((ex) => ex.id === exchangeId ? { ...ex, error: error.message } : ex)
-            );
+            setStreamingExchange((prev) => {
+                if (prev?.id === exchangeId) {
+                    const failed = { ...prev, error: error.message };
+                    useChatStore.getState().addExchange(failed);
+                    return null;
+                }
+                return prev;
+            });
+            setIsStreaming(false);
         },
 
         onRunCompleted: () => {
+            setStreamingExchange((prev) => {
+                if (prev) {
+                    useChatStore.getState().addExchange(prev);
+                }
+                return null;
+            });
             setIsStreaming(false);
         },
     }));
@@ -93,10 +107,11 @@ export function useChatAgent() {
     useEffect(() => {
         return useTravelPlanStore.subscribe((state, prevState) => {
             if (state.planVersion !== prevState.planVersion) {
-                setExchanges([]);
+                clearExchanges();
+                setStreamingExchange(null);
             }
         });
-    }, []);
+    }, [clearExchanges]);
 
     const sendMessage = (text: string) => {
         if (!text.trim()) return;
@@ -107,5 +122,5 @@ export function useChatAgent() {
         client.cancel();
     };
 
-    return { exchanges, isStreaming, sendMessage, handleCancel, client };
+    return { streamingExchange, isStreaming, sendMessage, handleCancel, client };
 }

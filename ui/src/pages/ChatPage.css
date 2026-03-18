@@ -1,33 +1,12 @@
 .chat-page {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     height: 100%;
     overflow: hidden;
 }
 
 .chat-main {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-}
-
-.chat-messages {
     flex: 1;
     overflow: auto;
-    width: 100%;
-}
-
-.chat-messages-inner {
-    max-width: 768px;
-    margin: 0 auto;
-}
-
-.chat-sidebar {
-    width: 320px;
     padding: 16px;
-    align-self: flex-start;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
 }
