@@ -6,16 +6,16 @@ namespace Travel.Workflows.Flights.Nodes;
 public partial class StartNode() : Executor(FlightsNodeNames.StartNode)
 {
     [MessageHandler(Send = [typeof(FlightSearchAgentCommand)])]
-    private async ValueTask HandleAsync(FlightsWorkflowRequest request, IWorkflowContext context,
+    private async ValueTask HandleAsync(FlightsWorkflowInput input, IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
         await context.SendMessageAsync(
             new FlightSearchAgentCommand(
-                request.Origin,
-                request.Destination,
-                request.DepartureDate,
-                request.ReturnDate,
-                request.Passengers),
+                input.Origin,
+                input.Destination,
+                input.DepartureDate,
+                input.ReturnDate,
+                input.Passengers),
             cancellationToken);
     }
 }

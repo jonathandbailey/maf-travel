@@ -13,17 +13,26 @@ public class FlightsWorkflowService(
     IAgentProvider agentProvider,
     McpClient mcpClient,
     IFlightApiClient flightApiClient,
+    ITravelApiClient travelApiClient,
     ILogger<FlightsWorkflowService> logger)
 {
     public async IAsyncEnumerable<WorkflowEvent> SearchAsync(
         FlightsWorkflowRequest request,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        var plan = await travelApiClient.GetPlanBySessionAsync(request.SessionId, cancellationToken);
+        var input = new FlightsWorkflowInput(
+            plan.Origin ?? string.Empty,
+            plan.Destination ?? string.Empty,
+            plan.StartDate.HasValue ? DateOnly.FromDateTime(plan.StartDate.Value) : DateOnly.FromDateTime(DateTime.Today),
+            plan.EndDate.HasValue ? DateOnly.FromDateTime(plan.EndDate.Value) : null,
+            plan.NumberOfTravelers ?? 1);
+
         var flightAgent = await agentProvider.CreateAsync(AgentType.Flight);
         var workflow = FlightsWorkflowBuilder.Build(flightAgent, mcpClient);
         var checkpointManager = CheckpointManager.Default;
 
-        var run = await InProcessExecution.RunStreamingAsync(workflow, request, checkpointManager);
+        var run = await InProcessExecution.RunStreamingAsync(workflow, input, checkpointManager);
 
         await foreach (var evt in run.WatchStreamAsync(cancellationToken))
         {
