@@ -52,15 +52,16 @@ public class TravelPlanQuery(IAzureStorageRepository storageRepository,
         foreach (var blob in blobs)
         {
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
+
             var document = JsonSerializer.Deserialize<TravelPlanDocument>(json, Json.JsonOptions);
+            
             if (document is null)
             {
-                logger.LogWarning("Failed to deserialize TravelPlan blob {BlobName} in {Container}", blob, ContainerName);
+                logger.LogError("Failed to deserialize TravelPlan blob {BlobName} in {Container}", blob, ContainerName);
+                continue;
             }
-            else
-            {
-                plans.Add(ToDomain(document));
-            }
+
+            plans.Add(ToDomain(document));
         }
 
         return plans;
