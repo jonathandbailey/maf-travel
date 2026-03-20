@@ -1,20 +1,21 @@
-using System.Text.Json;
-using Infrastructure.Repository.Azure;
+﻿using Infrastructure.Repository.Azure;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using Travel.Application.Exceptions;
 using Travel.Application.Interfaces;
 using Travel.Domain.Aggregates;
 using Travel.Infrastructure.Common;
 using Travel.Infrastructure.Documents;
+using Travel.Infrastructure.Repositories;
 
-namespace Travel.Infrastructure.Repositories;
+namespace Travel.Infrastructure.Queries;
 
-public class TravelPlanRepository(
-    IAzureStorageRepository storageRepository,
+
+public class TravelPlanQuery(IAzureStorageRepository storageRepository,
     IOptions<TravelPlanStorageSettings> settings,
-    ILogger<TravelPlanRepository> logger) : ITravelPlanRepository
+    ILogger<TravelPlanRepository> logger) : ITravelPlanQuery
 {
     private string ContainerName => settings.Value.ContainerName;
 
@@ -42,10 +43,11 @@ public class TravelPlanRepository(
 
         return ToDomain(document);
     }
+
     public async Task<IReadOnlyList<TravelPlan>> ListAsync(CancellationToken cancellationToken = default)
     {
         var blobs = await storageRepository.ListBlobsAsync(ContainerName);
-        
+
         var plans = new List<TravelPlan>(blobs.Count);
 
         foreach (var blob in blobs)
@@ -60,39 +62,6 @@ public class TravelPlanRepository(
 
         return plans;
     }
-
-    public async Task AddAsync(TravelPlan plan, CancellationToken cancellationToken = default)
-    {
-        await EnsureContainerAsync();
-        var json = JsonSerializer.Serialize(ToDocument(plan), Json.JsonOptions);
-        await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, "application/json");
-    }
-
-    public async Task UpdateAsync(TravelPlan plan, CancellationToken cancellationToken = default)
-    {
-        if (!await storageRepository.BlobExists(BlobName(plan.Id), ContainerName))
-            throw new NotFoundException($"TravelPlan {plan.Id} not found.");
-
-        var json = JsonSerializer.Serialize(ToDocument(plan), Json.JsonOptions);
-        await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, "application/json");
-    }
-
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
-            throw new NotFoundException($"TravelPlan {id} not found.");
-
-        await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
-    }
-
-    private async Task EnsureContainerAsync()
-    {
-        if (!await storageRepository.ContainerExists(ContainerName))
-            await storageRepository.CreateContainerAsync(ContainerName);
-    }
-
-    private static TravelPlanDocument ToDocument(TravelPlan plan) =>
-        new(plan.Id, plan.Origin, plan.Destination, plan.NumberOfTravelers, plan.StartDate, plan.EndDate);
 
     private static TravelPlan ToDomain(TravelPlanDocument doc) =>
         TravelPlan.Reconstitute(doc.Id, doc.Origin, doc.Destination, doc.NumberOfTravelers, doc.StartDate, doc.EndDate);

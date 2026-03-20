@@ -4,6 +4,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Travel.Application.Interfaces;
+using Travel.Infrastructure.Queries;
 using Travel.Infrastructure.Repositories;
 
 namespace Travel.Infrastructure.Extensions;
@@ -30,6 +31,8 @@ public static class InfrastructureExtensions
         services.AddSingleton<ITravelPlanRepository, TravelPlanRepository>();
         services.AddSingleton<ISessionRepository, SessionRepository>();
         services.AddSingleton<IFlightSearchRepository, FlightSearchRepository>();
+
+        services.AddSingleton<ITravelPlanQuery, TravelPlanQuery>();
 
         return services;
     }
