@@ -16,6 +16,7 @@ public class TravelPlanRepository(
     IOptions<TravelPlanStorageSettings> settings,
     ILogger<TravelPlanRepository> logger) : ITravelPlanRepository
 {
+    private const string ApplicationJson = Json.ApplicationJson;
     private string ContainerName => settings.Value.ContainerName;
 
     private static string BlobName(Guid id) => $"{id}.json";
@@ -51,11 +52,16 @@ public class TravelPlanRepository(
         foreach (var blob in blobs)
         {
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
+            
             var document = JsonSerializer.Deserialize<TravelPlanDocument>(json, Json.JsonOptions);
+
             if (document is null)
-                logger.LogWarning("Failed to deserialize TravelPlan blob {BlobName} in {Container}", blob, ContainerName);
-            else
-                plans.Add(ToDomain(document));
+            {
+                logger.LogError("Failed to deserialize TravelPlan blob {BlobName} in {Container}", blob, ContainerName);
+                continue;
+            }
+
+            plans.Add(ToDomain(document));
         }
 
         return plans;
@@ -64,8 +70,10 @@ public class TravelPlanRepository(
     public async Task AddAsync(TravelPlan plan, CancellationToken cancellationToken = default)
     {
         await EnsureContainerAsync();
+
         var json = JsonSerializer.Serialize(ToDocument(plan), Json.JsonOptions);
-        await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, "application/json");
+        
+        await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, ApplicationJson);
     }
 
     public async Task UpdateAsync(TravelPlan plan, CancellationToken cancellationToken = default)
@@ -77,7 +85,8 @@ public class TravelPlanRepository(
         }
 
         var json = JsonSerializer.Serialize(ToDocument(plan), Json.JsonOptions);
-        await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, "application/json");
+
+        await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, ApplicationJson);
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)

@@ -9,4 +9,6 @@ public static class Json
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = true
     };
+
+    public const string ApplicationJson = "application/json";
 }

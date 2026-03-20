@@ -11,7 +11,9 @@ public class GetTravelPlanQueryHandler(ITravelPlanQuery travelPlanQuery, ISessio
     public async Task<TravelPlanResponse> Handle(GetTravelPlanQuery query, CancellationToken cancellationToken)
     {
         var plan = await travelPlanQuery.GetAsync(query.Id, cancellationToken);
+        
         var session = await sessionRepository.GetByTravelPlanIdAsync(plan.Id, cancellationToken);
+        
         return new TravelPlanResponse(plan.Id, plan.Origin, plan.Destination, plan.NumberOfTravelers, plan.StartDate, plan.EndDate, session?.Id);
     }
 }
