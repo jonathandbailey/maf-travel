@@ -12,11 +12,12 @@ const LatestExchange = ({ exchange }: LatestExchangeProps) => {
     if (!exchange) return null;
 
     const isLoading = !exchange.assistantContent && !exchange.error;
+    const latestStatus = exchange.statusUpdates.at(-1)?.status;
 
     return (
         <div className="latest-exchange">
             <UserMessage content={exchange.userContent} />
-            {isLoading && <Status />}
+            {isLoading && <Status message={latestStatus} />}
             {exchange.assistantContent && <AssistantMessage content={exchange.assistantContent} />}
         </div>
     );
