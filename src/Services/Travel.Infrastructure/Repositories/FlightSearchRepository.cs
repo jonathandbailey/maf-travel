@@ -27,10 +27,11 @@ public class FlightSearchRepository(
         if (!await storageRepository.BlobExists(blobName, ContainerName))
         {
             logger.LogError("FlightSearch {Id} not found in container {Container}", id, ContainerName);
-            throw new TravelPlanUpdateException($"FlightSearch {id} not found.");
+            throw new FlightSearchUpdateException($"FlightSearch {id} not found.");
         }
 
         var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
+        
         var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, Json.JsonOptions);
 
         if (document is null)
@@ -54,12 +55,11 @@ public class FlightSearchRepository(
 
             if (document is null)
             {
-                logger.LogWarning("Failed to deserialize FlightSearch blob {BlobName} in {Container}", blob, ContainerName);
+                logger.LogError("Failed to deserialize FlightSearch blob {BlobName} in {Container}", blob, ContainerName);
+                continue;
             }
-            else
-            {
-                searches.Add(ToDomain(document));
-            }
+
+            searches.Add(ToDomain(document));
         }
 
         return searches;

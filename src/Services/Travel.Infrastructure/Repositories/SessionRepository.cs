@@ -16,18 +16,17 @@ public class SessionRepository(
     IOptions<SessionStorageSettings> settings,
     ILogger<SessionRepository> logger) : ISessionRepository
 {
+    private const string ApplicationJson = Json.ApplicationJson;
     private string ContainerName => settings.Value.ContainerName;
 
     private static string BlobName(Guid id) => $"{id}.json";
 
     public async Task AddAsync(Session session, CancellationToken cancellationToken = default)
     {
-        await EnsureContainerAsync();
-
         var document = new SessionDocument(session.Id, session.CreatedAt, session.TravelPlanId);
         var json = JsonSerializer.Serialize(document, Json.JsonOptions);
 
-        await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, "application/json");
+        await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, ApplicationJson);
     }
 
     public async Task<Session> GetAsync(Guid id, CancellationToken cancellationToken = default)
@@ -39,6 +38,7 @@ public class SessionRepository(
         }
 
         var json = await storageRepository.DownloadTextBlobAsync(BlobName(id), ContainerName);
+        
         var document = JsonSerializer.Deserialize<SessionDocument>(json, Json.JsonOptions);
 
         if (document is null)
@@ -62,6 +62,7 @@ public class SessionRepository(
         foreach (var blob in blobs)
         {
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
+            
             var document = JsonSerializer.Deserialize<SessionDocument>(json, Json.JsonOptions);
 
             if (document?.TravelPlanId == travelPlanId)
@@ -82,16 +83,9 @@ public class SessionRepository(
         }
 
         var document = new SessionDocument(session.Id, session.CreatedAt, session.TravelPlanId);
+        
         var json = JsonSerializer.Serialize(document, Json.JsonOptions);
 
-        await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, "application/json");
-    }
-
-    private async Task EnsureContainerAsync()
-    {
-        if (!await storageRepository.ContainerExists(ContainerName))
-        {
-            await storageRepository.CreateContainerAsync(ContainerName);
-        }
+        await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, ApplicationJson);
     }
 }

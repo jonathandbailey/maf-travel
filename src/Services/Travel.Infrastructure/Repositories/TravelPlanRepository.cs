@@ -69,8 +69,6 @@ public class TravelPlanRepository(
 
     public async Task AddAsync(TravelPlan plan, CancellationToken cancellationToken = default)
     {
-        await EnsureContainerAsync();
-
         var json = JsonSerializer.Serialize(ToDocument(plan), Json.JsonOptions);
         
         await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, ApplicationJson);
@@ -99,14 +97,7 @@ public class TravelPlanRepository(
 
         await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
     }
-
-    private async Task EnsureContainerAsync()
-    {
-        if (!await storageRepository.ContainerExists(ContainerName))
-        {
-            await storageRepository.CreateContainerAsync(ContainerName);
-        }
-    }
+ 
 
     private static TravelPlanDocument ToDocument(TravelPlan plan) =>
         new(plan.Id, plan.Origin, plan.Destination, plan.NumberOfTravelers, plan.StartDate, plan.EndDate);
