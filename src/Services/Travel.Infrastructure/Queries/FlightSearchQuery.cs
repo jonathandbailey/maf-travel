@@ -9,12 +9,12 @@ using Travel.Domain.Aggregates.FlightSearch;
 using Travel.Infrastructure.Common;
 using Travel.Infrastructure.Documents;
 
-namespace Travel.Infrastructure.Repositories;
+namespace Travel.Infrastructure.Queries;
 
-public class FlightSearchRepository(
+public class FlightSearchQuery(
     IAzureStorageRepository storageRepository,
     IOptions<FlightSearchStorageSettings> settings,
-    ILogger<FlightSearchRepository> logger) : IFlightSearchRepository
+    ILogger<FlightSearchQuery> logger) : IFlightSearchQuery
 {
     private string ContainerName => settings.Value.ContainerName;
 
@@ -64,50 +64,6 @@ public class FlightSearchRepository(
 
         return searches;
     }
-
-    public async Task AddAsync(FlightSearch search, CancellationToken cancellationToken = default)
-    {
-        await EnsureContainerAsync();
-
-        var json = JsonSerializer.Serialize(ToDocument(search), Json.JsonOptions);
-        await storageRepository.UploadTextBlobAsync(BlobName(search.Id), ContainerName, json, "application/json");
-    }
-
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
-        {
-            logger.LogError("FlightSearch {Id} not found in container {Container}", id, ContainerName);
-            throw new NotFoundException($"FlightSearch {id} not found.");
-        }
-
-        await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
-    }
-
-    private async Task EnsureContainerAsync()
-    {
-        if (!await storageRepository.ContainerExists(ContainerName))
-        {
-            await storageRepository.CreateContainerAsync(ContainerName);
-        }
-    }
-
-    private static FlightSearchDocument ToDocument(FlightSearch search) =>
-        new(
-            search.Id,
-            search.CreatedAt,
-            search.FlightOptions
-                .Select(o => new FlightOptionDocument(
-                    o.Id,
-                    o.FlightNumber,
-                    o.Airline,
-                    o.Origin,
-                    o.Destination,
-                    o.DepartureTime,
-                    o.ArrivalTime,
-                    o.PricePerPerson,
-                    o.AvailableSeats))
-                .ToList());
 
     private static FlightSearch ToDomain(FlightSearchDocument doc) =>
         FlightSearch.Reconstitute(

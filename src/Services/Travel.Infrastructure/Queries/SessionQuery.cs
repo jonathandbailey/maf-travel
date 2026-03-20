@@ -9,26 +9,16 @@ using Travel.Application.Models;
 using Travel.Infrastructure.Common;
 using Travel.Infrastructure.Documents;
 
-namespace Travel.Infrastructure.Repositories;
+namespace Travel.Infrastructure.Queries;
 
-public class SessionRepository(
+public class SessionQuery(
     IAzureStorageRepository storageRepository,
     IOptions<SessionStorageSettings> settings,
-    ILogger<SessionRepository> logger) : ISessionRepository
+    ILogger<SessionQuery> logger) : ISessionQuery
 {
     private string ContainerName => settings.Value.ContainerName;
 
     private static string BlobName(Guid id) => $"{id}.json";
-
-    public async Task AddAsync(Session session, CancellationToken cancellationToken = default)
-    {
-        await EnsureContainerAsync();
-
-        var document = new SessionDocument(session.Id, session.CreatedAt, session.TravelPlanId);
-        var json = JsonSerializer.Serialize(document, Json.JsonOptions);
-
-        await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, "application/json");
-    }
 
     public async Task<Session> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
@@ -71,27 +61,5 @@ public class SessionRepository(
         }
 
         return null;
-    }
-
-    public async Task UpdateAsync(Session session, CancellationToken cancellationToken = default)
-    {
-        if (!await storageRepository.BlobExists(BlobName(session.Id), ContainerName))
-        {
-            logger.LogError("Session {Id} not found in container {Container}", session.Id, ContainerName);
-            throw new NotFoundException($"Session {session.Id} was not found.");
-        }
-
-        var document = new SessionDocument(session.Id, session.CreatedAt, session.TravelPlanId);
-        var json = JsonSerializer.Serialize(document, Json.JsonOptions);
-
-        await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, "application/json");
-    }
-
-    private async Task EnsureContainerAsync()
-    {
-        if (!await storageRepository.ContainerExists(ContainerName))
-        {
-            await storageRepository.CreateContainerAsync(ContainerName);
-        }
     }
 }

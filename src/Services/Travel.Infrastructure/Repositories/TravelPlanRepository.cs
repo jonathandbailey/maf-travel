@@ -71,7 +71,10 @@ public class TravelPlanRepository(
     public async Task UpdateAsync(TravelPlan plan, CancellationToken cancellationToken = default)
     {
         if (!await storageRepository.BlobExists(BlobName(plan.Id), ContainerName))
+        {
+            logger.LogError("TravelPlan {Id} not found in container {Container}", plan.Id, ContainerName);
             throw new NotFoundException($"TravelPlan {plan.Id} not found.");
+        }
 
         var json = JsonSerializer.Serialize(ToDocument(plan), Json.JsonOptions);
         await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, "application/json");
@@ -80,7 +83,10 @@ public class TravelPlanRepository(
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
+        {
+            logger.LogError("TravelPlan {Id} not found in container {Container}", id, ContainerName);
             throw new NotFoundException($"TravelPlan {id} not found.");
+        }
 
         await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
     }
@@ -88,7 +94,9 @@ public class TravelPlanRepository(
     private async Task EnsureContainerAsync()
     {
         if (!await storageRepository.ContainerExists(ContainerName))
+        {
             await storageRepository.CreateContainerAsync(ContainerName);
+        }
     }
 
     private static TravelPlanDocument ToDocument(TravelPlan plan) =>

@@ -87,8 +87,11 @@ var json = JsonSerializer.Serialize(document, Json.JsonOptions);
 private static readonly JsonSerializerOptions JsonOptions = new() { ... };
 ```
 
-### 4 — Separate reads (Queries) from writes (Repositories)
-Read operations (`GetAsync`, `ListAsync`, `GetBy*`) belong in dedicated query classes under `Queries/`. Write operations (`AddAsync`, `UpdateAsync`, `DeleteAsync`) belong in `Repositories/`. Do not add read methods to repository classes.
+### 4 — Pragmatic CQRS: query handlers use `Queries/`, command handlers use `Repositories/`
+Repositories retain `GetAsync`/`ListAsync` for use by **command handlers only** — commands need to load aggregates before mutating them (e.g. verify existence, apply domain logic, then save). Dedicated query classes under `Queries/` are used by **query handlers only**. The separation is enforced by caller convention, not by removing methods from interfaces:
+
+- Command handlers → inject the repository interface (`ITravelPlanRepository`, `ISessionRepository`, etc.)
+- Query handlers → inject the query interface (`ITravelPlanQuery`, `ISessionQuery`, etc.)
 
 ### 5 — Use blank lines to separate logical blocks within methods
 Each phase (guard check, load, deserialize, map, return) gets its own visual block separated by a blank line.

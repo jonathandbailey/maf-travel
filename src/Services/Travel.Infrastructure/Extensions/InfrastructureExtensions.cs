@@ -33,6 +33,8 @@ public static class InfrastructureExtensions
         services.AddSingleton<IFlightSearchRepository, FlightSearchRepository>();
 
         services.AddSingleton<ITravelPlanQuery, TravelPlanQuery>();
+        services.AddSingleton<ISessionQuery, SessionQuery>();
+        services.AddSingleton<IFlightSearchQuery, FlightSearchQuery>();
 
         return services;
     }

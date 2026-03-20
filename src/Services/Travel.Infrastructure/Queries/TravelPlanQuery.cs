@@ -8,14 +8,13 @@ using Travel.Application.Interfaces;
 using Travel.Domain.Aggregates;
 using Travel.Infrastructure.Common;
 using Travel.Infrastructure.Documents;
-using Travel.Infrastructure.Repositories;
 
 namespace Travel.Infrastructure.Queries;
 
 
 public class TravelPlanQuery(IAzureStorageRepository storageRepository,
     IOptions<TravelPlanStorageSettings> settings,
-    ILogger<TravelPlanRepository> logger) : ITravelPlanQuery
+    ILogger<TravelPlanQuery> logger) : ITravelPlanQuery
 {
     private string ContainerName => settings.Value.ContainerName;
 
@@ -55,9 +54,13 @@ public class TravelPlanQuery(IAzureStorageRepository storageRepository,
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
             var document = JsonSerializer.Deserialize<TravelPlanDocument>(json, Json.JsonOptions);
             if (document is null)
+            {
                 logger.LogWarning("Failed to deserialize TravelPlan blob {BlobName} in {Container}", blob, ContainerName);
+            }
             else
+            {
                 plans.Add(ToDomain(document));
+            }
         }
 
         return plans;
