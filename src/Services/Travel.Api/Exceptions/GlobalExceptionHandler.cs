@@ -23,7 +23,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             return true;
         }
 
-        if (exception is NotFoundException notFoundException)
+        if (exception is TravelPlanUpdateException notFoundException)
         {
             await Results.Problem(
                 detail: notFoundException.Message,

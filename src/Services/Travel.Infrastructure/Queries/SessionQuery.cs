@@ -25,7 +25,7 @@ public class SessionQuery(
         if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
         {
             logger.LogError("Session {Id} not found in container {Container}", id, ContainerName);
-            throw new NotFoundException($"Session {id} was not found.");
+            throw new TravelPlanQueryException($"Session {id} was not found.");
         }
 
         var json = await storageRepository.DownloadTextBlobAsync(BlobName(id), ContainerName);

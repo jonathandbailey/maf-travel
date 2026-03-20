@@ -27,7 +27,7 @@ public class FlightSearchRepository(
         if (!await storageRepository.BlobExists(blobName, ContainerName))
         {
             logger.LogError("FlightSearch {Id} not found in container {Container}", id, ContainerName);
-            throw new NotFoundException($"FlightSearch {id} not found.");
+            throw new TravelPlanUpdateException($"FlightSearch {id} not found.");
         }
 
         var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
@@ -78,7 +78,7 @@ public class FlightSearchRepository(
         if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
         {
             logger.LogError("FlightSearch {Id} not found in container {Container}", id, ContainerName);
-            throw new NotFoundException($"FlightSearch {id} not found.");
+            throw new TravelPlanUpdateException($"FlightSearch {id} not found.");
         }
 
         await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);

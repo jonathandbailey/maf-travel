@@ -1,9 +1,9 @@
-﻿using Travel.Domain.Aggregates;
+﻿using Travel.Application.Models;
 
 namespace Travel.Application.Interfaces;
 
 public interface ITravelPlanQuery
 {
-    Task<TravelPlan> GetAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<TravelPlan>> ListAsync(CancellationToken cancellationToken = default);
+    Task<TravelPlanReadModel> GetAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<TravelPlanReadModel>> ListAsync(CancellationToken cancellationToken = default);
 }

@@ -27,10 +27,11 @@ public class FlightSearchQuery(
         if (!await storageRepository.BlobExists(blobName, ContainerName))
         {
             logger.LogError("FlightSearch {Id} not found in container {Container}", id, ContainerName);
-            throw new NotFoundException($"FlightSearch {id} not found.");
+            throw new TravelPlanQueryException($"FlightSearch {id} not found.");
         }
 
         var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
+
         var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, Json.JsonOptions);
 
         if (document is null)
@@ -50,6 +51,7 @@ public class FlightSearchQuery(
         foreach (var blob in blobs)
         {
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
+
             var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, Json.JsonOptions);
 
             if (document is null)

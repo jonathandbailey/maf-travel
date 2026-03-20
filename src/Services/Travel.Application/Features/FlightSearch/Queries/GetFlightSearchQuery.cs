@@ -7,11 +7,11 @@ namespace Travel.Application.Features.FlightSearch.Queries;
 public record GetFlightSearchQuery(Guid Id) : IRequest<FlightSearchResponse>;
 
 public class GetFlightSearchQueryHandler(
-    IFlightSearchRepository repository) : IRequestHandler<GetFlightSearchQuery, FlightSearchResponse>
+    IFlightSearchQuery flightSearchQuery) : IRequestHandler<GetFlightSearchQuery, FlightSearchResponse>
 {
     public async Task<FlightSearchResponse> Handle(GetFlightSearchQuery query, CancellationToken cancellationToken)
     {
-        var search = await repository.GetAsync(query.Id, cancellationToken);
+        var search = await flightSearchQuery.GetAsync(query.Id, cancellationToken);
         return ToResponse(search);
     }
 

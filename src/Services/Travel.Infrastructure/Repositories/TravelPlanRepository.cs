@@ -28,7 +28,7 @@ public class TravelPlanRepository(
         if (!await storageRepository.BlobExists(blobName, ContainerName))
         {
             logger.LogError("TravelPlan {id} not found in container {ContainerName}", id, ContainerName);
-            throw new NotFoundException($"TravelPlan {id} not found in container {ContainerName}");
+            throw new TravelPlanUpdateException($"TravelPlan {id} not found in container {ContainerName}");
         }
 
         var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
@@ -81,7 +81,7 @@ public class TravelPlanRepository(
         if (!await storageRepository.BlobExists(BlobName(plan.Id), ContainerName))
         {
             logger.LogError("TravelPlan {Id} not found in container {Container}", plan.Id, ContainerName);
-            throw new NotFoundException($"TravelPlan {plan.Id} not found.");
+            throw new TravelPlanUpdateException($"TravelPlan {plan.Id} not found.");
         }
 
         var json = JsonSerializer.Serialize(ToDocument(plan), Json.JsonOptions);
@@ -94,7 +94,7 @@ public class TravelPlanRepository(
         if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
         {
             logger.LogError("TravelPlan {Id} not found in container {Container}", id, ContainerName);
-            throw new NotFoundException($"TravelPlan {id} not found.");
+            throw new TravelPlanUpdateException($"TravelPlan {id} not found.");
         }
 
         await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
