@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Repository.Azure;
+namespace Infrastructure.Repository.Azure;
 
 public interface IAzureStorageRepository
 {

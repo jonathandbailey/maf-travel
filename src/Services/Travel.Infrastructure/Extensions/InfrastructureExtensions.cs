@@ -4,6 +4,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Travel.Application.Interfaces;
+using Travel.Infrastructure.Queries;
 using Travel.Infrastructure.Repositories;
 
 namespace Travel.Infrastructure.Extensions;
@@ -27,9 +28,14 @@ public static class InfrastructureExtensions
             azure.AddBlobServiceClient(configuration.GetConnectionString("blobs")));
 
         services.AddSingleton<IAzureStorageRepository, AzureStorageRepository>();
+        services.AddSingleton<IAzureStorageQuery, AzureStorageQuery>();
         services.AddSingleton<ITravelPlanRepository, TravelPlanRepository>();
         services.AddSingleton<ISessionRepository, SessionRepository>();
         services.AddSingleton<IFlightSearchRepository, FlightSearchRepository>();
+
+        services.AddSingleton<ITravelPlanQuery, TravelPlanQuery>();
+        services.AddSingleton<ISessionQuery, SessionQuery>();
+        services.AddSingleton<IFlightSearchQuery, FlightSearchQuery>();
 
         return services;
     }

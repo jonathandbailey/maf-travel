@@ -11,7 +11,7 @@ public class InMemoryTravelPlanRepository : ITravelPlanRepository
     public Task<TravelPlan> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
         if (!_store.TryGetValue(id, out var plan))
-            throw new NotFoundException($"TravelPlan {id} not found.");
+            throw new TravelPlanUpdateException($"TravelPlan {id} not found.");
 
         return Task.FromResult(plan);
     }
@@ -28,7 +28,7 @@ public class InMemoryTravelPlanRepository : ITravelPlanRepository
     public Task UpdateAsync(TravelPlan plan, CancellationToken cancellationToken = default)
     {
         if (!_store.ContainsKey(plan.Id))
-            throw new NotFoundException($"TravelPlan {plan.Id} not found.");
+            throw new TravelPlanUpdateException($"TravelPlan {plan.Id} not found.");
 
         _store[plan.Id] = plan;
         return Task.CompletedTask;
@@ -37,7 +37,7 @@ public class InMemoryTravelPlanRepository : ITravelPlanRepository
     public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         if (!_store.Remove(id))
-            throw new NotFoundException($"TravelPlan {id} not found.");
+            throw new TravelPlanUpdateException($"TravelPlan {id} not found.");
 
         return Task.CompletedTask;
     }

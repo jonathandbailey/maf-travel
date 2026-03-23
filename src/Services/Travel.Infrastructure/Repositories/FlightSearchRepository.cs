@@ -1,11 +1,12 @@
-using System.Text.Json;
 using Infrastructure.Repository.Azure;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 using Travel.Application.Exceptions;
 using Travel.Application.Interfaces;
 using Travel.Domain.Aggregates.FlightSearch;
+using Travel.Infrastructure.Common;
 using Travel.Infrastructure.Documents;
 
 namespace Travel.Infrastructure.Repositories;
@@ -15,12 +16,6 @@ public class FlightSearchRepository(
     IOptions<FlightSearchStorageSettings> settings,
     ILogger<FlightSearchRepository> logger) : IFlightSearchRepository
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = true
-    };
-
     private string ContainerName => settings.Value.ContainerName;
 
     private static string BlobName(Guid id) => $"{id}.json";
@@ -28,14 +23,24 @@ public class FlightSearchRepository(
     public async Task<FlightSearch> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var blobName = BlobName(id);
+
         if (!await storageRepository.BlobExists(blobName, ContainerName))
-            throw new NotFoundException($"FlightSearch {id} not found.");
+        {
+            logger.LogError("FlightSearch {Id} not found in container {Container}", id, ContainerName);
+            throw new FlightSearchUpdateException($"FlightSearch {id} not found.");
+        }
 
         var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
-        var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, JsonOptions);
-        return document is null
-            ? throw new NotFoundException($"FlightSearch {id} not found.")
-            : ToDomain(document);
+
+        var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, Json.JsonOptions);
+
+        if (document is null)
+        {
+            logger.LogError("FlightSearch {Id} failed to deserialize", id);
+            throw new JsonException($"FlightSearch {id} failed to deserialize");
+        }
+
+        return ToDomain(document);
     }
 
     public async Task<IReadOnlyList<FlightSearch>> ListAsync(CancellationToken cancellationToken = default)
@@ -46,11 +51,15 @@ public class FlightSearchRepository(
         foreach (var blob in blobs)
         {
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
-            var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, JsonOptions);
+            var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, Json.JsonOptions);
+
             if (document is null)
-                logger.LogWarning("Failed to deserialize FlightSearch blob {BlobName} in {Container}", blob, ContainerName);
-            else
-                searches.Add(ToDomain(document));
+            {
+                logger.LogError("Failed to deserialize FlightSearch blob {BlobName} in {Container}", blob, ContainerName);
+                continue;
+            }
+
+            searches.Add(ToDomain(document));
         }
 
         return searches;
@@ -59,14 +68,18 @@ public class FlightSearchRepository(
     public async Task AddAsync(FlightSearch search, CancellationToken cancellationToken = default)
     {
         await EnsureContainerAsync();
-        var json = JsonSerializer.Serialize(ToDocument(search), JsonOptions);
+
+        var json = JsonSerializer.Serialize(ToDocument(search), Json.JsonOptions);
         await storageRepository.UploadTextBlobAsync(BlobName(search.Id), ContainerName, json, "application/json");
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
-            throw new NotFoundException($"FlightSearch {id} not found.");
+        {
+            logger.LogError("FlightSearch {Id} not found in container {Container}", id, ContainerName);
+            throw new TravelPlanUpdateException($"FlightSearch {id} not found.");
+        }
 
         await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
     }
@@ -74,7 +87,9 @@ public class FlightSearchRepository(
     private async Task EnsureContainerAsync()
     {
         if (!await storageRepository.ContainerExists(ContainerName))
+        {
             await storageRepository.CreateContainerAsync(ContainerName);
+        }
     }
 
     private static FlightSearchDocument ToDocument(FlightSearch search) =>
