@@ -12,7 +12,7 @@ using Travel.Infrastructure.Documents;
 namespace Travel.Infrastructure.Queries;
 
 public class FlightSearchQuery(
-    IAzureStorageRepository storageRepository,
+    IAzureStorageQuery storageQuery,
     IOptions<FlightSearchStorageSettings> settings,
     ILogger<FlightSearchQuery> logger) : IFlightSearchQuery
 {
@@ -24,13 +24,13 @@ public class FlightSearchQuery(
     {
         var blobName = BlobName(id);
 
-        if (!await storageRepository.BlobExists(blobName, ContainerName))
+        if (!await storageQuery.BlobExists(blobName, ContainerName))
         {
             logger.LogError("FlightSearch {Id} not found in container {Container}", id, ContainerName);
             throw new TravelPlanQueryException($"FlightSearch {id} not found.");
         }
 
-        var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
+        var json = await storageQuery.DownloadTextBlobAsync(blobName, ContainerName);
 
         var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, Json.JsonOptions);
 
@@ -45,12 +45,12 @@ public class FlightSearchQuery(
 
     public async Task<IReadOnlyList<FlightSearch>> ListAsync(CancellationToken cancellationToken = default)
     {
-        var blobs = await storageRepository.ListBlobsAsync(ContainerName);
+        var blobs = await storageQuery.ListBlobsAsync(ContainerName);
         var searches = new List<FlightSearch>(blobs.Count);
 
         foreach (var blob in blobs)
         {
-            var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
+            var json = await storageQuery.DownloadTextBlobAsync(blob, ContainerName);
 
             var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, Json.JsonOptions);
 

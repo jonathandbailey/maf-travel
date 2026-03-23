@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -64,7 +64,7 @@ public class AzureStorageRepository(BlobServiceClient blobServiceClient, ILogger
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, $"Error while checking if {containerName} exists on Azure Storage");
+            logger.LogError(exception, "Error while checking if {containerName} exists on Azure Storage", containerName);
             throw;
         }
     }
@@ -99,7 +99,7 @@ public class AzureStorageRepository(BlobServiceClient blobServiceClient, ILogger
         try
         {
             var exists = await blobClient.ExistsAsync();
-            
+
             if (!exists.Value)
             {
                 throw new FileNotFoundException($"Blob '{blobName}' does not exist in container '{containerName}'");
@@ -182,7 +182,7 @@ public class AzureStorageRepository(BlobServiceClient blobServiceClient, ILogger
             return false;
 
         var lowerContentType = contentType.ToLowerInvariant();
-     
+
         var textApplicationTypes = new[]
         {
             "text/plain",

@@ -12,7 +12,7 @@ using Travel.Infrastructure.Documents;
 namespace Travel.Infrastructure.Queries;
 
 public class SessionQuery(
-    IAzureStorageRepository storageRepository,
+    IAzureStorageQuery storageQuery,
     IOptions<SessionStorageSettings> settings,
     ILogger<SessionQuery> logger) : ISessionQuery
 {
@@ -22,13 +22,13 @@ public class SessionQuery(
 
     public async Task<Session> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        if (!await storageRepository.BlobExists(BlobName(id), ContainerName))
+        if (!await storageQuery.BlobExists(BlobName(id), ContainerName))
         {
             logger.LogError("Session {Id} not found in container {Container}", id, ContainerName);
             throw new SessionQueryException($"Session {id} was not found.");
         }
 
-        var json = await storageRepository.DownloadTextBlobAsync(BlobName(id), ContainerName);
+        var json = await storageQuery.DownloadTextBlobAsync(BlobName(id), ContainerName);
         var document = JsonSerializer.Deserialize<SessionDocument>(json, Json.JsonOptions);
 
         if (document is null)
@@ -42,17 +42,17 @@ public class SessionQuery(
 
     public async Task<Session?> GetByTravelPlanIdAsync(Guid travelPlanId, CancellationToken cancellationToken = default)
     {
-        if (!await storageRepository.ContainerExists(ContainerName))
+        if (!await storageQuery.ContainerExists(ContainerName))
         {
             return null;
         }
 
-        var blobs = await storageRepository.ListBlobsAsync(ContainerName);
+        var blobs = await storageQuery.ListBlobsAsync(ContainerName);
 
         foreach (var blob in blobs)
         {
-            var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
-            
+            var json = await storageQuery.DownloadTextBlobAsync(blob, ContainerName);
+
             var document = JsonSerializer.Deserialize<SessionDocument>(json, Json.JsonOptions);
 
             if (document?.TravelPlanId == travelPlanId)

@@ -1,4 +1,4 @@
-﻿using Infrastructure.Repository.Azure;
+using Infrastructure.Repository.Azure;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,7 +12,7 @@ using Travel.Infrastructure.Documents;
 namespace Travel.Infrastructure.Queries;
 
 
-public class TravelPlanQuery(IAzureStorageRepository storageRepository,
+public class TravelPlanQuery(IAzureStorageQuery storageQuery,
     IOptions<TravelPlanStorageSettings> settings,
     ILogger<TravelPlanQuery> logger) : ITravelPlanQuery
 {
@@ -24,13 +24,13 @@ public class TravelPlanQuery(IAzureStorageRepository storageRepository,
     {
         var blobName = BlobName(id);
 
-        if (!await storageRepository.BlobExists(blobName, ContainerName))
+        if (!await storageQuery.BlobExists(blobName, ContainerName))
         {
             logger.LogError("TravelPlan {id} not found in container {ContainerName}", id, ContainerName);
             throw new TravelPlanQueryException($"TravelPlan {id} not found in container {ContainerName}");
         }
 
-        var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
+        var json = await storageQuery.DownloadTextBlobAsync(blobName, ContainerName);
 
         var document = JsonSerializer.Deserialize<TravelPlanDocument>(json, Json.JsonOptions);
 
@@ -45,13 +45,13 @@ public class TravelPlanQuery(IAzureStorageRepository storageRepository,
 
     public async Task<IReadOnlyList<TravelPlanReadModel>> ListAsync(CancellationToken cancellationToken = default)
     {
-        var blobs = await storageRepository.ListBlobsAsync(ContainerName);
+        var blobs = await storageQuery.ListBlobsAsync(ContainerName);
 
         var plans = new List<TravelPlanReadModel>(blobs.Count);
 
         foreach (var blob in blobs)
         {
-            var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
+            var json = await storageQuery.DownloadTextBlobAsync(blob, ContainerName);
 
             var document = JsonSerializer.Deserialize<TravelPlanDocument>(json, Json.JsonOptions);
 

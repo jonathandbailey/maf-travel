@@ -26,6 +26,7 @@ public static class InfrastructureExtensions
         services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
         services.AddSingleton<IAgentThreadRepository, AzureStorageAgentThreadRepository>();
         services.AddSingleton<IAzureStorageRepository, AzureStorageRepository>();
+        services.AddSingleton<IAzureStorageQuery, AzureStorageQuery>();
         services.AddSingleton<ITravelPlanRepository, AzureStorageTravelPlanRepository>();
 
         return services;

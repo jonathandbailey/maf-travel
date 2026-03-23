@@ -43,16 +43,17 @@ public class TravelPlanRepository(
 
         return ToDomain(document);
     }
+
     public async Task<IReadOnlyList<TravelPlan>> ListAsync(CancellationToken cancellationToken = default)
     {
         var blobs = await storageRepository.ListBlobsAsync(ContainerName);
-        
+
         var plans = new List<TravelPlan>(blobs.Count);
 
         foreach (var blob in blobs)
         {
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
-            
+
             var document = JsonSerializer.Deserialize<TravelPlanDocument>(json, Json.JsonOptions);
 
             if (document is null)
@@ -70,7 +71,7 @@ public class TravelPlanRepository(
     public async Task AddAsync(TravelPlan plan, CancellationToken cancellationToken = default)
     {
         var json = JsonSerializer.Serialize(ToDocument(plan), Json.JsonOptions);
-        
+
         await storageRepository.UploadTextBlobAsync(BlobName(plan.Id), ContainerName, json, ApplicationJson);
     }
 
@@ -97,7 +98,7 @@ public class TravelPlanRepository(
 
         await storageRepository.DeleteBlobAsync(BlobName(id), ContainerName);
     }
- 
+
 
     private static TravelPlanDocument ToDocument(TravelPlan plan) =>
         new(plan.Id, plan.Origin, plan.Destination, plan.NumberOfTravelers, plan.StartDate, plan.EndDate);

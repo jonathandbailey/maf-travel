@@ -28,6 +28,7 @@ public static class InfrastructureExtensions
             azure.AddBlobServiceClient(configuration.GetConnectionString("blobs")));
 
         services.AddSingleton<IAzureStorageRepository, AzureStorageRepository>();
+        services.AddSingleton<IAzureStorageQuery, AzureStorageQuery>();
         services.AddSingleton<ITravelPlanRepository, TravelPlanRepository>();
         services.AddSingleton<ISessionRepository, SessionRepository>();
         services.AddSingleton<IFlightSearchRepository, FlightSearchRepository>();

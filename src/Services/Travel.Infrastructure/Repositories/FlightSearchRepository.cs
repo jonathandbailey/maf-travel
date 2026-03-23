@@ -31,7 +31,7 @@ public class FlightSearchRepository(
         }
 
         var json = await storageRepository.DownloadTextBlobAsync(blobName, ContainerName);
-        
+
         var document = JsonSerializer.Deserialize<FlightSearchDocument>(json, Json.JsonOptions);
 
         if (document is null)

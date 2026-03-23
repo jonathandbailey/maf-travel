@@ -38,7 +38,7 @@ public class SessionRepository(
         }
 
         var json = await storageRepository.DownloadTextBlobAsync(BlobName(id), ContainerName);
-        
+
         var document = JsonSerializer.Deserialize<SessionDocument>(json, Json.JsonOptions);
 
         if (document is null)
@@ -62,7 +62,7 @@ public class SessionRepository(
         foreach (var blob in blobs)
         {
             var json = await storageRepository.DownloadTextBlobAsync(blob, ContainerName);
-            
+
             var document = JsonSerializer.Deserialize<SessionDocument>(json, Json.JsonOptions);
 
             if (document?.TravelPlanId == travelPlanId)
@@ -83,7 +83,7 @@ public class SessionRepository(
         }
 
         var document = new SessionDocument(session.Id, session.CreatedAt, session.TravelPlanId);
-        
+
         var json = JsonSerializer.Serialize(document, Json.JsonOptions);
 
         await storageRepository.UploadTextBlobAsync(BlobName(session.Id), ContainerName, json, ApplicationJson);
