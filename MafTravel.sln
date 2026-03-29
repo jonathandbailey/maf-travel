@@ -62,6 +62,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Gateway", "src\Trave
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Travel.Experience.Mcp.Flights", "src\Travel.Experience.Mcp.Flights\Travel.Experience.Mcp.Flights.csproj", "{78A3A350-DB4B-4432-C3CD-202EA76304EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "src\Tools\Tools.csproj", "{E2445F15-2138-4CD7-BC42-955D44C182E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +146,10 @@ Global
 		{78A3A350-DB4B-4432-C3CD-202EA76304EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78A3A350-DB4B-4432-C3CD-202EA76304EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78A3A350-DB4B-4432-C3CD-202EA76304EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2445F15-2138-4CD7-BC42-955D44C182E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2445F15-2138-4CD7-BC42-955D44C182E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2445F15-2138-4CD7-BC42-955D44C182E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2445F15-2138-4CD7-BC42-955D44C182E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -169,6 +175,7 @@ Global
 		{1C71B0B6-6FD4-E4D0-B11F-CEB0973C7697} = {A08C2368-F2E7-4A9C-98E8-4132A6D83F29}
 		{EBAA92EC-7C75-3702-CBCF-B47E907E52D8} = {74828106-6426-4828-BCE0-ED45DFFB2CAD}
 		{78A3A350-DB4B-4432-C3CD-202EA76304EB} = {FBA26D97-C73D-4261-87D3-E121EF85DA60}
+		{E2445F15-2138-4CD7-BC42-955D44C182E8} = {74828106-6426-4828-BCE0-ED45DFFB2CAD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CECF4BFE-6870-4849-BFB1-EC0B46CF01E1}

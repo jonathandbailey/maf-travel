@@ -1,8 +1,8 @@
 using Agents.Services;
-using Agents.Tools;
 using Infrastructure.Repository;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using Tools.Registry;
 
 namespace Travel.Agents.Services;
 

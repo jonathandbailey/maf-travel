@@ -1,7 +1,7 @@
 ﻿
-using Agents.Tools;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Tools.Registry;
 using Travel.Agents.Services;
 using Travel.Tests.Shared.Helper;
 using Travel.Workflows.Common.Interfaces;

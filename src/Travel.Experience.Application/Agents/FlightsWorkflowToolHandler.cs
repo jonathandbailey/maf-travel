@@ -1,8 +1,8 @@
-using Agents.Tools;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Tools.Registry;
 using Travel.Experience.Application.Dto;
 using Travel.Workflows.Flights.Dto;
 using Travel.Workflows.Flights.Events;

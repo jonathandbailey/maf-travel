@@ -1,5 +1,5 @@
-﻿using Agents.Tools;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Tools.Registry;
 using Travel.Agents.Services;
 using Travel.Experience.Application.Agents;
 using Travel.Workflows.Common.Interfaces;

@@ -2,7 +2,7 @@ using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Agents.Tools;
+using Tools.Registry;
 using Travel.Workflows.Common;
 using Travel.Workflows.TravelPlanCriteria.Dto;
 using Travel.Workflows.TravelPlanCriteria.Events;

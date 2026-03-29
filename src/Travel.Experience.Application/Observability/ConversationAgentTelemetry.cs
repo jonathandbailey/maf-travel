@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using A2A;
-using Agents.Tools;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
+using Tools.Registry;
 
 namespace Travel.Experience.Application.Observability;
 
