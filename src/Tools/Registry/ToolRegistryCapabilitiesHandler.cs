@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Extensions.AI;
 
-namespace Agents.Tools;
+namespace Tools.Registry;
 
 public sealed class ToolRegistryCapabilitiesHandler(IReadOnlyList<AITool> availableTools) : IToolHandler
 {

@@ -1,5 +1,4 @@
 using Agents.Services;
-using Agents.Tools;
 using Infrastructure.Repository;
 using Infrastructure.Settings;
 using Microsoft.Agents.AI;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
+using Tools.Registry;
 using Travel.Agents.Dto;
 using Travel.Agents.Services;
 using Travel.Tests.Shared.Settings;

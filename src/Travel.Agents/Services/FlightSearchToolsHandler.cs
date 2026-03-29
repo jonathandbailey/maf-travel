@@ -1,6 +1,6 @@
 using System.ComponentModel;
-using Agents.Tools;
 using Microsoft.Extensions.AI;
+using Tools.Registry;
 
 namespace Travel.Agents.Services;
 

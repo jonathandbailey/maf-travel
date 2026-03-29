@@ -1,6 +1,6 @@
 using Microsoft.Extensions.AI;
 
-namespace Agents.Tools;
+namespace Tools.Registry;
 
 public sealed class ToolRegistry : IToolRegistry
 {
